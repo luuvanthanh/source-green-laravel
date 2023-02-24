@@ -25,28 +25,39 @@ class SubjectCreateRequest extends FormRequest
      */
     public function rules()
     {
-<<<<<<< HEAD
-        return [];
-=======
         return [
             'name' => 'required|check_unique:study-program.Subjects,Name',
         ];
->>>>>>> f26c4c9ce7dd9a40420dc2f9b4ac187684f9ea2b
     }
 
     public function all($keys = null)
     {
         $data = parent::all();
 
-        $subject = Subject::orderBy('CreationTime', 'desc')->first();
+        $result = Subject::orderBy('CreationTime', 'desc')->first();
 
-        if (!is_null($subject)) {
-            $getInt = substr($subject->Code, 2) + 1;
-            $data['code'] = Subject::CODE . $getInt;
+        if (!is_null($result)) {
+            $getInt = (int)ltrim($result->Code, 'A..z: ');
+            $num = $getInt + 1;
+
+            if ($getInt < 9) {
+                $data['code'] = Subject::CODE . '00' . $num;
+            } elseif ($getInt >= 9 && $getInt < 99) {
+                $data['code'] = Subject::CODE . '0' . $num;
+            } else {
+                $data['code'] = Subject::CODE . $num;
+            }
         } else {
-            $data['code'] = Subject::CODE . '1';
+            $data['code'] = Subject::CODE . '001';
         }
 
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'check_unique' => 'The :attribute has already been taken.',
+        ];
     }
 }

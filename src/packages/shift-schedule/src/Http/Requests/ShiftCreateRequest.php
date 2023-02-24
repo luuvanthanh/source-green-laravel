@@ -43,7 +43,6 @@ class ShiftCreateRequest extends FormRequest
             'time' => [
                 'required', 'array',
                 function ($attribute, $value, $fail) {
-
                     for ($i = 0; $i < count($value); $i++) {
                         if ($value[$i]['endTime'] <= $value[$i]['startTime']) {
                             return $fail('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');

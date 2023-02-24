@@ -14,7 +14,7 @@ class DocumentManagement extends UuidModel
     /**
      * Declare the table name
      */
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     protected $table = 'DocumentManagements';
 
     const TYPE_DOCUMENT = [

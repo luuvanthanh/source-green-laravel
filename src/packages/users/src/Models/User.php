@@ -10,6 +10,7 @@ use GGPHP\Category\Models\Degree;
 use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Models\TrainingSchool;
 use GGPHP\Children\Models\Children;
+use GGPHP\Clover\Models\ClassTeacher;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ManualCalculation\Models\ManualCalculation;
@@ -21,6 +22,7 @@ use GGPHP\Profile\Models\Insurrance;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\Salary\Models\PayrollSession;
 use GGPHP\Timekeeping\Models\Timekeeping;
+use GGPHP\Transfer\Models\TransferDetail;
 use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
@@ -37,7 +39,7 @@ use ZK\Traits\SyncToDevice;
 class User extends UuidModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     public $incrementing = false;
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use Notifiable, CanResetPassword;
     use Authenticatable;
     use Authorizable, CanResetPassword, MustVerifyEmail;
@@ -385,5 +387,15 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function healthInsurance()
     {
         return $this->hasOne(HealthInsurance::class, 'EmployeeId');
+    }
+
+    public function transferDetail()
+    {
+        return $this->hasMany(TransferDetail::class, 'EmployeeId');
+    }
+
+    public function classTeacherNew()
+    {
+        return $this->hasOne(ClassTeacher::class, 'EmployeeId')->where('IsLastest', true);
     }
 }

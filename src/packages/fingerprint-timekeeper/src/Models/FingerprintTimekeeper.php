@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class FingerprintTimekeeper extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

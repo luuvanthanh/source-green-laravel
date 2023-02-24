@@ -9,7 +9,7 @@ use ZK\Traits\SyncToDevice;
 
 class MagneticCard extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SyncToDevice, SoftDeletes;
 
     /**

@@ -8,11 +8,14 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
+use GGPHP\StudyProgram\AttendancePhysical\Models\AttendancePhysical;
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use GGPHP\StudyProgram\QuarterReport\Models\QuarterReport;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SoftDeletes;
 
     const DELETED_AT = 'DeletionTime';
@@ -121,5 +124,20 @@ class Student extends UuidModel
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'BranchId');
+    }
+
+    public function quarterReport()
+    {
+        return $this->hasMany(QuarterReport::class, 'StudentId');
+    }
+
+    public function monthlyComment()
+    {
+        return $this->hasMany(MonthlyComment::class, 'StudentId');
+    }
+
+    public function attendancePhysical()
+    {
+        return $this->hasMany(AttendancePhysical::class, 'StudentId');
     }
 }

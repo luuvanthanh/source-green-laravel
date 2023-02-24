@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChildEvaluate extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SoftDeletes;
     
     protected $table = 'ChildEvaluates';
@@ -28,7 +28,7 @@ class ChildEvaluate extends UuidModel
         '30-36' => 6,
         '36-50' => 7,
         '50-60' => 8,
-        '61-72' => 9
+        '61-100' => 9
     ];
 
     public function childEvaluateDetail()

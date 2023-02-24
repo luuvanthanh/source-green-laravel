@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemesterDetail extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SoftDeletes;
     
     protected $table = 'TestSemesterDetails';

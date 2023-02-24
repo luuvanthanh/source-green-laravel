@@ -13,13 +13,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestSemester extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     use SoftDeletes;
     protected $table = 'TestSemesters';
 
     protected $fillable = [
         'AssessmentPeriodId', 'StudentId', 'Status', 'Type', 'ApprovalStatus', 'Strength',
-        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId', 'TimeApproved', 'TimePendingApproved'
+        'Encourage', 'ClassTypeId', 'TimeAgeTestSemester', 'EmployeeId', 'SchoolYearId',
+        'TimeApproved', 'TimePendingApproved', 'Suggestion'
     ];
 
     const STATUS = [

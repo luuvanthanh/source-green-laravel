@@ -1,0 +1,53 @@
+<?php
+
+namespace GGPHP\StudyProgram\MonthlyComment\Http\Requests;
+
+use GGPHP\StudyProgram\MonthlyComment\Models\MonthlyComment;
+use Illuminate\Foundation\Http\FormRequest;
+
+class MonthlyCommentUpdateStatusRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $status = implode(',', MonthlyComment::STATUS);
+        return [
+            'studentId' => 'array|required|check_exists:object.Students,Id',
+            'schoolYearId' => 'required|check_exists:fee.SchoolYears,Id',
+            'scriptReviewId' => 'nullable|check_exists:study-program.ScriptReviews,Id',
+            'newStatus' => 'required|in:' . $status,
+            "oldStatus" => 'required|in:' . $status,
+            'teacherSentId' => 'nullable|exists:Employees,Id',
+            'month' => 'required|date_format:Y-m-d',
+        ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+
+        if (!empty($data['oldStatus'])) {
+            $data['oldStatus'] = MonthlyComment::STATUS[$data['oldStatus']];
+        }
+
+        if (!empty($data['newStatus'])) {
+            $data['newStatus'] = MonthlyComment::STATUS[$data['newStatus']];
+        }
+
+        return $data;
+    }
+}

@@ -9,7 +9,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class Children extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     protected $appends = ['months'];

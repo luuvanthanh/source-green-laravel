@@ -4,11 +4,15 @@ namespace GGPHP\Clover\Transformers;
 
 use Carbon\Carbon;
 use GGPHP\Attendance\Transformers\AttendanceTransformer;
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\ChildDevelop\TestSemester\Transformers\TestSemesterTransformer;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Transformers\ParentsTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\InOutHistories\Transformers\InOutHistoriesTransformer;
+use GGPHP\StudyProgram\AttendancePhysical\Transformers\AttendancePhysicalTransformer;
+use GGPHP\StudyProgram\MonthlyComment\Transformers\MonthlyCommentTransformer;
+use GGPHP\StudyProgram\QuarterReport\Transformers\QuarterReportTransformer;
 use GGPHP\YoungAttendance\Absent\Transformers\AbsentTransformer;
 use GGPHP\YoungAttendance\ShiftSchedule\Transformers\ScheduleTransformer;
 
@@ -36,7 +40,10 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter', 'testSemester', 'classes'];
+    protected $availableIncludes = [
+        'schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent',
+        'studentTransporter', 'testSemester', 'classes', 'quarterReport', 'monthlyComment', 'branch', 'attendancePhysical'
+    ];
 
     /**
      * Transform the Student entity.
@@ -159,5 +166,28 @@ class StudentTransformer extends BaseTransformer
         }
 
         return $this->item($student->classes, new ClassesTransformer, 'Classes');
+    }
+
+    public function includeQuarterReport(Student $student)
+    {
+        return $this->collection($student->quarterReport, new QuarterReportTransformer, 'QuarterReport');
+    }
+
+    public function includeMonthLyComment(Student $student)
+    {
+        return $this->collection($student->monthlyComment, new MonthlyCommentTransformer, 'MonthlyComment');
+    }
+
+    public function includeBranch(Student $student)
+    {
+        if (empty($student->branch)) {
+            return;
+        }
+        return $this->item($student->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeAttendancePhysical(Student $student)
+    {
+        return $this->collection($student->attendancePhysical, new AttendancePhysicalTransformer, 'AttendancePhysical');
     }
 }

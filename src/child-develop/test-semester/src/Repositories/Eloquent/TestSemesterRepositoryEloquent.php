@@ -126,7 +126,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['assessmentPeriodId'])) {
-            $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
+            $arrAssessmentPeriod = explode(',', $attributes['assessmentPeriodId']);
+            $this->model = $this->model->whereIn('AssessmentPeriodId', $arrAssessmentPeriod);
         }
 
         if (!empty($attributes['schoolYearId'])) {
@@ -238,30 +239,26 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         })->with('account')->get();
 
         if (!empty($attributes['approvalStatus']) && $attributes['approvalStatus'] === TestSemester::APPROVAL_STATUS['UNQUALIFIED']) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS['APPROVED'];
+            $arrId = array_column(array_column($employee->ToArray(), 'account'), 'AppUserId');
             $attributes['timeApproved'] = now()->format('Y-m-d H:i:s');
-            $parentAccount = $testSemester->student->parent()->with('account')->get();
-
             $images =  json_decode($student->FileImage);
-            $urlImage = '';
-
-            if (!empty($images)) {
-                $urlImage = env('IMAGE_URL') . $images[0];
-            }
-            $message = 'Đánh giá định kỳ' . ' ' . $student->FullName;
-
-            $arrId = array_merge(array_column($employee->pluck('account')->toArray(), 'AppUserId'), array_column($parentAccount->pluck('account')->toArray(), 'AppUserId'));
+            $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
+            $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+            $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+            $schoolYear = $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
+            $message = 'Đánh giá định kỳ ' . $nameOfTestSemester . ' năm học ' .   $schoolYear . ' của ' . $student->FullName . ' đang chờ duyệt';
 
             if (!empty($arrId)) {
-                $dataNotiCation = [
+                $dataNotifiCation = [
                     'users' => $arrId,
-                    'title' => $student->FullName,
+                    'title' => $title,
                     'imageURL' => $urlImage,
                     'message' => $message,
-                    'moduleType' => 22,
+                    'moduleType' => 26,
                     'refId' => $testSemester->Id,
                 ];
-                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotiCation));
+
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
 
@@ -356,10 +353,8 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         if (!empty($attributes['classId'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($attributes) {
-                $arrayClass = explode(',', $attributes['classId']);
-                $query->whereIn('ClassId', $arrayClass);
-            });
+            $arrayClass = explode(',', $attributes['classId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('ClassId', $arrayClass);
         }
 
         if (!empty($attributes['studentId'])) {
@@ -406,39 +401,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
 
     public function approvedTestSemester(array $attributes)
     {
-        if (!empty($attributes['id'])) {
-            $testSemesters = $this->model()::WhereIn('Id', explode(',', $attributes['id']))->get();
-        } else {
-            $this->model = $this->model->where('ApprovalStatus', TestSemester::APPROVAL_STATUS['PENDING_APPROVED']);
-
-            if (!empty($attributes['branchId'])) {
-                $this->model = $this->model->whereHas('student.classes', function ($q) use ($attributes) {
-                    $q->where('BranchId', $attributes['branchId']);
-                });
-            }
-
-            if (!empty($attributes['classId'])) {
-                $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
-                    $query->where('ClassId', $attributes['classId']);
-                });
-            }
-
-            if (!empty($attributes['assessmentPeriodId'])) {
-                $this->model = $this->model->where('AssessmentPeriodId', $attributes['assessmentPeriodId']);
-            }
-
-            if (!empty($attributes['schoolYearId'])) {
-                $this->model = $this->model->where('SchoolYearId', $attributes['schoolYearId']);
-            }
-
-            if (!empty($attributes['key'])) {
-                $this->model = $this->model->whereHas('student', function ($q) use ($attributes) {
-                    $q->whereLike('FullName', $attributes['key']);
-                });
-            }
-
-            $testSemesters = $this->model->orderBy('CreationTime')->get();
-        }
+        $testSemesters = $this->model()::WhereIn('Id', $attributes['id'])->get();
 
         if (count($testSemesters) > 0) {
 
@@ -463,7 +426,7 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                 $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
 
                 if (!empty($studentAccount)) {
-                    $dataNoti = [
+                    $dataNotifiCation = [
                         'users' => array_column($studentAccount->pluck('account')->toArray(), 'AppUserId'),
                         'title' => $title,
                         'imageURL' => $urlImage,
@@ -471,12 +434,12 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
                         'moduleType' => 22,
                         'refId' => $testSemester->Id,
                     ];
-                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNoti));
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
                 }
             }
         }
 
-        return parent::all();
+        return parent::parserResult($this->model->orderBy('LastModificationTime', 'desc')->first());
     }
 
     public function updateMultiple(array $attributes)
@@ -644,5 +607,44 @@ class TestSemesterRepositoryEloquent extends BaseRepository implements TestSemes
         }
 
         return $this->excelExporterServices->export('test_semester', $params);
+    }
+
+    public function updateApprovalStatus(array $attributes, $id)
+    {
+        $testSemester = $this->model::findOrFail($id);
+        $testSemester->update([
+            'timeApproved' => now()->format('Y-m-d H:i:s'),
+            'ApprovalStatus' => $attributes['approvalStatus']
+        ]);
+
+        if ($testSemester->ApprovalStatus === TestSemester::APPROVAL_STATUS['APPROVED']) {
+            $student = $testSemester->student;
+            $parent = $student->parent()->with('account')->get();
+
+            if (!empty($parent)) {
+                $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+
+                $images =  json_decode($student->FileImage);
+                $urlImage = !empty($images) ? env('IMAGE_URL') . $images[0] : '';
+                $nameOfTestSemester = $testSemester->assessmentPeriod->nameAssessmentPeriod->Name;
+                $title = 'Đánh giá định kỳ' . ' ' . $nameOfTestSemester;
+                $message = $student->FullName . ' ' . 'nhận đánh giá định kỳ' . ' ' . $nameOfTestSemester . ' ' . 'năm học' . ' ' . $testSemester->assessmentPeriod->schoolYear->YearFrom . '-' . $testSemester->assessmentPeriod->schoolYear->YearTo;
+
+                if (!empty($arrId)) {
+                    $dataNotifiCation = [
+                        'users' => $arrId,
+                        'title' => $title,
+                        'imageURL' => $urlImage,
+                        'message' => $message,
+                        'moduleType' => 22,
+                        'refId' => $testSemester->Id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+                }
+            }
+        }
+
+        return parent::parserResult($testSemester);
     }
 }

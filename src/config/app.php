@@ -234,6 +234,10 @@ return [
         GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
         GGPHP\StudyProgram\Setting\Providers\SubjectServiceProvider::class,
         GGPHP\DecisionNumberSample\Providers\DecisionNumberSampleServiceProvider::class,
+        GGPHP\StudyProgram\ScriptReview\Providers\ScriptReviewServiceProvider::class,
+        GGPHP\StudyProgram\QuarterReport\Providers\QuarterReportServiceProvider::class,
+        GGPHP\StudyProgram\MonthlyComment\Providers\MonthlyCommentServiceProvider::class,
+        GGPHP\StudyProgram\AttendancePhysical\Providers\AttendancePhysicalServiceProvider::class
     ],
 
     /*

@@ -8,7 +8,7 @@ use GGPHP\Fee\Models\Fee;
 
 class RefundFee extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $timestamps = false;
 
     /**

@@ -24,6 +24,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 
+
 /**
  * Class UserRepositoryEloquent.
  *
@@ -98,7 +99,31 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             if ($attributes['hasClass'] == 'true') {
                 $this->model = $this->model->whereHas('classTeacher');
             } else {
-                $this->model = $this->model->whereDoesnthave('classTeacher');
+                
+                $users = User::whereHas('transferDetail', function ($query) use ($attributes) {
+                    $query->whereHas('transfer', function ($query) use ($attributes) {
+                        $now = Carbon::now()->format('Y-m-d');
+                        $query->where('TimeApply', '<=', $now);
+                    });
+                })->with(['transferDetail' => function ($query) {
+                    $query->select('TransferDetails.*')
+                        ->join('Transfers', 'TransferDetails.TransferId', '=', 'Transfers.Id')
+                        ->orderby('Transfers.TimeApply', 'DESC');
+                }])->get();
+
+                $userId = [];
+
+                foreach ($users as $key => $user) {
+                    if (!is_null($user->classTeacherNew)) {
+                        if ($user->transferDetail->first()->BranchId != $user->classTeacherNew->classes->BranchId) {
+                            $userId[] = $user->Id;
+                        }
+                    }
+                }
+
+                $userIdInClassTeacher = User::whereDoesnthave('classTeacher')->pluck('Id')->toArray();
+                $dataUserId = array_merge($userId, $userIdInClassTeacher);
+                $this->model = $this->model->whereIn('Id', $dataUserId);
             }
         }
 
@@ -1021,20 +1046,40 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         $dateConfigNotification  = Carbon::now()->addDay($configNotification->Date);
 
+        if ($dateNow->format('y') == $dateConfigNotification->format('y')) {
+            //lấy sinh nhật nhân viên cùng năm
+            $dataEmployeeBirthdayUpcoming = $this->getEmployeeBirthdayUpcoming($dateNow, $dateConfigNotification);
+        } else {
+            //lấy sinh nhật nhân viên cùng năm
+            $resultEmployeeBirthdayUpcoming = $this->getEmployeeBirthdayUpcoming($dateNow, Carbon::parse($dateNow->year . '-12-31'));
+            //lấy sinh nhật nhân viên khác năm
+            $resultEmployeeBirthdayUpcomingOtherYear = $this->getEmployeeBirthdayUpcoming(Carbon::parse($dateConfigNotification->year . '-01-01'), $dateConfigNotification);
+            $dataEmployeeBirthdayUpcoming = array_merge($resultEmployeeBirthdayUpcoming, $resultEmployeeBirthdayUpcomingOtherYear);
+        }
+
+        return [
+            'dataEmployeeBirthday' => $dataEmployeeBirthday,
+            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming,
+        ];
+    }
+
+    public function getEmployeeBirthdayUpcoming($dateNow, $dateConfigNotification)
+    {
         $employeeBirthdayUpcomingOtherMonth = [];
 
         if ($dateNow->format('m') < $dateConfigNotification->format('m')) {
-            //lấy nhân viên có sinh nhật khác tháng hiện tại
-            $employeeBirthdayUpcomingOtherMonth = User::whereMonth('DateOfBirth', '>=', $dateConfigNotification->format('m'))
-                ->whereDay('DateOfBirth', '>', $dateNow->firstOfMonth()->format('d'))
-                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
-                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
 
             //lấy nhân viên có sinh nhật là tháng hiện tại
             $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
                 ->whereDay('DateOfBirth', '>', $dateNow->format('d'))
                 ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m') - 1)
                 ->whereDay('DateOfBirth', '<=', $dateNow->lastOfMonth()->format('d'))->get();
+
+            //lấy nhân viên có sinh nhật khác tháng hiện tại
+            $employeeBirthdayUpcomingOtherMonth = User::whereMonth('DateOfBirth', '>=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '>', $dateNow->firstOfMonth()->format('d'))
+                ->whereMonth('DateOfBirth', '<=', $dateConfigNotification->format('m'))
+                ->whereDay('DateOfBirth', '<=', $dateConfigNotification->format('d'))->get();
         } else {
             //lấy nhân viên có sinh nhật là tháng hiện tại
             $employeeBirthdayUpcoming = User::whereMonth('DateOfBirth', '>=', $dateNow->format('m'))
@@ -1067,9 +1112,6 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $dataEmployeeBirthdayUpcoming = array_merge($dataEmployeeBirthdayUpcoming, $dataEmployeeBirthdayUpcomingOtherMonth);
         }
 
-        return [
-            'dataEmployeeBirthday' => $dataEmployeeBirthday,
-            'dataEmployeeBirthdayUpcoming' => $dataEmployeeBirthdayUpcoming,
-        ];
+        return $dataEmployeeBirthdayUpcoming;
     }
 }

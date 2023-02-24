@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class LabourContract extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     const SIGNER_DEFAULT = 'NGUYỄN HUỲNH THU TRÚC';

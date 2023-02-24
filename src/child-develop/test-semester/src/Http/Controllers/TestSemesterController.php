@@ -3,13 +3,17 @@
 namespace GGPHP\ChildDevelop\TestSemester\Http\Controllers;
 
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\ApprovedTestSemesterRequest;
 use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterCreateRequest;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateApprovalStatusRequest;
+use GGPHP\ChildDevelop\TestSemester\Http\Requests\TestSemesterUpdateRequest;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
 use GGPHP\ChildDevelop\TestSemester\Models\TestSemesterDetail;
 use GGPHP\ChildDevelop\TestSemester\Repositories\Contracts\TestSemesterRepository;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\RC4;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TestSemesterController extends Controller
 {
@@ -35,6 +39,8 @@ class TestSemesterController extends Controller
      */
     public function index(Request $request)
     {
+        // throw new HttpException(400, 'Hệ thống đang bảo trì.');
+
         $attributes = $request->all();
 
         if (!empty($attributes['status'])) {
@@ -122,13 +128,9 @@ class TestSemesterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TestSemesterUpdateRequest $request, $id)
     {
         $attributes = $request->all();
-
-        if (!empty($attributes['approvalStatus'])) {
-            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
-        }
 
         $testSemester = $this->testSemesterRepository->update($attributes, $id);
 
@@ -187,7 +189,7 @@ class TestSemesterController extends Controller
         return $this->success($reportTestSemester, trans('lang::messages.common.getListSuccess'));
     }
 
-    public function approvedTestSemester(Request $request)
+    public function approvedTestSemester(ApprovedTestSemesterRequest $request)
     {
         $testSemester = $this->testSemesterRepository->approvedTestSemester($request->all());
 
@@ -231,5 +233,18 @@ class TestSemesterController extends Controller
         }
 
         return $result;
+    }
+
+    public function updateApprovalStatus(TestSemesterUpdateApprovalStatusRequest $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['approvalStatus'])) {
+            $attributes['approvalStatus'] = TestSemester::APPROVAL_STATUS[$attributes['approvalStatus']];
+        }
+
+        $testSemester = $this->testSemesterRepository->updateApprovalStatus($attributes, $id);
+
+        return $this->success($testSemester, trans('lang::messages.common.modifySuccess'));
     }
 }

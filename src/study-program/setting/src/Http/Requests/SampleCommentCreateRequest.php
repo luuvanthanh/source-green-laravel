@@ -33,16 +33,30 @@ class SampleCommentCreateRequest extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all();
-
         $result = SampleComment::orderBy('CreationTime', 'desc')->first();
 
         if (!is_null($result)) {
-            $getInt = substr($result->Code, 2) + 1;
-            $data['code'] = SampleComment::CODE . $getInt;
+            $getInt = (int)ltrim($result->Code, 'A..z: ');
+            $num = $getInt + 1;
+
+            if ($getInt < 9) {
+                $data['code'] = SampleComment::CODE . '00' . $num;
+            } elseif ($getInt >= 9 && $getInt < 99) {
+                $data['code'] = SampleComment::CODE . '0' . $num;
+            } else {
+                $data['code'] = SampleComment::CODE . $num;
+            }
         } else {
-            $data['code'] = SampleComment::CODE . '1';
+            $data['code'] = SampleComment::CODE . '001';
         }
 
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'check_unique' => 'The :attribute has already been taken.',
+        ];
     }
 }

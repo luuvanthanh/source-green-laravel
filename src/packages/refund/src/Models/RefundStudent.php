@@ -8,7 +8,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class RefundStudent extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     /**
      * Declare the table name
      */

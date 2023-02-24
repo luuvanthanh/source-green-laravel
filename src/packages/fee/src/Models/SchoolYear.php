@@ -8,7 +8,7 @@ use GGPHP\Refund\Models\Refund;
 
 class SchoolYear extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**

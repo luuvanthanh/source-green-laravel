@@ -7,7 +7,7 @@ use GGPHP\Core\Models\UuidModel;
 
 class ChangeContractParameter extends UuidModel
 {
-    use ActivityLogTrait;
+    //use ActivityLogTrait;
     public $incrementing = false;
 
     /**
