@@ -129,8 +129,37 @@ const Index = memo(() => {
 
   const addApprove = () => {
     dispatch({
-      type: 'physicalPeriodicMeasurement/APPROVE',
-      payload: [params?.id],
+      type: 'physicalPeriodicMeasurementConfirmed/UPDATE_CONFIRMATION',
+      payload: {
+        id: params?.id,
+        studentId: dataDetailItem?.student?.id,
+        schoolYearId: user.schoolYear?.id,
+        classId: dataDetailItem?.information?.class?.id,
+        assessmentPeriodId: dataDetailItem?.information?.assessmentPeriod?.id,
+        templates: dataTemplates?.map(item => ({
+          type: item?.type,
+          templates: item?.physicalCriteraiTemplates?.map(itemTemplates => ({
+            content: itemTemplates?.contentInput,
+            template: {
+              id: itemTemplates?.id,
+              name: itemTemplates?.name,
+              isChecked: itemTemplates?.isChecked,
+              content: {
+                type: itemTemplates?.content?.type,
+                items: itemTemplates?.content?.items?.map(itemTemplatesContent => ({
+                  item: itemTemplatesContent?.name,
+                  isChecked: itemTemplatesContent?.isChecked || false,
+                })) || [],
+              }
+            }
+          }))
+        })),
+        rates: dataDetailItem?.rates?.map(i => ({
+          physicalStudyProgramId: i?.physicalStudyProgram?.id,
+          rate: i?.rate,
+          isLevelOut: i?.isLevelOut,
+        }))
+      },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -285,7 +314,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addApprove()}
                     size="large"
-                    loading={effects['physicalPeriodicMeasurementConfirmed/UPDATE_CONFIRMED']}
+                    loading={effects['physicalPeriodicMeasurementConfirmed/UPDATE_CONFIRMATION']}
                   >
                     Duyệt
                   </Button>

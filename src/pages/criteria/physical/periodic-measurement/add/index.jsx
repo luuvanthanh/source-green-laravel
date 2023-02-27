@@ -105,8 +105,8 @@ const Index = memo(() => {
         },
       });
     } else {
-      notification.error({
-        message: 'Error',
+      notification.warning({
+        message: 'Thông báo',
         description: 'Bạn cần chọn đầy đủ thông tin của môn đánh giá.',
       });
     }

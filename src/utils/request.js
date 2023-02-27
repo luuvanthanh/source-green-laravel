@@ -77,7 +77,8 @@ request.interceptors.response.use(
     if (
       optionsRoot?.method === variables?.GET &&
       response.status >= 400 &&
-      response.status <= 500
+      response.status <= 500 &&
+      optionsRoot?.cancelNotification
     ) {
       notification.error({
         message: 'Thông báo',

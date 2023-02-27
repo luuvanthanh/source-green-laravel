@@ -26,7 +26,8 @@ const Index = memo(({
   const detailSchoolYear = `${dataDetails?.information?.schoolYear?.yearFrom} - ${dataDetails?.information?.schoolYear?.yearTo}`;
   const detailSchoolYearAdd = `${user?.schoolYear?.yearFrom} - ${user?.schoolYear?.yearTo}`;
   const marginProps = { style: { paddingTop: 12, paddingBottom: 20 } };
-  const detailTeacher = `${dataDetails?.approvedEmployee?.fullName ? dataDetails?.approvedEmployee?.fullName : ""}  ${dataDetails?.approvedDate ? Helper.getDate(dataDetails?.approvedDate, variables.DATE_FORMAT.DATE_TIME) : ""}`;
+
+  const detailTeacher = `${dataDetails?.createdEmployee?.fullName ? dataDetails?.createdEmployee?.fullName : ""}  ${dataDetails?.creationTime ? Helper.getDate(dataDetails?.creationTime, variables.DATE_FORMAT.DATE_TIME) : ""}`;
   const detailTeacherManagement = `${dataDetails?.approvedEmployee?.fullName ? dataDetails?.approvedEmployee?.fullName : ""}  ${dataDetails?.approvedDate ? Helper.getDate(dataDetails?.approvedDate, variables.DATE_FORMAT.DATE_TIME) : ""}`;
   const detailTeacherManagementSend = `${dataDetails?.sentEmployee?.fullName ? dataDetails?.sentEmployee?.fullName : ""}  ${dataDetails?.sentDate ? Helper.getDate(dataDetails?.sentDate, variables.DATE_FORMAT.DATE_TIME) : ""}`;
 
@@ -85,7 +86,7 @@ const Index = memo(({
       </div>
       <Pane className="row">
         <Pane className="col-lg-3">
-          <FormDetail name={query?.type === 'add' ? detailSchoolYearAdd: detailSchoolYear} label="School year" type="text" />
+          <FormDetail name={query?.type === 'add' ? detailSchoolYearAdd : detailSchoolYear} label="School year" type="text" />
         </Pane>
         <Pane className="col-lg-3">
           <FormDetail name={dataDetails?.information?.branch?.name} label="Center" type="text" />

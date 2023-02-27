@@ -12,6 +12,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
+
 
 let isMounted = true;
 /**
@@ -125,7 +127,7 @@ class Index extends PureComponent {
         ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
-        type: head(dataFormContarct)?.type,
+        type: variablesModules?.STATUS_TYPE_DECISION?.SALARY_INCREASES,
         detail: values.detail.map((item) => ({
           ...item,
           date: moment(item.date).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -184,7 +186,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
-      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: 'SALARY_INCREASES' },
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.SALARY_INCREASES, },
       callback: (response) => {
         this.setStateData({
           dataFormContarct: response?.parsePayload,

@@ -10,8 +10,10 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
+
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -134,7 +136,7 @@ class Index extends PureComponent {
         ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
-        type: head(dataFormContarct)?.type,
+        type: variablesModules?.STATUS_TYPE_DECISION?.TRANSFER,
         decisionDate: values.decisionDate,
         timeApply: values.timeApply,
         reason: values.reason,
@@ -180,7 +182,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
-      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: 'TRANSFER' },
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.TRANSFER },
       callback: (response) => {
         this.setStateData({
           dataFormContarct: response?.parsePayload,
