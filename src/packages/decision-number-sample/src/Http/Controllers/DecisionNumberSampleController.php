@@ -84,7 +84,7 @@ class DecisionNumberSampleController extends Controller
     {
         $decisionNumberSample = $this->decisionNumberSampleRepository->update($request->all(), $id);
 
-        return $this->success([], trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+        return $this->success($decisionNumberSample, trans('lang::messages.common.modifySuccess'));
     }
 
     /**
@@ -94,7 +94,7 @@ class DecisionNumberSampleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DecisionNumberSampleDeleteRequest $request,$id)
     {
         $this->decisionNumberSampleRepository->delete($id);
 

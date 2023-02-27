@@ -12,6 +12,7 @@ use GGPHP\Reward\Services\DecisionRewardDetailServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DecisionRewardRepositoryEloquent.
@@ -74,6 +75,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         } catch (\Exception $e) {
 
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($decisionReward->Id);
@@ -93,6 +95,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         } catch (\Exception $e) {
 
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($decisionReward->Id);

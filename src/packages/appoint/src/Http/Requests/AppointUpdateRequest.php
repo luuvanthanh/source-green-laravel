@@ -4,6 +4,7 @@ namespace GGPHP\Appoint\Http\Requests;
 
 use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Appoint\Models\AppointDetail;
+use GGPHP\DecisionNumberSample\Models\DecisionNumberSample;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AppointUpdateRequest extends FormRequest

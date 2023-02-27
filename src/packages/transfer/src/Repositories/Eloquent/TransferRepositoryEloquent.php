@@ -12,6 +12,7 @@ use GGPHP\Transfer\Presenters\TransferPresenter;
 use GGPHP\Transfer\Repositories\Contracts\TransferRepository;
 use GGPHP\Transfer\Services\TransferDetailServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -85,6 +86,7 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($tranfer->Id);
@@ -98,10 +100,10 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             $tranfer->update($attributes);
             resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($tranfer->refresh(), $attributes);
             TransferDetailServices::update($tranfer->Id, $attributes['data'], $tranfer->TimeApply);
-
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($tranfer->Id);
