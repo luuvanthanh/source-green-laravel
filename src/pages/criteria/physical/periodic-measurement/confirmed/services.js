@@ -48,5 +48,19 @@ export function getBmiStudent(params = {}) {
   return requestNet(`/student-criterias/statistic-by-physical/${params?.studentId}`, {
     method: 'GET',
     params,
+    cancelNotification: true,
+  });
+}
+
+export function updateConfirmation(data = {}) {
+  return requestNet(`/physical-criteria-students/${data?.id}`, {
+    method: 'PUT',
+    data: {
+      ...data,
+      id: data?.id,
+    },
+    params: {
+      isApproved: true,
+    },
   });
 }

@@ -11,6 +11,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
+
 
 let isMounted = true;
 /**
@@ -119,7 +121,7 @@ class Index extends PureComponent {
       type: params.id ? 'decisionRewardsAdd/UPDATE' : 'decisionRewardsAdd/ADD',
       payload: {
         id: params.id,
-        typeDecisionNumberSample: head(dataFormContarct)?.type,
+        typeDecisionNumberSample: variablesModules?.STATUS_TYPE_DECISION?.DISCIPLINE_REWARD,
         ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
@@ -167,7 +169,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
-      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: 'DISCIPLINE_REWARD' },
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.DISCIPLINE_REWARD },
       callback: (response) => {
         this.setStateData({
           dataFormContarct: response?.parsePayload,

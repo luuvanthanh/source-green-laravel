@@ -153,6 +153,15 @@ export const variables = {
       name: 'Về sớm',
     },
   ],
+  STATUS_TYPE_DECISION: {
+    TRANSFER: 'TRANSFER',
+    APPOINT: 'APPOINT',
+    DISMISSED: 'DISMISSED',
+    DISCIPLINE_REWARD: 'DISCIPLINE_REWARD',
+    SALARY_INCREASES: 'SALARY_INCREASES',
+    RESIGNATION: 'RESIGNATION',
+    SUSPEND: 'SUSPEND',
+  },
 };
 
 export default variables;

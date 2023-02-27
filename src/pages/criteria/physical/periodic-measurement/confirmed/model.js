@@ -206,5 +206,13 @@ export default {
         });
       }
     },
+    *UPDATE_CONFIRMATION({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateConfirmation, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data);
+      }
+    },
   },
 };

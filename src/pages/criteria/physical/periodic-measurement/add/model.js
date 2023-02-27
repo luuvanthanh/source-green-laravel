@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import * as services from './services';
 
@@ -48,12 +49,23 @@ export default {
           id: uuidv4(),
           ...item,
         })),
-        templates: payload?.templates?.map(item=> ({
+        templates: payload?.templates?.map((item) => ({
           ...item,
-          templates: item?.type ==="FEEDBACK" ? item?.templates?.map(i=> ({
-            ...i,
-            content: `${((i?.template?.content?.items?.filter(k=> k?.isChecked)?.map(k => k?.item)).concat(`${i?.content}`))?.join('\n')}`
-          })) : item?.templates,
+          templates:
+            item?.type === 'FEEDBACK'
+              ? item?.templates?.map((i) => ({
+                  ...i,
+                  content:
+                    !isEmpty(i?.template?.content?.items?.filter((k) => k?.isChecked)) ||
+                    !isEmpty(i?.content)
+                      ? `${i?.template?.content?.items
+                          ?.filter((k) => k?.isChecked)
+                          ?.map((k) => k?.item)
+                          .concat(`${i?.content ? i?.content : ''}`)
+                          ?.join('\n')}`
+                      : '',
+                }))
+              : item?.templates,
         })),
         information: {
           student: payload?.student,
@@ -69,8 +81,12 @@ export default {
       dataDetails: {
         ...payload,
         rates: payload.rates?.map((item) => ({
-          id: uuidv4(),
           ...item,
+          id: uuidv4(),
+          rate: (item?.totalOfStudentJoin / item?.totalOfJoin) * 100,
+          isLevelOut:
+            (item?.totalOfStudentJoin / item?.totalOfJoin) * 100 >
+            item?.physicalStudyProgram?.rateOfApplication,
         })),
       },
       dataTemplates: payload.templates?.map((i) => ({
@@ -111,9 +127,9 @@ export default {
                       items: item.content?.items?.map((itemDetail) => ({
                         ...itemDetail,
                         isChecked:
-                        payload?.record?.id === item?.id
-                        ? itemDetail?.checkId === payload?.value
-                        : itemDetail?.isChecked,
+                          payload?.record?.id === item?.id
+                            ? itemDetail?.checkId === payload?.value
+                            : itemDetail?.isChecked,
                       })),
                     },
                     checkEmpty: payload?.record?.id === item?.id ? true : item?.checkEmpty,

@@ -127,10 +127,14 @@ const Index = memo(() => {
                   <FormDetail label="Tỉ lệ tham gia môn học" type="label" />
                   <Rate rates={dataDetailItem?.rates} />
                 </Pane>
-                <Pane className="col-lg-12 border-top pt20 p0">
-                  <FormDetail label="Biẻu đồ BMI" type="label" />
-                  <Bmi dataDetailItem={dataDetailItem} />
-                </Pane>
+                {
+                  query?.type !== 'done-review' && (
+                    <Pane className="col-lg-12 border-top pt20 p0">
+                      <FormDetail label="Biẻu đồ BMI" type="label" />
+                      <Bmi dataDetailItem={dataDetailItem} />
+                    </Pane>
+                  )
+                }
               </Pane>
               <Pane>
                 {

@@ -15,6 +15,7 @@ export function get(params = {}) {
       ...Helper.getPagination(params.page, params.limit),
       status: undefined,
     },
+    cancelNotification: true,
   });
 }
 
@@ -28,6 +29,7 @@ export function getApproved(params = {}) {
       limit: undefined,
       ...Helper.getPagination(params.page, params.limit),
     },
+    cancelNotification: true,
   });
 }
 
