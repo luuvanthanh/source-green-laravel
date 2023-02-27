@@ -105,34 +105,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
-  };
-
-  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -333,14 +305,6 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Từ khóa"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả loại' }, ...dataType]}
