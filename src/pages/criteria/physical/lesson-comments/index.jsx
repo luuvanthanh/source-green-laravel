@@ -177,6 +177,7 @@ class Index extends PureComponent {
         payload: {
           ...search,
           branchId: undefined,
+          hasApproved: search.status === variablesModules.STATUS.DID_FEEDBACK,
           status: search?.status === variablesModules.STATUS.APPROVED_FEEDBACK ?
             variablesModules.STATUS.APPROVED_FEEDBACK : variablesModules.STATUS.DID_FEEDBACK
         }
