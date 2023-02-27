@@ -6,6 +6,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\CallCenter\Transformers\ExtensionTranformer;
 use GGPHP\Crm\CallCenter\Transformers\ManagerCallTransformer;
 use GGPHP\Crm\Employee\Models\Employee;
+use GGPHP\Crm\KnowledgeToTeachChildren\Transformers\PostKnowledgeToTeachChildrenTransformer;
 
 /**
  * Class CityTransformer.
@@ -31,7 +32,7 @@ class EmployeeTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['managerCall', 'extension'];
+    protected $availableIncludes = ['managerCall', 'extension', 'postKnowledgeToTeachChildren'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -71,5 +72,10 @@ class EmployeeTransformer extends BaseTransformer
     public function includeExtension(Employee $employee)
     {
         return $this->collection($employee->extension, new ExtensionTranformer, 'Extension');
+    }
+
+    public function includePostKnowledgeToTeachChildren(Employee $employee)
+    {
+        return $this->collection($employee->postKnowledgeToTeachChildren, new PostKnowledgeToTeachChildrenTransformer, 'PostKnowledgeToTeachChildren');
     }
 }

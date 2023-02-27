@@ -83,7 +83,9 @@
             "GGPHP\\Crm\\ChildDevelop\\": "crm/child-develop/src",
             "GGPHP\\Crm\\SsoAccount\\": "crm/sso-account/src",
             "GGPHP\\Crm\\Fee\\": "crm/fee/src",
-            "GGPHP\\Crm\\CallCenter\\": "crm/call-center/src"
+            "GGPHP\\Crm\\CallCenter\\": "crm/call-center/src",
+            "GGPHP\\Crm\\KnowledgeToTeachChildren\\": "crm/knowledge-to-teach-children/src"
+            
         },
         "classmap": [
             "database/seeds",
