@@ -135,7 +135,7 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="col-lg-3">
                     <FormDetail
-                      name={`${details?.creator?.name} lúc ${Helper.getDate(details?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`}
+                      name={`${details?.createdEmployee?.fullName} lúc ${Helper.getDate(details?.creationTime, variables.DATE_FORMAT.DATE_TIME)}`}
                       label="Giáo viên nhận xét"
                     />
                   </Pane>

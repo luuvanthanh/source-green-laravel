@@ -251,12 +251,15 @@ class Index extends PureComponent {
         }</Text>,
       },
       {
-        title: 'Số lớp áp dụng',
-        key: 'total',
-        className: 'min-width-140 center',
-        width: 140,
-        align: 'center',
-        render: (record) => <Text size="normal">  {record?.classes?.length}</Text>,
+        title: 'Lớp áp dụng',
+        key: 'name',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => <Text size="normal">{
+          record?.classes?.map((item, index) => (
+            <>{`${item?.class?.name}${index !== record?.classes?.length - 1 ? ', ' : ''}`}</>
+          ))
+        }</Text>,
       },
       {
         key: 'action',
