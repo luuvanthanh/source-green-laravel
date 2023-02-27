@@ -14,6 +14,7 @@ use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class AppointRepositoryEloquent.
@@ -86,6 +87,7 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($appoint->Id);
@@ -104,6 +106,7 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($appoint->Id);

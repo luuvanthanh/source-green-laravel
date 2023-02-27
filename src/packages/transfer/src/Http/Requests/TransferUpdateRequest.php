@@ -2,6 +2,7 @@
 
 namespace GGPHP\Transfer\Http\Requests;
 
+use GGPHP\DecisionNumberSample\Models\DecisionNumberSample;
 use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Models\TransferDetail;
 use Illuminate\Foundation\Http\FormRequest;
