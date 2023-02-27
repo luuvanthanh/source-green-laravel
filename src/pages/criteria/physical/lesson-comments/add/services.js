@@ -12,9 +12,13 @@ export function add(data = {}) {
 export function update(data = {}) {
   return request(`/physical-feedback-students/${data.id}`, {
     method: 'PUT',
+    params: {
+      isApproved: data?.isApproved,
+    },
     data: {
       ...data,
-      id: undefined
+      id: undefined,
+      isApproved: undefined
     },
     parse: true,
   });

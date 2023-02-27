@@ -85,7 +85,7 @@ const General = memo(() => {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'HRMContractModelNumber/REMOVE',
+          type: 'HRMDecisionDenominator/REMOVE',
           payload: {
             id,
           },

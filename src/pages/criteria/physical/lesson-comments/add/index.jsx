@@ -195,15 +195,52 @@ const Index = memo(() => {
     });
   };
 
-  const onApproveFeedback = (id) => {
+  const onApproveFeedback = () => {
+    const payload = {
+      id: details.id,
+      studentId: details?.student?.id,
+      schoolYearId: details?.schoolYear?.id,
+      classId: details?.class?.id,
+      physicalStudyProgramId: details?.physicalStudyProgram?.id,
+      physicalStudyProgramSessionId: details?.physicalStudyProgramSession?.id,
+      joinedDate: details?.joinedDate && moment(details?.joinedDate),
+      isApproved: true,
+      templates: isEmpty(dataComment) ? [] : dataComment?.map(i => ({
+        template: {
+          id: isNotFeedback ? i?.id : i?.template?.id,
+          name: isNotFeedback ? i?.name : i?.template?.name,
+          isChecked: true,
+          content: {
+            type: "FEEDBACK",
+            items: isEmpty(i?.content?.items) ? [] : i?.content?.items?.map(j => ({
+              item: j?.item,
+              isChecked: j?.isChecked
+            }))
+          }
+        },
+        content: i?.contentText
+      }))
+    };
     dispatch({
-      type: 'PhysicalLessonCommentsAdd/APPROVE_FEEDBACK',
-      payload: {
-        listIdApprove: [id]
-      },
-      callback: (response) => {
+      type: 'PhysicalLessonCommentsAdd/UPDATE',
+      payload,
+      callback: (response, error) => {
         if (response) {
-          history.goBack();
+          if (response) {
+            history.goBack();
+          }
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              form.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
         }
       },
     });
@@ -383,7 +420,7 @@ const Index = memo(() => {
                       className="ml10 px25"
                       color="primary"
                       loading={effects['PhysicalLessonCommentsAdd/APPROVE_FEEDBACK']}
-                      onClick={() => onApproveFeedback(details.id)}
+                      onClick={() => onApproveFeedback()}
                     >
                       Duyệt
                     </Button>

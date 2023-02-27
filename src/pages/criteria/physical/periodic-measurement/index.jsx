@@ -33,7 +33,7 @@ const Index = () => {
 
   const history = useHistory();
   const [search, setSearch] = useState({
-    key: query?.key,
+    keyWord: query?.keyWord,
     branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
     schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -78,6 +78,8 @@ const Index = () => {
         payload: {
           ...search,
           status: variablesModules.STATUS_SEARCH?.[status],
+          hasApproved: status === variablesModules.STATUS?.MEASURED,
+          hasSent: !!(status === variablesModules.STATUS?.APPROVED || variablesModules.STATUS?.MEASURED)
         },
         callback: (response, err) => {
           if (response) {
@@ -372,7 +374,7 @@ const Index = () => {
       return Helper.getDate(value?.approvedDate, variables.DATE_FORMAT.DATE_TIME);
     }
     if (search?.status === variablesModules.STATUS.SEND) {
-      return Helper.getDate(value?.sendDate, variables.DATE_FORMAT.DATE_TIME);
+      return Helper.getDate(value?.sentDate, variables.DATE_FORMAT.DATE_TIME);
     }
     return "";
   };
@@ -577,8 +579,8 @@ const Index = () => {
               </div>
               <div className="col-lg-3">
                 <FormItem
-                  name="key"
-                  onChange={(event) => onChange(event, 'key')}
+                  name="keyWord"
+                  onChange={(event) => onChange(event, 'keyWord')}
                   type={variables.INPUT_SEARCH}
                   placeholder="Nhập Tên học sinh để tìm kiếm"
                 />
@@ -616,11 +618,8 @@ const Index = () => {
             pagination={paginationFunction(pagination)}
             defaultExpandAllRows
             rowSelection={
-              search?.status === head(variablesModules.STATUS_TABS)?.id ||
-                search?.status === variablesModules.STATUS.NOT_MEASURED ||
-                search?.status === variablesModules.STATUS.MEASURED ||
-                search?.status === head(variablesModules.APPROVED)?.id ||
-                search?.status === variablesModules.STATUS.SEND ? null : { ...rowSelection }}
+              search?.status === variablesModules.STATUS.NOT_APPROVED ||
+                search?.status === variablesModules.STATUS.NOT_SEND ? { ...rowSelection } : null}
             childrenColumnName="children"
             params={{
               header: header(),
