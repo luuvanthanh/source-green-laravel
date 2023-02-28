@@ -297,7 +297,7 @@ const Index = memo(() => {
 
                   onClick={() => history.goBack()}
                 >
-                  Hủy
+                  Đóng
                 </p>
                 <Button
                   className="ml-auto px25"
