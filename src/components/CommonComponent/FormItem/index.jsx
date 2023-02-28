@@ -124,6 +124,7 @@ const renderChildren = (
       )}
       disabled={disabled}
       onChange={onChange}
+      min="0"
       placeholder="0"
       value={value}
     />
