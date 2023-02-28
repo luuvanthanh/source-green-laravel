@@ -15,6 +15,8 @@ import styles from '@/assets/styles/Common/common.scss';
 import Table from '@/components/CommonComponent/Table';
 import { Helper } from '@/utils';
 import variablesModules from './utils/variables';
+import stylesModule from './styles.module.scss';
+
 
 const General = memo(() => {
   const mounted = useRef(false);
@@ -197,7 +199,7 @@ const General = memo(() => {
                   name="key"
                   onChange={(event) => onChange(event, 'key')}
                   type={variables.INPUT_SEARCH}
-                  placeholder="Nhập Tên học sinh để tìm kiếm"
+                  placeholder="Từ khóa tìm kiếm"
                 />
               </div>
               <div className="col-lg-3">
@@ -212,6 +214,9 @@ const General = memo(() => {
               </div>
             </div>
           </Form>
+            </div>
+          
+          <div className={stylesModule['wrapper-lable']}>
           <Table
             columns={header()}
             dataSource={data}
