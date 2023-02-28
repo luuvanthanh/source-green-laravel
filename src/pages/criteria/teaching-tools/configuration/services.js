@@ -1,15 +1,7 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/request';
 
 export function add(data = {}) {
-  return request('/v1/config-notifications', {
-    method: 'POST',
-    data,
-    parse: true,
-  });
-}
-
-export function update(data = {}) {
-  return request(`/v1/branches/${data.id}`, {
+  return request('/sensitive-periods/set-config', {
     method: 'PUT',
     data,
     parse: true,
@@ -17,7 +9,7 @@ export function update(data = {}) {
 }
 
 export function details() {
-  return request(`/v1/config-notifications`, {
+  return request(`/sensitive-periods/get-config`, {
     method: 'GET',
   });
 }

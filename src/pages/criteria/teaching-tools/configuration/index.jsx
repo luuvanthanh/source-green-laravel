@@ -1,24 +1,20 @@
 import { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
+import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 
-// import { isEmpty, get, } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import stylesModule from './styles.module.scss';
 
 
 const Index = memo(() => {
-
-    // const dispatch = useDispatch();
-
-    const [formRef] = Form.useForm();
-
+    const [form] = Form.useForm();
     const [
         effects
     ] = useSelector(({ sensitivePeriodConfiguration, loading, user, menu }) => [
@@ -27,15 +23,52 @@ const Index = memo(() => {
         user,
         menu,
     ]);
+  const dispatch = useDispatch();
 
-    const onFinish = () => {
-
+    const onFinish = (value) => {
+        dispatch({
+            type:  'sensitivePeriodConfiguration/ADD',
+            payload:  {dateConfig: 
+            {
+                dateTotal: value?.dateTotal,
+                name: value?.name,
+            }},
+            callback: (response, error) => {
+              if (error) {
+                if (!isEmpty(error?.validationErrors)) {
+                  error?.validationErrors.forEach((item) => {
+                    form.setFields([
+                      {
+                        name: get(item, 'member').toLowerCase(),
+                        errors: [get(item, 'message')],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
     };
 
 
+    useEffect(() => {
+          dispatch({
+            type: 'sensitivePeriodConfiguration/GET_DETAILS',
+            payload: {},
+            callback: (response) => {
+              if (response) {
+                form.setFieldsValue({
+                  name: response?.dateConfig?.name,
+                  dateTotal: response?.dateConfig?.dateTotal,
+                });
+              }
+            },
+          });
+      }, []);
+
     return (
         <div style={{ padding: 20 }}>
-            <Form layout="vertical" form={formRef} onFinish={onFinish}>
+            <Form layout="vertical"  form={form}  onFinish={onFinish}>
                 <Helmet title="Cấu hình TKNC" />
                 <div className="row">
                     <div className="col-lg-8 offset-lg-2">
@@ -53,7 +86,7 @@ const Index = memo(() => {
                                     <Pane className="col-lg-6">
                                         <FormItem
                                             label="Số ngày liên tục"
-                                            name="code"
+                                            name="dateTotal"
                                             type={variables.NUMBER_INPUT}
                                             rules={[variables.RULES.EMPTY]}
                                         />

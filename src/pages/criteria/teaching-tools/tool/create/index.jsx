@@ -250,6 +250,18 @@ const Index = memo(() => {
         ),
       },
       {
+        title: 'Hành động của trẻ',
+        key: 'activity',
+        dataIndex: 'activity',
+        className: 'min-width-200',
+        width: 200,
+        editable: true,
+        type: variables.TEXTAREA,
+        render: (value) => (
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} value={value} placeholder="Nhập" />
+        ),
+      },
+      {
         title: 'Tham gia phụ huynh',
         key: 'parentInvolvement',
         dataIndex: 'parentInvolvement',

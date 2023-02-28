@@ -55,18 +55,12 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
-      data: [{ id: 2 }],
+      data: [],
       search: {
         key: query?.key,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
-        // from: query?.from
-        //   ? query?.from
-        //   : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        // to: query?.to
-        //   ? query?.to
-        //   : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
@@ -174,19 +168,37 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    // this.props.dispatch({
-    //   type: 'teachingToolsStudent/GET_DATA',
-    //   payload: {
-    //     ...search,
-    //   },
-    //   callback: (response) => {
-    //     if (response) {
-    //       this.setStateData({
-    //         data: response.parsePayload,
-    //       });
-    //     }
-    //   },
-    // });
+    if(search?.approvalStatus === variablesModules?.STATUS?.PENDING_APPROVED) {
+      this.props.dispatch({
+        type: 'teachingToolsStudent/GET_NO_SENDING',
+        payload: {
+          ...search,
+        },
+        callback: (response) => {
+          console.log("response",response);
+          // if (response) {
+          //   this.setStateData({
+          //     data: response.parsePayload, 
+          //   });
+          // }
+        },
+      });
+    }else {
+      this.props.dispatch({
+        type: 'teachingToolsStudent/GET_SENDING',
+        payload: {
+          ...search,
+        },
+        callback: (response) => {
+          console.log("response",response);
+          // if (response) {
+          //   this.setStateData({
+          //     data: response.parsePayload,
+          //   });
+          // }
+        },
+      });
+    }
     history.push({
       pathname,
       query: Helper.convertParamSearch({
@@ -405,7 +417,7 @@ class Index extends PureComponent {
         schoolYearId: type === 'all' ? search?.schoolYearId : null,
         branchId: type === 'all' ? search?.branchId : null,
         classId: type === 'all' ? search?.classId : null,
-        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
+        sensitivePeriodId: type === 'all' ? search?.sensitivePeriodId : null,
       },
       callback: (response) => {
         if (response) {
@@ -552,7 +564,7 @@ class Index extends PureComponent {
                 date: search.from && search.to && [moment(search.from), moment(search.to)],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                assessmentPeriodId: search.assessmentPeriodId || null,
+                sensitivePeriodId: search.sensitivePeriodId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -601,10 +613,10 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...assessmentPeriod?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
-                    name="assessmentPeriodId"
+                    data={ [{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
+                    name="sensitivePeriodId"
                     options={['id', 'name']}
-                    onChange={(event) => this.onChangeSelect(event, 'assessmentPeriodId')}
+                    onChange={(event) => this.onChangeSelect(event, 'sensitivePeriodId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
