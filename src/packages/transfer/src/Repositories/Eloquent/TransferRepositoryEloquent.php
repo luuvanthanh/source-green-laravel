@@ -4,6 +4,7 @@ namespace GGPHP\Transfer\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Transfer\Models\Transfer;
@@ -11,6 +12,7 @@ use GGPHP\Transfer\Presenters\TransferPresenter;
 use GGPHP\Transfer\Repositories\Contracts\TransferRepository;
 use GGPHP\Transfer\Services\TransferDetailServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -79,10 +81,12 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         \DB::beginTransaction();
         try {
             $tranfer = Transfer::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($tranfer, $attributes);
             TransferDetailServices::add($tranfer->Id, $attributes['data'], $tranfer->TimeApply);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($tranfer->Id);
@@ -94,12 +98,12 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         \DB::beginTransaction();
         try {
             $tranfer->update($attributes);
-
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($tranfer->refresh(), $attributes);
             TransferDetailServices::update($tranfer->Id, $attributes['data'], $tranfer->TimeApply);
-
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($tranfer->Id);
@@ -143,7 +147,7 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         $detail = $transfer->transferDetails->first();
         $employee = $detail->employee;
         $labourContract = $employee->labourContract->last();
-        
+
         if ($labourContract) {
             $contractNumber = !is_null($labourContract->ContractNumber) ? $labourContract->ContractNumber : $labourContract->OrdinalNumber . '/' . $labourContract->NumberForm;
         } else {

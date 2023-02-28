@@ -4,6 +4,7 @@ namespace GGPHP\Dismissed\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Presenters\DismissedPresenter;
 use GGPHP\Dismissed\Repositories\Contracts\DismissedRepository;
@@ -13,6 +14,7 @@ use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DismissedRepositoryEloquent.
@@ -79,10 +81,12 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         \DB::beginTransaction();
         try {
             $dismissed = Dismissed::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($dismissed, $attributes);
             DismissedDetailServices::add($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($dismissed->Id);
@@ -95,12 +99,13 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         \DB::beginTransaction();
         try {
             $dismissed->update($attributes);
-
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($dismissed->refresh(), $attributes);
             DismissedDetailServices::update($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
 
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($dismissed->Id);

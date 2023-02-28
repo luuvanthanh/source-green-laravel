@@ -2,6 +2,10 @@
 
 namespace GGPHP\ChildDevelop\Category\Http\Requests;
 
+use GGPHP\ChildDevelop\TestSemester\Models\TestSemester;
+use GGPHP\Clover\Models\PeriodicAssessmentPhysical;
+use GGPHP\Clover\Models\PhysicalCriteriaStudent;
+use GGPHP\Clover\Models\PhysicalEvaluateTemplate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AssessmentPeriodUpdateRequest extends FormRequest
@@ -23,6 +27,17 @@ class AssessmentPeriodUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'id' => function ($attributes, $value, $fail) { 
+                $testSemester = TestSemester::where('AssessmentPeriodId', $value)->first();
+                $periodicAssessmentPhysical  = PeriodicAssessmentPhysical::where('AssessmentPeriodId', $value)->first();
+                $physicalEvaluateTemplate  = PhysicalEvaluateTemplate::where('AssessmentPeriodId', $value)->first();
+                $physicalCriteriaStudent  = PhysicalCriteriaStudent::where('AssessmentPeriodId', $value)->first();
+
+                if (!is_null($testSemester) || !is_null($periodicAssessmentPhysical) || !is_null($physicalEvaluateTemplate) || !is_null($physicalCriteriaStudent)) {
+                    return $fail('Dữ liệu đã được sử dụng không được chỉnh sửa');
+                }
+            }
+        ];
     }
 }

@@ -3,6 +3,7 @@
 namespace GGPHP\ChildDevelop\Category\Http\Controllers;
 
 use GGPHP\ChildDevelop\Category\Http\Requests\AssessmentPeriodCreateRequest;
+use GGPHP\ChildDevelop\Category\Http\Requests\AssessmentPeriodDeleteRequest;
 use GGPHP\ChildDevelop\Category\Http\Requests\AssessmentPeriodUpdateRequest;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -88,7 +89,7 @@ class AssessmentPeriodController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(AssessmentPeriodDeleteRequest $request,$id)
     {
         $this->assessmentPeriodRepository->delete($id);
 

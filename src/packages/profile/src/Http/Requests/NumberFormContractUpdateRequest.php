@@ -39,7 +39,7 @@ class NumberFormContractUpdateRequest extends FormRequest
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) use ($id) {
-                    $model = NumberFormContract::findOrfail($id);
+                    $model = NumberFormContract::findOrFail($id);
 
                     if ($value >= $model->OrdinalNumber) {
                         return true;

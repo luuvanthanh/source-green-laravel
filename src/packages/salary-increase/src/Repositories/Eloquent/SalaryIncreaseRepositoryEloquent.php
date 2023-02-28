@@ -5,6 +5,7 @@ namespace GGPHP\SalaryIncrease\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\SalaryIncrease\Models\SalaryIncrease;
@@ -13,6 +14,7 @@ use GGPHP\SalaryIncrease\Repositories\Contracts\SalaryIncreaseRepository;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class SalaryIncreaseRepositoryEloquent.
@@ -75,6 +77,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $salaryIncrease = SalaryIncrease::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($salaryIncrease, $attributes);
             $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
 
             if (is_null($labourContract)) {
@@ -109,6 +112,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($salaryIncrease->Id);
@@ -120,7 +124,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $salaryIncrease->update($attributes);
-
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($salaryIncrease->refresh(), $attributes);
             if (!empty($attributes['detail'])) {
                 $salaryIncrease->parameterValues()->detach();
 
@@ -158,6 +162,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($salaryIncrease->Id);

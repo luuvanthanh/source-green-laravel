@@ -2,6 +2,7 @@
 
 namespace GGPHP\Transfer\Http\Requests;
 
+use GGPHP\DecisionNumberSample\Models\DecisionNumberSample;
 use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Models\TransferDetail;
 use Illuminate\Foundation\Http\FormRequest;
@@ -37,6 +38,24 @@ class TransferUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'numberForm' => 'nullable|exists:DecisionNumberSamples,NumberForm',
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $transfer = Transfer::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->id)->first();
+
+                    if (is_null($transfer)) {
+                        return true;
+                    }
+
+                    if ($value == $transfer->OrdinalNumber) {
+                        return $fail('Số thứ tự phải khác số đã có.');
+                    }
+
+                    return true;
+                }
+            ]
         ];
     }
 }
