@@ -5,6 +5,7 @@ namespace GGPHP\Tariff\PaymentPlan\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Tariff\PaymentPlan\Http\Requests\PaymentPlanCreateRequest;
 use GGPHP\Tariff\PaymentPlan\Http\Requests\PaymentPlanUpdateRequest;
+use GGPHP\Tariff\PaymentPlan\Http\Requests\SentPaymentPlanRequest;
 use GGPHP\Tariff\PaymentPlan\Repositories\Contracts\PaymentPlanRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -84,5 +85,12 @@ class PaymentPlanController extends Controller
         $this->paymentPlanRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function sentPaymentPlan(SentPaymentPlanRequest $request)
+    {
+        $paymentPlan = $this->paymentPlanRepository->sentPaymentPlan($request->all());
+
+        return $this->success($paymentPlan, trans('lang::messages.common.modifySuccess'));
     }
 }

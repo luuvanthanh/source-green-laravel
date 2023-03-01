@@ -18,8 +18,6 @@ class FeeTransformer extends BaseTransformer
 
     public function customAttributes($model): array
     {
-        return [
-
-        ];
+        return [];
     }
 }

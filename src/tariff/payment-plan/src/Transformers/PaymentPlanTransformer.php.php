@@ -45,7 +45,9 @@ class PaymentPlanTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'Status' => array_search($model->Status, PaymentPlan::STATUS)
+        ];
     }
 
     public function includePaymentPlanDetail(PaymentPlan $PaymentPlan)

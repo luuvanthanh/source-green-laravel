@@ -65,6 +65,12 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
             $this->model = $this->model->whereIn('ClassId', $classId);
         }
 
+        if (!empty($attributes['studentId'])) {
+            $this->model = $this->model->whereHas('paymentPlanDetail.chargeOldStudent', function ($query) use ($attributes) {
+                $query->where('StudentId', $attributes);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentPlan = $this->paginate($attributes['limit']);
         } else {
@@ -119,5 +125,12 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
         }
 
         return parent::parserResult($paymentPlan);
+    }
+
+    public function sentPaymentPlan($attributes)
+    {
+        $paymentPlan = PaymentPlan::findOrFail($attributes['id']);
+
+        return $paymentPlan;
     }
 }
