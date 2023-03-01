@@ -86,6 +86,18 @@ export default {
         });
       }
     },
+    *GET_TOTAL_DATA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getTotalData, payload);
+        callback(response);
+      } catch (error) {
+        callback(error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

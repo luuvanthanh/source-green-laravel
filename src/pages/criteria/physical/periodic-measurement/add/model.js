@@ -85,7 +85,7 @@ export default {
           id: uuidv4(),
           rate: (item?.totalOfStudentJoin / item?.totalOfJoin) * 100,
           isLevelOut:
-            (item?.totalOfStudentJoin / item?.totalOfJoin) * 100 >
+            (item?.totalOfStudentJoin / item?.totalOfJoin) * 100 <
             item?.physicalStudyProgram?.rateOfApplication,
         })),
       },

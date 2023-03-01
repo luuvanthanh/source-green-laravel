@@ -39,7 +39,6 @@ request.interceptors.request.use(async (url, options) => {
     },
   };
 });
-
 // response interceptor, handling response
 request.interceptors.response.use(
   async (response) => {
