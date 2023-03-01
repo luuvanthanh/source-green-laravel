@@ -90,7 +90,7 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         yield saga.put({
@@ -102,6 +102,7 @@ export default {
             },
           },
         });
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -109,7 +110,7 @@ export default {
         });
       }
     },
-    *GET_DATA_NO_FEEDBACK({ payload }, saga) {
+    *GET_DATA_NO_FEEDBACK({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getDataNoFeedback, payload);
         yield saga.put({
@@ -121,6 +122,7 @@ export default {
             },
           },
         });
+        callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -175,6 +177,17 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *GET_SUMMARY_STATUS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getSummaryStatus, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    }
   },
   subscriptions: {}
 };

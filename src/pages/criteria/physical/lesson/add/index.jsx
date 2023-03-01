@@ -4,7 +4,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
-import { Form } from 'antd';
+import { Form, Tag } from 'antd';
 import { memo, useEffect, useRef, useState } from 'react';
 import Loading from '@/components/CommonComponent/Loading';
 import { Helmet } from 'react-helmet';
@@ -12,7 +12,8 @@ import { useParams, useHistory } from 'umi';
 import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
+import PropTypes from 'prop-types';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -160,6 +161,48 @@ const Index = memo(() => {
     });
   };
 
+  const tagRenderBranch = (props) => {
+    const { label, closable, onClose } = props;
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <Tag
+        color={label === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
+  const tagRenderClass = (props) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <Tag
+        color={head(dataClass?.filter(i => i?.id === value))?.branch?.name === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
@@ -228,6 +271,7 @@ const Index = memo(() => {
                       rules={[variables.RULES.EMPTY]}
                       label="Cở sở áp dụng"
                       onChange={onChangeBranch}
+                      tagRender={tagRenderBranch}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
@@ -239,6 +283,7 @@ const Index = memo(() => {
                       type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
                       label="Lớp áp dụng"
+                      tagRender={tagRenderClass}
                     />
                   </Pane>
                 </Pane>
@@ -367,5 +412,20 @@ const Index = memo(() => {
     </div>
   );
 });
+
+Index.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.string,
+  closable: PropTypes.bool,
+  onClose: PropTypes.func
+};
+
+Index.defaultProps = {
+  label: '',
+  value: '',
+  closable: false,
+  onClose: null
+};
+
 
 export default Index;
