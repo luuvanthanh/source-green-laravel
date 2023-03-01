@@ -13,32 +13,32 @@ export const variables = {
     {
       id: 'NOT_MEASURED',
       name: 'CHƯA ĐO LƯỜNG',
-      type: 'quantityNotYetReview',
+      type: 'totalOfNoCriteria',
     },
     {
       id: 'MEASURED',
       name: 'ĐÃ ĐO LƯỜNG',
-      type: 'quantityDoneReview',
+      type: 'totalOfHasCriteria',
     },
     {
       id: 'NOT_APPROVED',
       name: 'CHƯA DUYỆT',
-      type: 'quantityNotYetConfirm',
+      type: 'totalOfNoApprove',
     },
     {
       id: 'APPROVED',
       name: 'ĐÃ DUYỆT',
-      type: 'quantityDoneConfirm',
+      type: 'totalOfHasApprove',
     },
     {
       id: 'NOT_SEND',
       name: 'CHƯA GỬI',
-      type: 'quantityNotYetConfirm',
+      type: 'totalOfNoSend',
     },
     {
       id: 'SEND',
       name: 'ĐÃ GỬI',
-      type: 'quantityDoneConfirm',
+      type: 'totalOfHasSend',
     },
   ],
   STATUS_SEARCH: {
