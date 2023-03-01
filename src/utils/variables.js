@@ -82,6 +82,12 @@ export const variables = {
       pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,
       message: 'Trường này là số điện thoại',
     },
+    ONLY_TEXT_NUMBER: {
+      pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,
+      message: 'Trường này là số',
+    },
+    MAX_ONLY_TEXT_NUMBER: { max: 3, message: 'Trường này không quá 3 kí tự' },
+    MIN_ONLY_TEXT_NUMBER: { min: 3, message: 'Trường này ít nhất 3 kí tự' },
     YEAR_FROM: 'Từ Năm không được lớn hơn Đến Năm',
     YEAR_TO: 'Đến Năm không được nhỏ hơn Từ Năm',
     INVALID_DATE: 'Ngày không hợp lệ',

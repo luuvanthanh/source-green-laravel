@@ -451,14 +451,14 @@ const Index = memo(() => {
   };
 
   const tagRenderBranch = (props) => {
-    const { label, value, closable, onClose } = props;
+    const { label, closable, onClose } = props;
     const onPreventMouseDown = (event) => {
       event.preventDefault();
       event.stopPropagation();
     };
     return (
       <Tag
-        color={value === '8c4265dd-21c7-412b-b003-9a2a493d897a' ? '#27a600' : '#0072d6'}
+        color={label === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
@@ -479,7 +479,7 @@ const Index = memo(() => {
     };
     return (
       <Tag
-        color={head(dataClass?.filter(i => i?.id === value))?.branchId === '8c4265dd-21c7-412b-b003-9a2a493d897a' ? '#27a600' : '#0072d6'}
+        color={head(dataClass?.filter(i => i?.id === value))?.branch?.name === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}

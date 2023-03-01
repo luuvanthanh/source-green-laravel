@@ -12,19 +12,23 @@ export const variables = {
   STATUS_TABS_REVIEWS: [
     {
       id: 'NOT_FEEDBACK',
-      name: 'Chưa nhận xét',
+      name: 'CHƯA NHẬN XÉT',
+      keySummary: 'totalOfNoFeedback'
     },
     {
       id: 'DID_FEEDBACK',
-      name: 'Đã nhận xét',
+      name: 'ĐÃ NHẬN XÉT',
+      keySummary: 'totalOfHasFeedback'
     },
     {
       id: 'NOT_APPROVED_FEEDBACK',
-      name: 'Chưa duyệt',
+      name: 'CHƯA DUYỆT',
+      keySummary: 'totalOfNoApprove'
     },
     {
       id: 'APPROVED_FEEDBACK',
-      name: 'Đã duyệt',
+      name: 'ĐÃ DUYỆT',
+      keySummary: 'totalOfHasApprove'
     },
   ]
 };

@@ -133,7 +133,7 @@ class Index extends PureComponent {
       type: params.id ? 'transfersAdd/UPDATE' : 'transfersAdd/ADD',
       payload: {
         id: params.id,
-        ordinalNumber: String(values.ordinalNumber),
+        ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
         type: variablesModules?.STATUS_TYPE_DECISION?.TRANSFER,
@@ -256,9 +256,12 @@ class Index extends PureComponent {
                     <FormItem
                       label="Số quyết định"
                       name="ordinalNumber"
-                      type={variables.NUMBER_INPUT}
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY,
+                      variables.RULES.ONLY_TEXT_NUMBER,
+                      variables.RULES.MAX_ONLY_TEXT_NUMBER,
+                      variables.RULES.MIN_ONLY_TEXT_NUMBER]}
                       disabled={isEmpty(dataFormContarct)}
-                      rules={[variables.RULES.EMPTY]}
                     />
                   </div>
                   <div className="col-lg-3">

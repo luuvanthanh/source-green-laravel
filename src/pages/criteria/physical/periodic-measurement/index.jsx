@@ -44,6 +44,7 @@ const Index = () => {
   });
 
   const [checkLoad, setCheckLoad] = useState(true);
+  const [dataTotalHeader, setDataTotalHeader] = useState(undefined);
   const [data, setData] = useState([]);
   const [defaultBranchs] = useState(defaultBranch?.id ? [defaultBranch] : []);
 
@@ -57,9 +58,24 @@ const Index = () => {
         type: 'physicalPeriodicMeasurement/GET_DATA',
         payload: {
           ...search,
+          hasApproved: 'false',
+          hasSent: 'false',
         },
         callback: (response, err) => {
-          if (response) {
+          if (response?.items) {
+            dispatch({
+              type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
+              payload: {
+                ...search,
+                hasApproved: 'false',
+                hasSent: 'false',
+              },
+              callback: (response) => {
+                if (response) {
+                  setDataTotalHeader(response);
+                }
+              }
+            });
             setData(response?.items?.map(item => ({
               ...item,
               nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
@@ -68,6 +84,7 @@ const Index = () => {
             ));
           } if (err) {
             setData([]);
+            setDataTotalHeader({});
           }
         },
       });
@@ -78,11 +95,25 @@ const Index = () => {
         payload: {
           ...search,
           status: variablesModules.STATUS_SEARCH?.[status],
-          hasApproved: status === variablesModules.STATUS?.MEASURED,
-          hasSent: !!(status === variablesModules.STATUS?.APPROVED || variablesModules.STATUS?.MEASURED)
+          hasApproved: status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
+          hasSent: status === variablesModules.STATUS?.APPROVED || status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
         },
         callback: (response, err) => {
-          if (response) {
+          if (response.items) {
+            dispatch({
+              type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
+              payload: {
+                ...search,
+                status: variablesModules.STATUS_SEARCH?.[status],
+                hasApproved: status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
+                hasSent: status === variablesModules.STATUS?.APPROVED || status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
+              },
+              callback: (response) => {
+                if (response) {
+                  setDataTotalHeader(response);
+                }
+              }
+            });
             setData(response?.items?.map(item => ({
               ...item,
               nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
@@ -90,6 +121,7 @@ const Index = () => {
             ));
           } if (err) {
             setData([]);
+            setDataTotalHeader({});
           }
         },
       });
@@ -604,7 +636,8 @@ const Index = () => {
             >
               {variablesModules.STATUS_TABS.map((item) => (
                 <TabPane
-                  tab={`${item.name}`}
+                  tab={`${item.name} ${(!isEmpty(dataTotalHeader)) ?
+                    `(${dataTotalHeader?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})` : ""}`}
                   key={item.id}
                 />
               ))}

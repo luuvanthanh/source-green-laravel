@@ -224,7 +224,7 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormDetail
                       name={[...new Map(details?.classes?.map(i => i?.class?.branch)?.map(item => [item.id, item])).values()]}
-                      label="Cở sở áp dụng"
+                      label="Cơ sở áp dụng"
                       type="selectTagsV2"
                     />
                   </Pane>

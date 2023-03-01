@@ -4,6 +4,17 @@ import { omit } from 'lodash';
 
 import { Helper } from '@/utils';
 
+export function getTotalData(params = {}) {
+  return requestNet('/physical-criteria-students/get-summary-status', {
+    method: 'GET',
+    params: {
+      ...params,
+      page: undefined,
+      limit: undefined,
+    },
+  });
+}
+
 export function get(params = {}) {
   return requestNet('/physical-criteria-students/items-has-no-criteria', {
     method: 'GET',

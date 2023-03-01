@@ -71,7 +71,7 @@ const General = memo(() => {
       selectDate: undefined,
       type: values?.type,
       numberForm: values?.numberForm,
-      ordinalNumber: String(values?.ordinalNumber),
+      ordinalNumber: values?.ordinalNumber,
     };
 
     dispatch({
@@ -122,7 +122,17 @@ const General = memo(() => {
                       <FormItem label="Mẫu số quyết định" name="numberForm" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Số hiện tại" name="ordinalNumber" type={variables.NUMBER_INPUT} rules={[variables.RULES.EMPTY]} />
+                      <div className={stylesModule['lable-item']} >
+                        <FormItem
+                          label="Số hiện tại"
+                          name="ordinalNumber"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY,
+                          variables.RULES.ONLY_TEXT_NUMBER,
+                          variables.RULES.MAX_ONLY_TEXT_NUMBER,
+                          variables.RULES.MIN_ONLY_TEXT_NUMBER]} />
+                        <p>Cú pháp: XXX với X là ký tự số</p>
+                      </div>
                     </Pane>
                     <Pane className="col-lg-6">
                       <div className={styles['form-item']}>
