@@ -19,6 +19,7 @@ export function getDataNoFeedback(params = {}) {
       ...params,
       ...Helper.getPagination(params.page, params.limit),
     },
+    cancelNotification: true,
   });
 }
 
@@ -42,3 +43,11 @@ export function approveFeedback(data = {}) {
   });
 }
 
+export function getSummaryStatus(params = {}) {
+  return requestNet('/physical-feedback-students/get-summary-status', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}

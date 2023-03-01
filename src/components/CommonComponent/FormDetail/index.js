@@ -80,7 +80,7 @@ class FormDetail extends Component {
           </div>
           <div size="normal" className={styles['general-detail']}>
             {name?.map((i) => (
-              <Tag className={i?.id === '8c4265dd-21c7-412b-b003-9a2a493d897a' || i?.branchId === '8c4265dd-21c7-412b-b003-9a2a493d897a' ? styles.tag__green : styles.tag__blue}>{i?.name}</Tag>
+              <Tag className={i?.branch?.name === 'Scenic Valley 2' || i?.name === 'Scenic Valley 2' ? styles.tag__green : styles.tag__blue}>{i?.name}</Tag>
             ))}
           </div>
         </div>

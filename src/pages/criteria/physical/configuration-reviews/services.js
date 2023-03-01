@@ -7,7 +7,7 @@ export function get(params = {}) {
     params: {
       ...params,
       ...Helper.getPagination(params.page, params.limit),
-    },
+    }
   });
 }
 export function remove(id = {}) {

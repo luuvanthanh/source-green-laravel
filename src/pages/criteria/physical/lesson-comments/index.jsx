@@ -60,6 +60,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       dataSelected: [],
+      summaryStatus: undefined,
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
@@ -164,13 +165,37 @@ class Index extends PureComponent {
         payload: {
           ...search,
           branchId: undefined,
-          status: undefined
+          status: undefined,
+        },
+        callback: (response) => {
+          if (response?.items) {
+            this.props.dispatch({
+              type: 'PhysicalLessonComments/GET_SUMMARY_STATUS',
+              payload: {
+                ...search,
+                status: undefined,
+                page: undefined,
+                limit: undefined
+              },
+              callback: (response) => {
+                if (response) {
+                  this.setStateData(
+                    (prevState) => ({
+                      ...prevState,
+                      summaryStatus: response,
+                    })
+                  );
+                }
+              },
+            });
+          }
         }
       });
     }
-    if (search.status === variablesModules.STATUS.DID_FEEDBACK ||
+    if ((search.status === variablesModules.STATUS.DID_FEEDBACK ||
       search.status === variablesModules.STATUS.NOT_APPROVED_FEEDBACK ||
-      search.status === variablesModules.STATUS.APPROVED_FEEDBACK
+      search.status === variablesModules.STATUS.APPROVED_FEEDBACK) &&
+      search?.classId && search?.schoolYearId && search?.date
     ) {
       this.props.dispatch({
         type: 'PhysicalLessonComments/GET_DATA',
@@ -180,6 +205,31 @@ class Index extends PureComponent {
           hasApproved: search.status === variablesModules.STATUS.DID_FEEDBACK,
           status: search?.status === variablesModules.STATUS.APPROVED_FEEDBACK ?
             variablesModules.STATUS.APPROVED_FEEDBACK : variablesModules.STATUS.DID_FEEDBACK
+        },
+        callback: (response) => {
+          if (response?.items) {
+            this.props.dispatch({
+              type: 'PhysicalLessonComments/GET_SUMMARY_STATUS',
+              payload: {
+                ...search,
+                hasApproved: search.status === variablesModules.STATUS.DID_FEEDBACK,
+                status: search?.status === variablesModules.STATUS.APPROVED_FEEDBACK ?
+                  variablesModules.STATUS.APPROVED_FEEDBACK : variablesModules.STATUS.DID_FEEDBACK,
+                page: undefined,
+                limit: undefined
+              },
+              callback: (response) => {
+                if (response) {
+                  this.setStateData(
+                    (prevState) => ({
+                      ...prevState,
+                      summaryStatus: response,
+                    })
+                  );
+                }
+              },
+            });
+          }
         }
       });
     }
@@ -266,12 +316,10 @@ class Index extends PureComponent {
    */
 
   onChangeSelect = (e, type) => {
-    this.formRef.current.setFieldsValue({ date: undefined });
     this.setState(
       (prevState) => ({
         search: {
           ...prevState.search,
-          date: undefined,
         },
       }),
     );
@@ -538,7 +586,7 @@ class Index extends PureComponent {
     const rowSelection = {
       onChange: this.onSelectChange
     };
-    const { search, defaultBranchs } = this.state;
+    const { search, defaultBranchs, summaryStatus } = this.state;
     const loading = effects['PhysicalLessonComments/GET_DATA'];
     return (
       <>
@@ -621,7 +669,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-2">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [...classes]}
+                    data={[...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -652,7 +700,7 @@ class Index extends PureComponent {
                 onChange={(event) => this.onChangeSelectStatus(event, 'status')}
               >
                 {variablesModules.STATUS_TABS_REVIEWS.map((item) => (
-                  <TabPane tab={`${item.name}`} key={item.id} />
+                  <TabPane tab={`${item.name} ${summaryStatus ? `(${summaryStatus[item.keySummary]})` : ''}`} key={item.id} />
                 ))}
               </Tabs>
             </Form>
