@@ -214,9 +214,9 @@ const General = memo(() => {
               </div>
             </div>
           </Form>
-            </div>
-          
-          <div className={stylesModule['wrapper-lable']}>
+        </div>
+
+        <div className={stylesModule['wrapper-table']}>
           <Table
             columns={header()}
             dataSource={data}

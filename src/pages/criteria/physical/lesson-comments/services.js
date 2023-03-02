@@ -35,9 +35,11 @@ export function getDataType(params = {}) {
 export function approveFeedback(data = {}) {
   return requestNet(`/physical-feedback-students/approve`, {
     method: 'PUT',
-    params: {
+    params: data?.isAll ? {
       isAll: data?.isAll,
-    },
+      ...data?.search,
+      status: undefined,
+    } : {},
     data: data?.listIdApprove,
     parse: true,
   });
