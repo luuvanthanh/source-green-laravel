@@ -152,6 +152,23 @@ const Index = memo(() => {
         payload: params?.id,
         callback: (response) => {
           if (response) {
+            dispatch({
+              type: 'EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW',
+              payload: {
+                month: query?.month,
+                classId: response?.student?.classId,
+                branchId: response?.student?.branchId,
+                type: 'MONTHLY_COMMENT'
+              },
+              callback: (response) => {
+                if (response) {
+                  dispatch({
+                    type: 'EnglishMonthlyReportAdd/GET_SET_DATA_DETAIL',
+                    payload: head(response.parsePayload),
+                  });
+                }
+              },
+            });
             setDataStudent(response?.student);
             form.setFieldsValue({
               data: response.parsePayload.childEvaluateDetail,
@@ -166,21 +183,6 @@ const Index = memo(() => {
     dispatch({
       type: 'EnglishMonthlyReport/GET_DATA_TYPE',
       payload: {},
-    });
-    dispatch({
-      type: 'EnglishMonthlyReportAdd/GET_DATA_SCRIPT_REVIEW',
-      payload: {
-        month: query?.month,
-        type: 'MONTHLY_COMMENT'
-      },
-      callback: (response) => {
-        if (response) {
-          dispatch({
-            type: 'EnglishMonthlyReportAdd/GET_SET_DATA_DETAIL',
-            payload: head(response.parsePayload),
-          });
-        }
-      },
     });
     dispatch({
       type: 'EnglishMonthlyReportAdd/GET_DATA_EVALUATION_CRITERRIA',
