@@ -62,8 +62,7 @@ const Index = () => {
           hasSent: 'false',
         },
         callback: (response) => {
-          if (response?.totalOfHasApprove) {
-            setDataTotalHeader(response);
+          if (response?.totalOfHasApprove >= 0) {
             dispatch({
               type: 'physicalPeriodicMeasurement/GET_DATA',
               payload: {
@@ -85,8 +84,8 @@ const Index = () => {
                 }
               },
             });
-          }
-          else {
+            setDataTotalHeader(response);
+          } else {
             setDataTotalHeader({});
             setData([]);
           }
@@ -103,7 +102,7 @@ const Index = () => {
           hasSent: status === variablesModules.STATUS?.APPROVED || status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
         },
         callback: (response) => {
-          if (response?.totalOfHasApprove) {
+          if (response?.totalOfHasApprove >= 0) {
             setDataTotalHeader(response);
             dispatch({
               type: 'physicalPeriodicMeasurement/GET_DATA_APPROVED',
