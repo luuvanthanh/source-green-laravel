@@ -19,3 +19,10 @@ export function details(data) {
     method: 'GET',
   });
 }
+
+export function getNumberDecisionDenominator(params = {}) {
+  return request(`/v1/decision-number-samples`, {
+    method: 'GET',
+    params,
+  });
+}

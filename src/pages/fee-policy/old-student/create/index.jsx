@@ -288,6 +288,7 @@ const Index = memo(() => {
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
+        type: 'HP,TIENAN'
       },
     });
     dispatch({
@@ -306,6 +307,7 @@ const Index = memo(() => {
         payload: {
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
+          type: 'HP,TIENAN'
         },
       });
       dispatch({

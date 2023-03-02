@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -11,6 +11,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
+
 
 let isMounted = true;
 /**
@@ -40,7 +42,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      dataFormContarct: {},
+    };
     setIsMounted(true);
   }
 
@@ -74,6 +78,9 @@ class Index extends PureComponent {
         from: details.from && moment(details.from),
         to: details.to && moment(details.to),
       });
+      this.setStateData({
+        dataFormContarct: details?.numberForm && [details],
+      });
     }
   }
 
@@ -104,13 +111,16 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { dataFormContarct } = this.state;
     dispatch({
       type: params.id ? 'decisionSuspendsAdd/UPDATE' : 'decisionSuspendsAdd/ADD',
       payload: {
         id: params.id,
-        decisionNumber: values.decisionNumber,
+        ordinalNumber: values.ordinalNumber,
+        numberForm: head(dataFormContarct)?.numberForm,
+        decisionNumberSampleId: head(dataFormContarct)?.id,
+        type: variablesModules?.STATUS_TYPE_DECISION?.SUSPEND,
         decisionDate: values.decisionDate,
-        type: values.type,
         reason: values.reason,
         employeeId: values.employeeId,
         from: values.from,
@@ -137,6 +147,30 @@ class Index extends PureComponent {
     });
   };
 
+  converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
+  onChangeNumber = (e) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.SUSPEND, },
+      callback: (response) => {
+        this.setStateData({
+          dataFormContarct: response?.parsePayload,
+        });
+        this.formRef.current.setFieldsValue({
+          ordinalNumber: this.converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
+      }
+    });
+  };
+
   render() {
     const {
       categories,
@@ -144,6 +178,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
+    const { dataFormContarct } = this.state;
     const loadingSubmit =
       effects['decisionSuspendsAdd/ADD'] || effects['decisionSuspendsAdd/UPDATE'];
     return (
@@ -177,20 +212,30 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="Số quyết định"
-                    name="decisionNumber"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <FormItem
                     label="Ngày quyết định"
                     name="decisionDate"
                     disabledDate={Helper.disabledDate}
                     type={variables.DATE_PICKER}
+                    onChange={this.onChangeNumber}
                     rules={[variables.RULES.EMPTY]}
                   />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    label="Số quyết định"
+                    name="ordinalNumber"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMPTY,
+                    variables.RULES.ONLY_TEXT_NUMBER,
+                    variables.RULES.MAX_ONLY_TEXT_NUMBER,
+                    variables.RULES.MIN_ONLY_TEXT_NUMBER]}
+                    disabled={isEmpty(dataFormContarct)}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <p className="mb0 font-size-13 mt35 font-weight-bold">
+                    {!isEmpty(dataFormContarct) ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                  </p>
                 </div>
               </div>
               <div className="row">

@@ -6,14 +6,16 @@ export function add(data = {}) {
   return request('/v1/payment-plans', {
     method: 'POST',
     data: {
-      datePlan: data?.datePlan ?  Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: data.datePlan,
-        }),
-        format: variables.DATE_FORMAT.DATE_AFTER,
-        isUTC: false,
-      }) : moment(),
+      datePlan: data?.datePlan
+        ? Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: data.datePlan,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          })
+        : moment(),
       chargeMonth: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
@@ -26,9 +28,8 @@ export function add(data = {}) {
       schoolYearId: data?.schoolYearId,
       branchId: data?.branchId,
       classId: data?.classId,
-      detail: data?.data?.map((i) => ({
-        note: i.note,
-        chargeOldStudentId: i.studentId,
+      detail: data?.detail?.map((i) => ({
+        ...i,
       })),
     },
   });
@@ -39,9 +40,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       include: Helper.convertIncludes([
-        'paymentPlanDetail.chargeOldStudent.student',
-        'paymentPlanDetail.chargeOldStudent.tuition',
-        'paymentPlanDetail.chargeOldStudent.tuition,schoolYear,branch,classes,classType',
+        'paymentPlanDetail.student,schoolYear,branch,classes,classType',
       ]),
     },
   });
@@ -71,9 +70,8 @@ export function update(data = {}) {
       branchId: data?.branchId,
       classId: data?.classId,
       classTypeId: data?.classTypeId,
-      detail: data?.data?.map((i) => ({
-        note: i.note,
-        chargeOldStudentId: i.studentId,
+      detail: data?.detail?.map((i) => ({
+        ...i,
       })),
     },
   });
@@ -90,9 +88,11 @@ export function getPayment(params = {}) {
   return request(`/v1/charge-old-students`, {
     method: 'GET',
     params: {
+      month_payment_plan: params.month_payment_plan,
       schoolYearId: params?.schoolYearId,
       branchId: params?.branchId,
       classId: params?.classId,
+      is_payment_plan: true,
       include: Helper.convertIncludes(['tuition', 'student']),
     },
   });

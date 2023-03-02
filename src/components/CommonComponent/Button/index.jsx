@@ -54,6 +54,8 @@ const ICON_BUTTON = {
   report: <span className="icon-report" />,
   'cloud-upload': <span className="icon-cloud-upload" />,
   'redo2': <span className="icon-redo2" />,
+  excel: <span className="icon-excel" />,
+  accept: <span className="icon-accept" />
 };
 export default function ButtonCustom({
   children,

@@ -105,34 +105,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
-  };
-
-  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -156,13 +128,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
       pagination,
+      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+  }
 
   /**
  * Function remove items
@@ -210,7 +187,8 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Loại đánh giá',
@@ -245,12 +223,15 @@ class Index extends PureComponent {
         }</Text>,
       },
       {
-        title: 'Số lớp áp dụng',
-        key: 'total',
-        className: 'min-width-140 center',
-        width: 140,
-        align: 'center',
-        render: (record) => <Text size="normal">  {record?.classes?.length}</Text>,
+        title: 'Lớp áp dụng',
+        key: 'name',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => <Text size="normal">{
+          record?.classes?.map((item, index) => (
+            <>{`${item?.class?.name}${index !== record?.classes?.length - 1 ? ', ' : ''}`}</>
+          ))
+        }</Text>,
       },
       {
         key: 'action',
@@ -324,14 +305,6 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Từ khóa"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả loại' }, ...dataType]}

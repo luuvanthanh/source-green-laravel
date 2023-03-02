@@ -2,7 +2,7 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
@@ -37,7 +37,9 @@ const General = memo(() => {
 
   const mounted = useRef(false);
   const loadingSubmit =
-    effects['currencyPaymentPlanAdd/ADD'] || effects['currencyPaymentPlanAdd/UPDATE'] || effects['currencyPaymentPlanAdd/GET_PAYMENT'] ;
+    effects['currencyPaymentPlanAdd/ADD'] ||
+    effects['currencyPaymentPlanAdd/UPDATE'] ||
+    effects['currencyPaymentPlanAdd/GET_PAYMENT'];
 
   const params = useParams();
   const [dataPayment, setDataPayment] = useState([]);
@@ -84,6 +86,7 @@ const General = memo(() => {
           if (response) {
             setDetails((prev) => ({
               ...prev,
+              ...response,
               startDate: response?.schoolYear?.startDate
                 ? Helper.getDate(response?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI)
                 : '',
@@ -101,13 +104,15 @@ const General = memo(() => {
             });
             form.setFieldsValue({
               data: response?.paymentPlanDetail?.map((item) => ({
-                fullName: item?.chargeOldStudent?.student?.fullName,
-                totalMoney: parseInt(item?.chargeOldStudent?.totalMoney, 10),
-                studentId: item?.chargeOldStudent?.id,
+                fullName: item?.student?.fullName,
+                totalMoney: parseInt(item?.totalMoneyMonth, 10),
+                chargeOldStudentId: item?.id,
+                studentId: item?.student?.id,
                 note: item?.note,
-                tuition: item?.chargeOldStudent?.tuition?.map((i) => ({
-                  fee: i?.fee?.name,
+                tuition: item?.feeInfo?.map((i) => ({
+                  fee: i?.feeName,
                   money: parseInt(i?.money, 10),
+                  fee_id: i?.feeId,
                 })),
               })),
             });
@@ -117,14 +122,24 @@ const General = memo(() => {
     }
     dispatch({
       type: 'currencyPaymentPlanAdd/GET_CLASSES',
-      payload : {},
+      payload: {},
     });
   }, [params.id]);
 
   const onFinish = (values) => {
     dispatch({
       type: 'currencyPaymentPlanAdd/GET_PAYMENT',
-      payload: values,
+      payload: {
+        ...values,
+        month_payment_plan: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values?.chargeMonth,
+          }),
+          format: variables.DATE_FORMAT.YEAR_MONTH,
+          isUTC: false,
+        }),
+      },
       callback: (response, error) => {
         if (response) {
           setDataSelect(values);
@@ -132,11 +147,13 @@ const General = memo(() => {
           form.setFieldsValue({
             data: response.map((item) => ({
               fullName: item?.student?.fullName,
-              totalMoney: parseInt(item?.totalMoney, 10),
-              studentId: item?.id,
-              tuition: item?.tuition?.map((i) => ({
-                fee: i?.fee?.name,
+              totalMoney: parseInt(head(item?.feeInfo)?.total_money_month, 10),
+              chargeOldStudentId: item?.id,
+              studentId: item?.student?.id,
+              tuition: head(item?.feeInfo)?.fee?.map((i) => ({
+                fee: i?.fee_name,
                 money: parseInt(i?.money, 10),
+                fee_id: i?.fee_id,
               })),
             })),
           });
@@ -161,8 +178,37 @@ const General = memo(() => {
     dispatch({
       type: params?.id ? 'currencyPaymentPlanAdd/UPDATE' : 'currencyPaymentPlanAdd/ADD',
       payload: params?.id
-        ? { id: params.id, ...values, ...details, classTypeId: dataType[0]?.classType?.id }
-        : { ...values, ...dataSelect, classTypeId: dataType[0]?.classType?.id },
+        ? {
+            id: params.id,
+            detail: values?.data?.map((i) => ({
+              chargeOldStudentId: i?.chargeOldStudentId,
+              studentId: i?.studentId,
+              totalMoneyMonth: i?.totalMoney,
+              note: i?.note,
+              feeInfo: i?.tuition?.map((k) => ({
+                money: k?.money,
+                feeName: k?.fee,
+                feeId: k?.fee_id,
+              })),
+            })),
+            ...details,
+            classTypeId: head(dataType)?.classType?.id,
+          }
+        : {
+            ...dataSelect,
+            classTypeId: head(dataType)?.classType?.id,
+            detail: values?.data?.map((i) => ({
+              chargeOldStudentId: i?.chargeOldStudentId,
+              studentId: i?.studentId,
+              totalMoneyMonth: i?.totalMoney,
+              note: i?.note,
+              feeInfo: i?.tuition?.map((k) => ({
+                money: k?.money,
+                feeName: k?.fee,
+                feeId: k?.fee_id,
+              })),
+            })),
+          },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -241,12 +287,23 @@ const General = memo(() => {
     }));
   };
 
-const onChangeBranch = (e) => {
-  dispatch({
-    type: 'currencyPaymentPlanAdd/GET_CLASSES',
-    payload: {branch : e},
-  });
-};
+  const onChangeBranch = (e) => {
+    dispatch({
+      type: 'currencyPaymentPlanAdd/GET_CLASSES',
+      payload: { branch: e },
+    });
+  };
+
+  const onChangeTotal = () => {
+    form.validateFields().then((values) => {
+      form.setFieldsValue({
+        data: values?.data?.map((item) => ({
+          ...item,
+          totalMoney: item?.tuition.reduce((accumulator, object) => accumulator + object.money, 0),
+        })),
+      });
+    });
+  };
 
   return (
     <>
@@ -268,6 +325,7 @@ const onChangeBranch = (e) => {
                         name="datePlan"
                         type={variables.DATE_PICKER}
                         onChange={changeDate}
+                        disabled={params?.id}
                       />
                     </Pane>
                     {params?.id ? (
@@ -305,55 +363,59 @@ const onChangeBranch = (e) => {
                         />
                       </Pane>
                     )}
-                    {
-                      details?.startDate  ?
+                    {details?.startDate ? (
                       <Pane className="col-lg-3">
-                      <FormItem
-                        className="mb-3"
-                        label="Tháng tính phí"
-                        name="chargeMonth"
-                        type={variables.MONTH_PICKER}
-                        placeholder="Chọn tháng"
-                        allowClear={false}
-                        rules={[variables.RULES.EMPTY]}
-                        onChange={changeMonth}
-                        disabledDate={(current) =>
-                          (details?.startDate &&
-                            current <
-                              moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
-                                'day',
-                              )) ||
-                          (details?.endDate &&
-                            current >=
-                              moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day'))
-                        }
-                      />
-                    </Pane>
-                    : 
-                    <Pane className="col-lg-3">
-                    <FormItem
-                      className="mb-3"
-                      label="Tháng tính phí"
-                      name="chargeMonth"
-                      type={variables.MONTH_PICKER}
-                      placeholder="Chọn tháng"
-                      allowClear={false}
-                      rules={[variables.RULES.EMPTY]}
-                      onChange={changeMonth}
-                      disabledDate={(current) =>
-                        (details?.startDate &&
-                          current <
-                            moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
-                              'day',
-                            )) ||
-                        (details?.endDate &&
-                          current >=
-                            moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day'))
-                      }
-                      disabled
-                    />
-                  </Pane>
-                    }
+                        <FormItem
+                          className="mb-3"
+                          label="Tháng tính phí"
+                          name="chargeMonth"
+                          type={variables.MONTH_PICKER}
+                          placeholder="Chọn tháng"
+                          allowClear={false}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={changeMonth}
+                          disabledDate={(current) =>
+                            (details?.startDate &&
+                              current <
+                                moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
+                                  'day',
+                                )) ||
+                            (details?.endDate &&
+                              current >=
+                                moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf(
+                                  'day',
+                                ))
+                          }
+                          disabled={params?.id}
+                        />
+                      </Pane>
+                    ) : (
+                      <Pane className="col-lg-3">
+                        <FormItem
+                          className="mb-3"
+                          label="Tháng tính phí"
+                          name="chargeMonth"
+                          type={variables.MONTH_PICKER}
+                          placeholder="Chọn tháng"
+                          allowClear={false}
+                          rules={[variables.RULES.EMPTY]}
+                          onChange={changeMonth}
+                          disabledDate={(current) =>
+                            (details?.startDate &&
+                              current <
+                                moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf(
+                                  'day',
+                                )) ||
+                            (details?.endDate &&
+                              current >=
+                                moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf(
+                                  'day',
+                                ))
+                          }
+                          disabled={params?.id}
+                        />
+                      </Pane>
+                    )}
                     {params?.id ? (
                       <>
                         <Pane className="col-lg-3">
@@ -424,16 +486,26 @@ const onChangeBranch = (e) => {
                       />
                     </Pane>
                     <Pane className="pt30 pl15">
-                      {
-                        params?.id ? 
-                      <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}  disabled>
-                        Tính phí
-                      </Button>
-                        : 
-                        <Button className="ml-auto px25" color="success" htmlType="submit"  loading={loadingSubmit}>
-                        Tính phí
-                      </Button>
-                      }
+                      {params?.id ? (
+                        <Button
+                          className="ml-auto px25"
+                          color="success"
+                          htmlType="submit"
+                          loading={loadingSubmit}
+                          disabled
+                        >
+                          Tính phí
+                        </Button>
+                      ) : (
+                        <Button
+                          className="ml-auto px25"
+                          color="success"
+                          htmlType="submit"
+                          loading={loadingSubmit}
+                        >
+                          Tính phí
+                        </Button>
+                      )}
                     </Pane>
                   </Pane>
                 </Form>
@@ -477,6 +549,7 @@ const onChangeBranch = (e) => {
                                           fieldKey={[fieldItem.fieldKey, 'fullName']}
                                           name={[fieldItem.name, 'fullName']}
                                           type={variables.INPUT}
+                                          disabled
                                         />
                                       </div>
                                       <div className={classnames(stylesModule.nol)}>
@@ -492,6 +565,7 @@ const onChangeBranch = (e) => {
                                                         fieldKey={[fieldItemD.fieldKey, 'fee']}
                                                         name={[fieldItemD.name, 'fee']}
                                                         type={variables.INPUT}
+                                                        disabled
                                                       />
                                                     </div>
                                                     <div className={classnames(stylesModule.col)}>
@@ -500,6 +574,7 @@ const onChangeBranch = (e) => {
                                                         fieldKey={[fieldItemD.fieldKey, 'money']}
                                                         name={[fieldItemD.name, 'money']}
                                                         type={variables.INPUT_NUMBER}
+                                                        onChange={() => onChangeTotal()}
                                                       />
                                                     </div>
                                                   </div>
@@ -521,13 +596,14 @@ const onChangeBranch = (e) => {
                                             <FormItem
                                               name={[fieldItem.name, 'totalMoney']}
                                               type={variables.INPUT_NUMBER}
+                                              disabled
                                             />
                                           </div>
                                         </div>
                                       </div>
                                       <div
                                         className={classnames(stylesModule.cols)}
-                                        style={{ width: '25%'}}
+                                        style={{ width: '25%' }}
                                       >
                                         <FormItem
                                           className={stylesModule.item}

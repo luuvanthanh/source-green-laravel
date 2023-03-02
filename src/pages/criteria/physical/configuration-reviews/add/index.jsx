@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Tag } from 'antd';
 import { isEmpty, get, head, last } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
@@ -14,6 +14,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import PropTypes from 'prop-types';
 import stylesModule from '../styles.module.scss';
 import Comment from './comment';
 import Subject from './subject';
@@ -30,7 +31,6 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const {
     dataType,
-    branches,
     menuLeftCriteria,
     years,
     loading: { effects },
@@ -39,7 +39,6 @@ const Index = memo(() => {
   } = useSelector(({ menu, loading, configurationReviewsAdd, user }) => ({
     loading,
     menuLeftCriteria: menu.menuLeftCriteria,
-    branches: configurationReviewsAdd?.branches,
     dataType: configurationReviewsAdd.dataType,
     years: configurationReviewsAdd.years,
     error: configurationReviewsAdd.error,
@@ -48,7 +47,10 @@ const Index = memo(() => {
   }));
 
   const [type, setType] = useState('');
+  const [idDataType, setIdDataType] = useState('');
+  const [branches, setBranches] = useState([]);
   const [dataClass, setDataClass] = useState([]);
+  const [dataClassTemp, setDataClassTemp] = useState([]);
   const [dataSubject, setDataSubject] = useState(undefined);
   const [dataComment, setDataComment] = useState(undefined);
 
@@ -147,16 +149,38 @@ const Index = memo(() => {
             type: 'configurationReviewsAdd/GET_DATA_TYPE',
             payload: details?.type,
           });
+          dispatch({
+            type: 'configurationReviewsAdd/GET_DETAIL_DATA_TYPE',
+            payload: { id: details?.assessmentPeriod?.id },
+            callback: (response) => {
+              if (response) {
+                setBranches(response?.parsePayload?.branch);
+                setDataClass(response?.parsePayload?.classes?.filter(item => form.getFieldValue('branchIds')?.includes(item?.branchId)));
+              }
+            },
+          });
         }
-        dispatch({
-          type: 'configurationReviewsAdd/GET_CLASSES',
-          payload: { branchIds: Array.from(new Set(details?.classes?.map((i) => i?.class?.branch?.id))) },
-          callback: (response) => {
-            if (response) {
-              setDataClass(response);
-            }
-          },
-        });
+        if (details?.type === 'LESSION_FEEDBACK') {
+          setType(details?.type);
+          dispatch({
+            type: 'configurationReviewsAdd/GET_BRANCHES',
+            payload: {},
+            callback: (response) => {
+              if (response) {
+                setBranches(response?.parsePayload);
+              }
+            },
+          });
+          dispatch({
+            type: 'configurationReviewsAdd/GET_CLASSES',
+            payload: { branchIds: Array.from(new Set(details?.classes?.map((i) => i?.class?.branch?.id))) },
+            callback: (response) => {
+              if (response) {
+                setDataClass(response);
+              }
+            },
+          });
+        }
         form.setFieldsValue({
           assessmentPeriodId: details?.assessmentPeriod?.id,
           type: details?.type,
@@ -167,7 +191,7 @@ const Index = memo(() => {
           isCheckSubjectComment: last(details?.templates)?.isEnable
         });
 
-        if (head(details?.templates)?.isEnable) {
+        if (head(details?.templates)?.type === 'FEEDBACK' && head(details?.templates)?.isEnable) {
           setDataComment(head(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
             ...i,
             isComment: true,
@@ -182,7 +206,7 @@ const Index = memo(() => {
           })));
         }
 
-        if (last(details?.templates)?.isEnable) {
+        if (last(details?.templates)?.type === 'CRITERIA' && last(details?.templates)?.isEnable) {
           setDataSubject(last(details?.templates)?.physicalCriteraiTemplates?.map(i => ({
             ...i,
             isSubject: true,
@@ -260,7 +284,10 @@ const Index = memo(() => {
 
   const onChangeType = (e) => {
     setType(e);
+    setIdDataType('');
+    setDataClass([]);
     if (e === 'PERIODIC_MEASUREMENT') {
+      setBranches([]);
       dispatch({
         type: 'configurationReviewsAdd/GET_DATA_TYPE',
         payload: {
@@ -269,13 +296,43 @@ const Index = memo(() => {
         },
       });
     }
+    if (e === 'LESSION_FEEDBACK') {
+      dispatch({
+        type: 'configurationReviewsAdd/GET_BRANCHES',
+        payload: {},
+        callback: (response) => {
+          if (response) {
+            setBranches(response?.parsePayload);
+          }
+        },
+      });
+    }
+    form.setFieldsValue({
+      branchIds: [],
+      classIds: [],
+      assessmentPeriodId: undefined
+    });
+  };
+
+  const onChangeDatatype = (e) => {
+    setIdDataType(e);
+    dispatch({
+      type: 'configurationReviewsAdd/GET_DETAIL_DATA_TYPE',
+      payload: { id: e },
+      callback: (response) => {
+        if (response) {
+          setBranches(response?.parsePayload?.branch);
+          setDataClassTemp(response?.parsePayload?.classes);
+        }
+      },
+    });
+    form.setFieldsValue({
+      branchIds: [],
+      classIds: [],
+    });
   };
 
   useEffect(() => {
-    dispatch({
-      type: 'configurationReviewsAdd/GET_BRANCHES',
-      payload: {},
-    });
     dispatch({
       type: 'configurationReviewsAdd/GET_YEARS',
       payload: {},
@@ -325,17 +382,21 @@ const Index = memo(() => {
   }, [defaultBranch]);
 
   const onChangeBranch = (e) => {
-    dispatch({
-      type: 'configurationReviewsAdd/GET_CLASSES',
-      payload: { branchIds: e },
-      callback: (response) => {
-        if (response) {
-          setDataClass(response);
-        }
-      },
-    });
+    if (!idDataType) {
+      dispatch({
+        type: 'configurationReviewsAdd/GET_CLASSES',
+        payload: { branchIds: e },
+        callback: (response) => {
+          if (response) {
+            setDataClass(response);
+          }
+        },
+      });
+    } else {
+      setDataClass(dataClassTemp?.filter(i => form.getFieldValue('branchIds')?.includes(i?.branchId)));
+    }
     form.setFieldsValue({
-      classId: undefined,
+      classIds: dataClass?.filter(i => form.getFieldValue('classIds')?.includes(i?.id))?.filter(j => form.getFieldValue('branchIds')?.includes(j?.branchId))?.map(k => k?.id),
     });
   };
 
@@ -389,9 +450,51 @@ const Index = memo(() => {
     }
   };
 
+  const tagRenderBranch = (props) => {
+    const { label, closable, onClose } = props;
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <Tag
+        color={label === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
+  const tagRenderClass = (props) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <Tag
+        color={head(dataClass?.filter(i => i?.id === value))?.branch?.name === 'Scenic Valley 2' ? '#27a600' : '#0072d6'}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Edit' : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa' : 'Tạo mới'} menu={menuLeftCriteria} />
       <Helmet title="Cấu hình đánh giá" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
@@ -435,6 +538,7 @@ const Index = memo(() => {
                           type={variables.SELECT}
                           label="Kỳ đánh giá"
                           rules={[variables.RULES.EMPTY_INPUT]}
+                          onChange={onChangeDatatype}
                         />
                       </Pane>
                     )
@@ -447,15 +551,17 @@ const Index = memo(() => {
                       rules={[variables.RULES.EMPTY]}
                       label="Cơ sở áp dụng"
                       onChange={onChangeBranch}
+                      tagRender={tagRenderBranch}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
                     <FormItem
                       name="classIds"
-                      data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? dataClass?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId) : dataClass}
+                      data={dataClass}
                       type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
                       label="Lớp áp dụng"
+                      tagRender={tagRenderClass}
                     />
                   </Pane>
                 </Pane>
@@ -537,6 +643,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  loading={effects['configurationReviewsAdd/ADD'] || effects['configurationReviewsAdd/UPDATE']}
                 >
                   Lưu
                 </Button>
@@ -548,5 +655,19 @@ const Index = memo(() => {
     </div>
   );
 });
+
+Index.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.string,
+  closable: PropTypes.bool,
+  onClose: PropTypes.func
+};
+
+Index.defaultProps = {
+  label: '',
+  value: '',
+  closable: false,
+  onClose: null
+};
 
 export default Index;

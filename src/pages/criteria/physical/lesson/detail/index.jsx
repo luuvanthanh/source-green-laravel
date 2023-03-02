@@ -10,6 +10,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Loading from '@/components/CommonComponent/Loading';
 import classnames from 'classnames';
+import { Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -32,6 +33,25 @@ const Index = memo(() => {
 
   const [details, setDetails] = useState(undefined);
 
+  const onRemove = (id) => {
+    const text = "Bạn có chắc chắn muốn xóa bài học này không?";
+    Helper.confirmDelete({
+      callback: () => {
+        dispatch({
+          type: 'physicalLesson/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    }, text);
+  };
+
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -47,13 +67,21 @@ const Index = memo(() => {
   }, [params.id]);
 
   useEffect(() => {
+    dispatch({
+      type: 'physicalLessonAdd/GET_YEARS',
+      payload: {},
+    });
+  }, []);
+
+
+  useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Bài học" />
       <Loading
         loading={effects['physicalLessonAdd/GET_DATA']}
       >
@@ -99,15 +127,15 @@ const Index = memo(() => {
                   <Pane className="col-lg-12">
                     <FormDetail
                       name={[...new Map(details?.classes?.map(i => i?.class?.branch)?.map(item => [item.id, item])).values()]}
-                      label="Cở sở áp dụng"
-                      type="selectTags"
+                      label="Cơ sở áp dụng"
+                      type="selectTagsV2"
                     />
                   </Pane>
                   <Pane className="col-lg-12">
                     <FormDetail
                       name={details?.classes?.map(i => i?.class)}
                       label="Lớp áp dụng"
-                      type="selectTags"
+                      type="selectTagsV2"
                     />
                   </Pane>
                 </Pane>
@@ -159,6 +187,9 @@ const Index = memo(() => {
           <Pane className="d-flex justify-content-between align-items-center mb20 mt20">
             <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
               Đóng
+            </p>
+            <p className="btn-delete ml-4" role="presentation" onClick={() => onRemove(details?.id)}>
+              Xóa
             </p>
             <Button
               className="ml-auto px25"

@@ -331,6 +331,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.THECHAT],
           },
+          {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/add',
+            component: './criteria/physical/lesson-comments/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/nhan-xet-tiet-hoc/:id/detail',
+            component: './criteria/physical/lesson-comments/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky',
+            component: './criteria/physical/periodic-measurement',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/add',
+            component: './criteria/physical/periodic-measurement/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/detail',
+            component: './criteria/physical/periodic-measurement/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
+          {
+            path: '/chuong-trinh-hoc/the-chat/do-luong-dinh-ky/:id/confirmed',
+            component: './criteria/physical/periodic-measurement/confirmed',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.THECHAT],
+          },
         ],
       },
       // CRITERIA
@@ -1590,6 +1626,24 @@ export default [
           {
             path: '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
             component: './hrm/decision-suspends/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh',
+            component: './hrm/decision-denominator',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/tao-moi',
+            component: './hrm/decision-denominator/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/khai-bao-mau-so-quyet-dinh/:id/chi-tiet',
+            component: './hrm/decision-denominator/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
@@ -3761,6 +3815,20 @@ export default [
             wrappers: ['@/wrappers/auth'],
             // authority: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
             authority: [permissions.CTH],
+          },
+        ],
+      },
+
+      // BAO CAO ERP
+      {
+        path: '/bao-cao-erp',
+        component: './menu/layout',
+        routes: [
+          {
+            path: '/bao-cao-erp/:type',
+            component: './report-erp',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
           },
         ],
       },
