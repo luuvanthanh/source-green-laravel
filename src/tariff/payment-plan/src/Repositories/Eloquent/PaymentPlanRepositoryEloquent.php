@@ -69,7 +69,7 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
         }
 
         if (!empty($attributes['studentId'])) {
-            $this->model = $this->model->whereHas('paymentPlanDetail.chargeOldStudent', function ($query) use ($attributes) {
+            $this->model = $this->model->whereHas('paymentPlanDetail', function ($query) use ($attributes) {
                 $query->where('StudentId', $attributes['studentId']);
             });
         }
@@ -139,11 +139,8 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
         $arrayStudentId = [];
         $paymentPlan = PaymentPlan::findOrFail($attributes['id']);
         $arrayPaymentPlanDetailId = $paymentPlan->paymentPlanDetail()->pluck('ChargeOldStudentId')->toArray();
-        $chargeOldStudents = ChargeOldStudent::whereIn('Id', $arrayPaymentPlanDetailId)->get();
+        $arrayStudentId = $paymentPlan->paymentPlanDetail()->pluck('StudentId')->toArray();
 
-        foreach ($chargeOldStudents as $chargeOldStudent) {
-            $arrayStudentId[] = $chargeOldStudent->StudentId;
-        }
         $students = Student::whereIn('Id', $arrayStudentId)->get();
 
         foreach ($students as $student) {
@@ -170,15 +167,10 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
             }
 
             $month = Carbon::parse($paymentPlan->ChargeMonth);
-            $chargeOldStudents = ChargeOldStudent::whereIn('Id', $arrayPaymentPlanDetailId)->where('StudentId', $student->Id)->first();
-            $collection = collect($chargeOldStudents->ExpectedToCollectMoney);
-            $expectedToCollectMoney = $collection->filter(function ($value, $key) use ($month) {
-                return $value['month'] == $month->format('Y-m');
-            })->toArray();;
-
-
-            $message = 'Biểu phí tháng ' . $month->format('m/Y') . ' của bé ' . $student->FullName . ' là ' . $expectedToCollectMoney[0]['total_money_month'];
-
+            $paymentPlanDetail =  $paymentPlan->paymentPlanDetail()->where('StudentId', $student->Id)->first();
+            $totalMoneyMonth = !is_null($paymentPlanDetail->TotalMoneyMonth) ? number_format($paymentPlanDetail->TotalMoneyMonth) : 0;
+            $message = 'Biểu phí tháng ' . $month->format('m/Y') . ' của bé ' . $student->FullName . ' là ' . $totalMoneyMonth;
+            
             if (!empty($arrId)) {
                 $dataNotifiCation = [
                     'users' => $arrId,
