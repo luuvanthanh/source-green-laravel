@@ -42,6 +42,9 @@ export function getData(params = {}) {
 export function getDataStudent(params = {}) {
   return requestNet(`/students/${params}`, {
     method: 'GET',
+    params: {
+      ...params,
+    },
   });
 }
 
