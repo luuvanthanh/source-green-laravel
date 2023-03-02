@@ -2,6 +2,7 @@
 
 namespace GGPHP\Tariff\PaymentPlan\Transformers;
 
+use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\ChargeOldStudentTransformer;
 use GGPHP\Tariff\PaymentPlan\Models\PaymentPlanDetail;
@@ -30,7 +31,7 @@ class PaymentPlanDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['chargeOldStudent'];
+    protected $availableIncludes = ['chargeOldStudent', 'student'];
 
     /**
      * Transform the User entity.
@@ -51,5 +52,14 @@ class PaymentPlanDetailTransformer extends BaseTransformer
         }
 
         return $this->item($paymentPlanDetail->chargeOldStudent, new ChargeOldStudentTransformer, 'ChargeOldStudent');
+    }
+
+    public function includeStudent(PaymentPlanDetail $paymentPlanDetail)
+    {
+        if (is_null($paymentPlanDetail->student)) {
+            return;
+        }
+
+        return $this->item($paymentPlanDetail->student, new StudentTransformer, 'Student');
     }
 }

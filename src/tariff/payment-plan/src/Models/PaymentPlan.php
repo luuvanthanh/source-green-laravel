@@ -10,10 +10,15 @@ use GGPHP\Fee\Models\SchoolYear;
 
 class PaymentPlan extends UuidModel
 {
+    const STATUS = [
+        'NOT_SENT' => 1,
+        'SENT' => 2
+    ];
+
     protected $table = 'fee.PaymentPlans';
 
     protected $fillable = [
-        'DatePlan', 'ChargeMonth', 'SchoolYearId', 'BranchId', 'ClassId', 'ClassTypeId'
+        'DatePlan', 'ChargeMonth', 'SchoolYearId', 'BranchId', 'ClassId', 'ClassTypeId', 'Status'
     ];
 
     protected $casts = [

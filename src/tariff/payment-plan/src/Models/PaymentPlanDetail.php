@@ -2,6 +2,7 @@
 
 namespace GGPHP\Tariff\PaymentPlan\Models;
 
+use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Fee\Models\ChargeOldStudent;
 
@@ -10,7 +11,11 @@ class PaymentPlanDetail extends UuidModel
     protected $table = 'fee.PaymentPlanDetails';
 
     protected $fillable = [
-        'ChargeOldStudentId', 'Note', 'PaymentPlanId'
+        'ChargeOldStudentId', 'Note', 'PaymentPlanId', 'StudentId', 'FeeInfo', 'TotalMoneyMonth'
+    ];
+
+    protected $casts = [
+        'FeeInfo' => 'array'
     ];
 
     public function paymentPlan()
@@ -21,5 +26,10 @@ class PaymentPlanDetail extends UuidModel
     public function chargeOldStudent()
     {
         return $this->belongsTo(ChargeOldStudent::class, 'ChargeOldStudentId');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'StudentId');
     }
 }
