@@ -67,6 +67,14 @@ const Index = memo(() => {
   }, [params.id]);
 
   useEffect(() => {
+    dispatch({
+      type: 'physicalLessonAdd/GET_YEARS',
+      payload: {},
+    });
+  }, []);
+
+
+  useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);

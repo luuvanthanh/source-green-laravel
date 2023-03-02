@@ -2677,61 +2677,73 @@ export async function getLeftMenuChildDevelop() {
 
 export async function getLeftMenuCurrency() {
   return [
+    // {
+    //   title: 'Khai báo danh mục',
+    //   key: 'Currency',
+    //   icon: 'icon icon-list',
+    //   permission: [permissions.BIEUPHI],
+    //   children: [
+    //     // {
+    //     //   title: 'Tính phí học sinh cũ',
+    //     //   key: 'old-student',
+    //     //   url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
+    //     //   permission: [permissions.BIEUPHI],
+    //     //   pro: true,
+    //     // },
+    //     // {
+    //     //   title: 'Tính phí học sinh mới',
+    //     //   key: 'new-student',
+    //     //   url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
+    //     //   permission: [permissions.BIEUPHI],
+    //     //   pro: true,
+    //     // },
+    //     {
+    //       title: 'Kế hoạch đóng phí',
+    //       key: 'payment-plan',
+    //       url: [
+    //         '/bieu-phi/ke-hoach-dong-phi',
+    //         '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+    //         '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
+    //       ],
+    //       permission: [permissions.BIEUPHI],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
-      title: 'Khai báo danh mục',
-      key: 'Currency',
+      title: 'Kế hoạch đóng phí',
+      key: 'payment-plan',
       icon: 'icon icon-list',
-      permission: [permissions.BIEUPHI],
-      children: [
-        // {
-        //   title: 'Tính phí học sinh cũ',
-        //   key: 'old-student',
-        //   url: ['/bieu-phi/tinh-phi-hoc-sinh-cu', '/bieu-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet'],
-        //   permission: [permissions.BIEUPHI],
-        //   pro: true,
-        // },
-        // {
-        //   title: 'Tính phí học sinh mới',
-        //   key: 'new-student',
-        //   url: ['/bieu-phi/tinh-phi-hoc-sinh-moi', '/bieu-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet'],
-        //   permission: [permissions.BIEUPHI],
-        //   pro: true,
-        // },
-        {
-          title: 'Kế hoạch đóng phí',
-          key: 'payment-plan',
-          url: [
-            '/bieu-phi/ke-hoach-dong-phi',
-            '/bieu-phi/ke-hoach-dong-phi/tao-moi',
-            '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
-          ],
-          permission: [permissions.BIEUPHI],
-          pro: true,
-        },
+      url: [
+        '/bieu-phi/ke-hoach-dong-phi',
+        '/bieu-phi/ke-hoach-dong-phi/tao-moi',
+        '/bieu-phi/ke-hoach-dong-phi/:id/chi-tiet',
       ],
-    },
-    {
-      title: 'Báo cáo',
-      key: 'Report',
-      icon: 'icon icon-list',
       permission: [permissions.BIEUPHI],
-      children: [
-        {
-          title: 'TH công nợ theo đối tượng',
-          key: 'debt',
-          url: ['/bieu-phi/bao-cao/cong-no-theo-doi-tuong'],
-          permission: [permissions.BIEUPHI],
-          pro: true,
-        },
-        {
-          title: 'TH thu - chi theo đối tượng',
-          key: 'revenue-expenditure',
-          url: ['/bieu-phi/bao-cao/thu-chi-theo-doi-tuong'],
-          permission: [permissions.BIEUPHI],
-          pro: true,
-        },
-      ],
+      pro: true,
     },
+    // {
+    //   title: 'Báo cáo',
+    //   key: 'Report',
+    //   icon: 'icon icon-list',
+    //   permission: [permissions.BIEUPHI],
+    //   children: [
+    //     {
+    //       title: 'TH công nợ theo đối tượng',
+    //       key: 'debt',
+    //       url: ['/bieu-phi/bao-cao/cong-no-theo-doi-tuong'],
+    //       permission: [permissions.BIEUPHI],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'TH thu - chi theo đối tượng',
+    //       key: 'revenue-expenditure',
+    //       url: ['/bieu-phi/bao-cao/thu-chi-theo-doi-tuong'],
+    //       permission: [permissions.BIEUPHI],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'Cấu hình nội dung',
       key: 'configuration',

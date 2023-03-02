@@ -177,6 +177,22 @@ export default {
         callback(null, error?.data);
       }
     },
+    *APPROVE_ALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.approveAll, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data);
+      }
+    },
+    *SEND_ALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.sendAll, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data);
+      }
+    },
   },
   subscriptions: {},
 };

@@ -159,8 +159,14 @@ const Index = () => {
   };
   const addAll = () => {
     dispatch({
-      type: search?.status === variablesModules.STATUS.NOT_APPROVED ? 'physicalPeriodicMeasurement/APPROVE' : 'physicalPeriodicMeasurement/SEND',
-      payload: { isAll: true },
+      type: search?.status === variablesModules.STATUS.NOT_APPROVED ? 'physicalPeriodicMeasurement/APPROVE_ALL' : 'physicalPeriodicMeasurement/SEND_ALL',
+      payload: {
+        branchId: search.branchId,
+        classId: search.classId,
+        schoolYearId: search.schoolYearId,
+        assessmentPeriodId: search.assessmentPeriodId,
+        keyWord: search.keyWord,
+      },
       callback: (response, error) => {
         if (response) {
           onLoad();

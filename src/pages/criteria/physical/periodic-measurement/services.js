@@ -67,3 +67,23 @@ export function send(data = {}) {
     data,
   });
 }
+
+export function approveAll(data = {}) {
+  return requestNet(`/physical-criteria-students/approve`, {
+    method: 'PUT',
+    data,
+    params: {
+      isAll: true,
+    },
+  });
+}
+
+export function sendAll(data = {}) {
+  return requestNet(`/physical-criteria-students/send`, {
+    method: 'PUT',
+    data,
+    params: {
+      isAll: true,
+    },
+  });
+}
