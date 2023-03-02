@@ -56,6 +56,7 @@ const Index = memo(({ tuition, details, hanDleChangeText, checkSearch }) => {
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
+        type: 'HP,TIENAN'
       },
     });
     dispatch({

@@ -7,7 +7,6 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      status: 'NOT_SENT',
       include: Helper.convertIncludes([
         'paymentPlanDetail.chargeOldStudent.tuition,schoolYear,branch,classes,classType',
       ]),

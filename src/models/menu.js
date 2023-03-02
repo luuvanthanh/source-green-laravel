@@ -126,7 +126,7 @@ export default {
           type: 'SET_MENU_REPORT',
           payload: response.items,
         });
-        callback(response.items);
+        callback(response?.items.sort((a, b) => a?.name.localeCompare(b?.name)));
       } catch (error) {
         throw error.data;
       }
