@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, head, size, isEmpty, get } from 'lodash';
+import { isEmpty, debounce, head, size, get } from 'lodash';
 
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -55,53 +55,58 @@ const Index = () => {
     const status = search?.status;
     if (status === variablesModules.STATUS?.NOT_MEASURED) {
       dispatch({
-        type: 'physicalPeriodicMeasurement/GET_DATA',
+        type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
         payload: {
           ...search,
           hasApproved: 'false',
           hasSent: 'false',
         },
-        callback: (response, err) => {
-          if (response?.items) {
+        callback: (response) => {
+          if (response?.totalOfHasApprove) {
+            setDataTotalHeader(response);
             dispatch({
-              type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
+              type: 'physicalPeriodicMeasurement/GET_DATA',
               payload: {
                 ...search,
                 hasApproved: 'false',
                 hasSent: 'false',
               },
               callback: (response) => {
-                if (response) {
-                  setDataTotalHeader(response);
+                if (response?.items) {
+                  setData(response?.items?.map(item => ({
+                    ...item,
+                    nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
+                    assessmentPeriodId: period?.find(i => search?.assessmentPeriodId === i?.id)?.id,
+                  })
+                  ));
                 }
-              }
+                else {
+                  setData([]);
+                }
+              },
             });
-            setData(response?.items?.map(item => ({
-              ...item,
-              nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
-              assessmentPeriodId: period?.find(i => search?.assessmentPeriodId === i?.id)?.id,
-            })
-            ));
-          } if (err) {
-            setData([]);
-            setDataTotalHeader({});
           }
-        },
+          else {
+            setDataTotalHeader({});
+            setData([]);
+          }
+        }
       });
     }
     else {
       dispatch({
-        type: 'physicalPeriodicMeasurement/GET_DATA_APPROVED',
+        type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
         payload: {
           ...search,
           status: variablesModules.STATUS_SEARCH?.[status],
           hasApproved: status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
           hasSent: status === variablesModules.STATUS?.APPROVED || status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
         },
-        callback: (response, err) => {
-          if (response.items) {
+        callback: (response) => {
+          if (response?.totalOfHasApprove) {
+            setDataTotalHeader(response);
             dispatch({
-              type: 'physicalPeriodicMeasurement/GET_TOTAL_DATA',
+              type: 'physicalPeriodicMeasurement/GET_DATA_APPROVED',
               payload: {
                 ...search,
                 status: variablesModules.STATUS_SEARCH?.[status],
@@ -109,21 +114,24 @@ const Index = () => {
                 hasSent: status === variablesModules.STATUS?.APPROVED || status === variablesModules.STATUS?.MEASURED ? 'true' : 'false',
               },
               callback: (response) => {
-                if (response) {
-                  setDataTotalHeader(response);
+                if (response.items) {
+                  setData(response?.items?.map(item => ({
+                    ...item,
+                    nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
+                  })
+                  ));
                 }
-              }
+                else {
+                  setDataTotalHeader({});
+                }
+              },
             });
-            setData(response?.items?.map(item => ({
-              ...item,
-              nameAssessmentPeriod: period?.find(i => search?.assessmentPeriodId === i?.id)?.nameAssessmentPeriod?.name,
-            })
-            ));
-          } if (err) {
-            setData([]);
-            setDataTotalHeader({});
           }
-        },
+          else {
+            setDataTotalHeader({});
+            setData([]);
+          }
+        }
       });
     }
     history.push({
@@ -653,7 +661,7 @@ const Index = () => {
             bordered={false}
             columns={header()}
             dataSource={data}
-            loading={loading['physicalPeriodicMeasurement/GET_DATA'] || loading['physicalPeriodicMeasurement/GET_DATA_APPROVED']}
+            loading={loading['physicalPeriodicMeasurement/GET_DATA'] || loading['physicalPeriodicMeasurement/GET_DATA_APPROVED'] || loading['physicalPeriodicMeasurement/GET_TOTAL_DATA']}
             pagination={paginationFunction(pagination)}
             defaultExpandAllRows
             rowSelection={

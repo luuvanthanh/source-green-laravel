@@ -13,6 +13,17 @@
   }
 }
 
+.wrapper-table-header {
+  :global(.ant-table-thead > tr > th) {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    background: #ffffff !important;
+  }
+}
+
 @import "@/assets/styles/mixins.scss";
 
 .wrapper-title {
@@ -189,6 +200,7 @@
 
 .list-button {
   display: flex;
+  justify-content: end;
   .plan {
     width: 32px;
     height: 32px;

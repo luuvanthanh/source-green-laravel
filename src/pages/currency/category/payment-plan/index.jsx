@@ -13,6 +13,9 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import stylesModule from './styles.module.scss';
+import variablesModules from './utils/variables';
+
+
 
 let isMounted = true;
 /**
@@ -29,13 +32,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ currencyPaymentPlan, loading }) => ({
+const mapStateToProps = ({ currencyPaymentPlan, loading, user }) => ({
   data: currencyPaymentPlan.data,
   error: currencyPaymentPlan.error,
   year: currencyPaymentPlan.year,
   dataClass: currencyPaymentPlan.dataClass,
   pagination: currencyPaymentPlan.pagination,
   loading,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,6 +49,7 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      user,
     } = props;
     this.state = {
       search: {
@@ -52,6 +57,7 @@ class Index extends PureComponent {
         to: query?.to || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
       },
       categories: {
         yearsConvert: [],
@@ -72,7 +78,7 @@ class Index extends PureComponent {
   /**
  * Function load branches
  */
-   loadCategories = () => {
+  loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'currencyPaymentPlan/GET_YEAR',
@@ -230,6 +236,21 @@ class Index extends PureComponent {
     });
   };
 
+  onSend = (id) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'currencyPaymentPlan/SEND',
+      payload: {
+        id,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   /**
    * Function header table
    */
@@ -272,7 +293,7 @@ class Index extends PureComponent {
         title: 'Trạng thái',
         key: 'year',
         className: 'min-width-200',
-        render: (record) => record?.status || '',
+        render: (record) => variablesModules.STATUS[record.status],
       },
       {
         key: 'action',
@@ -281,8 +302,12 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className={stylesModule['list-button']} >
-            <Button icon="plan" className={stylesModule.plan} />
-            <Button icon="remove" className={stylesModule.remove} onClick={() => this.onRemove(record.id)} />
+            {record?.status === "NOT_SENT" && (
+              <>
+                <Button icon="plan" className={stylesModule.plan} onClick={() => this.onSend(record.id)} />
+                <Button icon="remove" className={stylesModule.remove} onClick={() => this.onRemove(record.id)} />
+              </>
+            )}
             <Button
               icon="edit"
               className={stylesModule.edit}
@@ -303,8 +328,8 @@ class Index extends PureComponent {
       location: { pathname },
       dataClass,
     } = this.props;
-    const { search , categories: { yearsConvert } } = this.state;
-    const loading = effects['currencyPaymentPlan/GET_DATA'];
+    const { search, categories: { yearsConvert } } = this.state;
+    const loading = effects['currencyPaymentPlan/GET_DATA'] || effects['currencyPaymentPlan/SEND'] || effects['currencyPaymentPlan/REMOVE'];
     return (
       <>
         <Helmet title="Kế hoạch đóng phí" />
@@ -356,19 +381,21 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered
-              columns={this.header()}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
-            />
+            <div className={stylesModule['wrapper-table-header']} >
+              <Table
+                bordered={false}
+                columns={this.header()}
+                dataSource={data}
+                loading={loading}
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: '60vh' }}
+              />
+            </div>
           </div>
         </div>
       </>
@@ -383,6 +410,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
   dataClass: PropTypes.arrayOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -392,6 +420,7 @@ Index.defaultProps = {
   location: {},
   data: [],
   dataClass: [],
+  user: {},
 };
 
 export default Index;

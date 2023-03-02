@@ -12,6 +12,7 @@ export function getTotalData(params = {}) {
       page: undefined,
       limit: undefined,
     },
+    cancelNotification: true,
   });
 }
 
@@ -26,7 +27,6 @@ export function get(params = {}) {
       ...Helper.getPagination(params.page, params.limit),
       status: undefined,
     },
-    cancelNotification: true,
   });
 }
 
@@ -71,9 +71,10 @@ export function send(data = {}) {
 export function approveAll(data = {}) {
   return requestNet(`/physical-criteria-students/approve`, {
     method: 'PUT',
-    data,
+    data: {},
     params: {
       isAll: true,
+      ...data,
     },
   });
 }
@@ -81,9 +82,10 @@ export function approveAll(data = {}) {
 export function sendAll(data = {}) {
   return requestNet(`/physical-criteria-students/send`, {
     method: 'PUT',
-    data,
+    data: {},
     params: {
       isAll: true,
+      ...data,
     },
   });
 }
