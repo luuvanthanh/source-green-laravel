@@ -28,9 +28,8 @@ export function add(data = {}) {
       schoolYearId: data?.schoolYearId,
       branchId: data?.branchId,
       classId: data?.classId,
-      detail: data?.data?.map((i) => ({
-        note: i.note,
-        chargeOldStudentId: i.studentId,
+      detail: data?.detail?.map((i) => ({
+        ...i,
       })),
     },
   });
@@ -41,9 +40,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       include: Helper.convertIncludes([
-        'paymentPlanDetail.chargeOldStudent.student',
-        'paymentPlanDetail.chargeOldStudent.tuition',
-        'paymentPlanDetail.chargeOldStudent.tuition,schoolYear,branch,classes,classType',
+        'paymentPlanDetail.student,schoolYear,branch,classes,classType',
       ]),
     },
   });
@@ -73,9 +70,8 @@ export function update(data = {}) {
       branchId: data?.branchId,
       classId: data?.classId,
       classTypeId: data?.classTypeId,
-      detail: data?.data?.map((i) => ({
-        note: i.note,
-        chargeOldStudentId: i.studentId,
+      detail: data?.detail?.map((i) => ({
+        ...i,
       })),
     },
   });

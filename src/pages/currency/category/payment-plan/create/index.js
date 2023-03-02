@@ -86,6 +86,7 @@ const General = memo(() => {
           if (response) {
             setDetails((prev) => ({
               ...prev,
+              ...response,
               startDate: response?.schoolYear?.startDate
                 ? Helper.getDate(response?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI)
                 : '',
@@ -103,13 +104,15 @@ const General = memo(() => {
             });
             form.setFieldsValue({
               data: response?.paymentPlanDetail?.map((item) => ({
-                fullName: item?.chargeOldStudent?.student?.fullName,
-                totalMoney: parseInt(item?.chargeOldStudent?.totalMoney, 10),
-                studentId: item?.chargeOldStudent?.id,
+                fullName: item?.student?.fullName,
+                totalMoney: parseInt(item?.totalMoneyMonth, 10),
+                chargeOldStudentId: item?.id,
+                studentId: item?.student?.id,
                 note: item?.note,
-                tuition: item?.chargeOldStudent?.tuition?.map((i) => ({
-                  fee: i?.fee?.name,
+                tuition: item?.feeInfo?.map((i) => ({
+                  fee: i?.feeName,
                   money: parseInt(i?.money, 10),
+                  fee_id: i?.feeId,
                 })),
               })),
             });
@@ -145,10 +148,12 @@ const General = memo(() => {
             data: response.map((item) => ({
               fullName: item?.student?.fullName,
               totalMoney: parseInt(head(item?.feeInfo)?.total_money_month, 10),
-              studentId: item?.id,
+              chargeOldStudentId: item?.id,
+              studentId: item?.student?.id,
               tuition: head(item?.feeInfo)?.fee?.map((i) => ({
                 fee: i?.fee_name,
                 money: parseInt(i?.money, 10),
+                fee_id: i?.fee_id,
               })),
             })),
           });
@@ -173,8 +178,37 @@ const General = memo(() => {
     dispatch({
       type: params?.id ? 'currencyPaymentPlanAdd/UPDATE' : 'currencyPaymentPlanAdd/ADD',
       payload: params?.id
-        ? { id: params.id, ...values, ...details, classTypeId: dataType[0]?.classType?.id }
-        : { ...values, ...dataSelect, classTypeId: dataType[0]?.classType?.id },
+        ? {
+            id: params.id,
+            detail: values?.data?.map((i) => ({
+              chargeOldStudentId: i?.chargeOldStudentId,
+              studentId: i?.studentId,
+              totalMoneyMonth: i?.totalMoney,
+              note: i?.note,
+              feeInfo: i?.tuition?.map((k) => ({
+                money: k?.money,
+                feeName: k?.fee,
+                feeId: k?.fee_id,
+              })),
+            })),
+            ...details,
+            classTypeId: head(dataType)?.classType?.id,
+          }
+        : {
+            ...dataSelect,
+            classTypeId: head(dataType)?.classType?.id,
+            detail: values?.data?.map((i) => ({
+              chargeOldStudentId: i?.chargeOldStudentId,
+              studentId: i?.studentId,
+              totalMoneyMonth: i?.totalMoney,
+              note: i?.note,
+              feeInfo: i?.tuition?.map((k) => ({
+                money: k?.money,
+                feeName: k?.fee,
+                feeId: k?.fee_id,
+              })),
+            })),
+          },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -260,6 +294,17 @@ const General = memo(() => {
     });
   };
 
+  const onChangeTotal = () => {
+    form.validateFields().then((values) => {
+      form.setFieldsValue({
+        data: values?.data?.map((item) => ({
+          ...item,
+          totalMoney: item?.tuition.reduce((accumulator, object) => accumulator + object.money, 0),
+        })),
+      });
+    });
+  };
+
   return (
     <>
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCurrency} />
@@ -280,6 +325,7 @@ const General = memo(() => {
                         name="datePlan"
                         type={variables.DATE_PICKER}
                         onChange={changeDate}
+                        disabled={params?.id}
                       />
                     </Pane>
                     {params?.id ? (
@@ -340,6 +386,7 @@ const General = memo(() => {
                                   'day',
                                 ))
                           }
+                          disabled={params?.id}
                         />
                       </Pane>
                     ) : (
@@ -365,7 +412,7 @@ const General = memo(() => {
                                   'day',
                                 ))
                           }
-                          disabled
+                          disabled={params?.id}
                         />
                       </Pane>
                     )}
@@ -527,6 +574,7 @@ const General = memo(() => {
                                                         fieldKey={[fieldItemD.fieldKey, 'money']}
                                                         name={[fieldItemD.name, 'money']}
                                                         type={variables.INPUT_NUMBER}
+                                                        onChange={() => onChangeTotal()}
                                                       />
                                                     </div>
                                                   </div>
