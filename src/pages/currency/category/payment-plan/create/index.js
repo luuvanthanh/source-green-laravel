@@ -548,6 +548,7 @@ const General = memo(() => {
                                             <FormItem
                                               name={[fieldItem.name, 'totalMoney']}
                                               type={variables.INPUT_NUMBER}
+                                              disabled
                                             />
                                           </div>
                                         </div>
