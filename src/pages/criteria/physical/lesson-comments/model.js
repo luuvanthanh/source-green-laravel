@@ -4,14 +4,6 @@ import * as services from './services';
 export default {
   namespace: 'PhysicalLessonComments',
   state: {
-    data: [],
-    pagination: {
-      total: 0
-    },
-    dataNoFeedback: [],
-    paginationNoFeedback: {
-      total: 0
-    },
     years: [],
     dataType: [],
     branches: [],
@@ -20,16 +12,6 @@ export default {
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
-    }),
-    SET_DATA_NO_FEEDBACK: (state, { payload }) => ({
-      ...state,
-      dataNoFeedback: payload.parsePayload,
-      paginationNoFeedback: payload.pagination,
-    }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
       branches: payload.parsePayload,
@@ -93,15 +75,6 @@ export default {
     *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
         callback(response);
       } catch (error) {
         yield saga.put({
@@ -113,29 +86,11 @@ export default {
     *GET_DATA_NO_FEEDBACK({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getDataNoFeedback, payload);
-        yield saga.put({
-          type: 'SET_DATA_NO_FEEDBACK',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
         callback(response);
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
-        });
-        yield saga.put({
-          type: 'SET_DATA_NO_FEEDBACK',
-          payload: {
-            parsePayload: [],
-            pagination: {
-              total: 0,
-            }
-          },
         });
       }
     },

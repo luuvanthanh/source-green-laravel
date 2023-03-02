@@ -33,11 +33,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ PhysicalLessonComments, loading, user }) => ({
-  data: PhysicalLessonComments.data,
-  dataNoFeedback: PhysicalLessonComments.dataNoFeedback,
   loading,
-  pagination: PhysicalLessonComments.pagination,
-  paginationNoFeedback: PhysicalLessonComments.paginationNoFeedback,
   classes: PhysicalLessonComments.classes,
   branches: PhysicalLessonComments.branches,
   assessmentPeriod: PhysicalLessonComments.assessmentPeriod,
@@ -61,6 +57,14 @@ class Index extends PureComponent {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       dataSelected: [],
       summaryStatus: undefined,
+      data: [],
+      pagination: {
+        total: 0
+      },
+      dataNoFeedback: [],
+      paginationNoFeedback: {
+        total: 0
+      },
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
@@ -169,6 +173,16 @@ class Index extends PureComponent {
         },
         callback: (response) => {
           if (response?.items) {
+            this.setStateData(
+              (prevState) => ({
+                ...prevState,
+                dataNoFeedback: response.items,
+                paginationNoFeedback: {
+                  total: response.totalCount
+                }
+              }),
+              // () => this.onLoad(),
+            );
             this.props.dispatch({
               type: 'PhysicalLessonComments/GET_SUMMARY_STATUS',
               payload: {
@@ -208,6 +222,14 @@ class Index extends PureComponent {
         },
         callback: (response) => {
           if (response?.items) {
+            this.setStateData(
+              (prevState) => ({
+                ...prevState,
+                data: response.items,
+                pagination: {
+                  total: response.totalCount
+                }
+              }));
             this.props.dispatch({
               type: 'PhysicalLessonComments/GET_SUMMARY_STATUS',
               payload: {
@@ -543,6 +565,7 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'PhysicalLessonComments/APPROVE_FEEDBACK',
       payload: {
+        search: this.state.search,
         isAll,
         listIdApprove: this?.state.dataSelected
       },
@@ -570,12 +593,8 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
-      dataNoFeedback,
       classes,
       branches,
-      pagination,
-      paginationNoFeedback,
       defaultBranch,
       match: { params },
       location: { pathname },
@@ -586,7 +605,9 @@ class Index extends PureComponent {
     const rowSelection = {
       onChange: this.onSelectChange
     };
-    const { search, defaultBranchs, summaryStatus } = this.state;
+    const { search, defaultBranchs, summaryStatus, data,
+      dataNoFeedback, pagination,
+      paginationNoFeedback } = this.state;
     const loading = effects['PhysicalLessonComments/GET_DATA'];
     return (
       <>
@@ -738,10 +759,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  dataNoFeedback: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  paginationNoFeedback: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
@@ -754,10 +771,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
-  dataNoFeedback: [],
-  pagination: {},
-  paginationNoFeedback: {},
   loading: {},
   dispatch: {},
   location: {},
