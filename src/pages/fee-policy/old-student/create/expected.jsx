@@ -59,6 +59,7 @@ const Index = memo(({ yearsSchool, idYear, idRes, YearsDetail }) => {
             payload: {
                 page: variables.PAGINATION.PAGE,
                 limit: variables.PAGINATION.SIZEMAX,
+                type: 'HP,TIENAN'
             },
         });
         dispatch({
