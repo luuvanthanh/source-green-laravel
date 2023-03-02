@@ -24,6 +24,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implements ChargeOldStudentRepository
 {
+    const SEMESTER1 = 'HOCKY1';
+    const SEMESTER2 = 'HOCKY2';
+
     protected $fieldSearchable = [
         'Id',
         'CreationTime',
@@ -251,6 +254,120 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
         }
 
         $data['countClassType'] = array_values(array_unique($data['countClassType']));
+        return $data;
+    }
+
+    public function getMonthAgeDetailStudentBySchoolYear($schoolYear, $student, $dayAdmission, $allDateOfSchoolYear): array
+    {
+        $data['dataClassType'] = [];
+        $data['dataPaymentForm'] = [];
+        $totalMonthCaseTwo = 0;
+        $numberMonthVariableTwo = 0;
+        foreach ($schoolYear->changeParameter->changeParameterDetail as $key => $value) {
+            $now = Carbon::parse($student->DayOfBirth);
+            $valueDate = Carbon::parse($value->Date);
+            $ageMonth = (($valueDate->format('Y') - $now->format('Y')) * 12) + ($valueDate->format('m') - $now->format('m'));
+
+            $classType = ClassType::where('From', '<=', $ageMonth)->where('To', '>=', $ageMonth)->first();
+            if (is_null($classType)) {
+                continue;
+            }
+            $data['countClassType'][] = !empty($classType) ? $classType->Id : 0;
+            $dateOfMonth = [];
+            if (!array_key_exists($classType->Id, $data['dataClassType'])) {
+                if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($value->EndDate)->format('Y-m')) {
+                    foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                        if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                            //số ngày trong tháng trước lúc bé nhập học
+                            $dateOfMonth[] = $dateOfSchoolYear;
+                        }
+                    }
+                }
+
+                $data['dataClassType'][$classType->Id] = [
+                    'classTypeId' => !empty($classType) ? $classType->Id : null,
+                    'classType' => !empty($classType->Name) ? $classType->Name : null,
+                    'numberMonth' => $value->FullMonth,
+                    'schoolDay' => $value->SchoolDay,
+                    'numberMonthCaseTwo' => 1,
+                    'dateOfMonth' => !empty($dateOfMonth) ? array_sum($dateOfMonth) : 0
+                ];
+
+                $numberMonthVariableOne = $data['dataClassType'][$classType->Id]['numberMonth'];
+            } else {
+                $data['dataClassType'][$classType->Id]['numberMonth'] += $value->FullMonth;
+                $data['dataClassType'][$classType->Id]['numberMonthCaseTwo'] += 1;
+                $data['dataClassType'][$classType->Id]['schoolDay'] += $value->SchoolDay;
+                if (Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($value->EndDate)->format('Y-m')) {
+                    foreach ($allDateOfSchoolYear as $key => $dateOfSchoolYear) {
+                        if ($dayAdmission > $key && Carbon::parse($dayAdmission)->format('Y-m') == Carbon::parse($key)->format('Y-m')) {
+                            //số ngày trong tháng trước lúc bé nhập học
+                            $dateOfMonth[] = $dateOfSchoolYear;
+                        }
+                    }
+                }
+
+                $data['dataClassType'][$classType->Id]['dateOfMonth'] += array_sum($dateOfMonth);
+                $numberMonthVariableTwo +=  $value->FullMonth;
+            }
+
+            if ($value->paymentForm->Code == self::SEMESTER1 || $value->paymentForm->Code == self::SEMESTER2) {
+                if (!array_key_exists($value->paymentForm->Code, $data['dataPaymentForm'])) {
+                    $data['dataPaymentForm'][$value->paymentForm->Code] = [
+                        'paymentFormCode' => $value->paymentForm->Code,
+                        'paymentFormId' => $value->paymentForm->Id,
+                        'numberMonthInSemester' => 1,
+                        'dataClassType' => []
+                    ];
+
+                    if (!array_key_exists($classType->Id, $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'])) {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id] = [
+                            'classTypeId' => !empty($classType) ? $classType->Id : null,
+                            'classType' => !empty($classType->Name) ? $classType->Name : null,
+                            'numberClassType' => 1,
+                            'schoolDay' => $value->SchoolDay,
+                        ];
+                    } else {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['numberClassType'] += 1;
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['schoolDay'] +=  $value->SchoolDay;
+                    }
+                } else {
+                    if (!array_key_exists($classType->Id, $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'])) {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id] = [
+                            'classTypeId' => !empty($classType) ? $classType->Id : null,
+                            'classType' => !empty($classType->Name) ? $classType->Name : null,
+                            'numberClassType' => 1,
+                            'schoolDay' => $value->SchoolDay,
+                        ];
+                    } else {
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['numberClassType'] += 1;
+                        $data['dataPaymentForm'][$value->paymentForm->Code]['dataClassType'][$classType->Id]['schoolDay'] +=  $value->SchoolDay;
+                    }
+
+                    $data['dataPaymentForm'][$value->paymentForm->Code]['numberMonthInSemester'] += 1;
+                }
+            }
+
+            $data['detailStudent'][$value->StartDate] = [
+                'month' => $value->StartDate,
+                'ageMont' => (int) $ageMonth,
+                'classType' => !empty($classType->Name) ? $classType->Name : null,
+                'classTypeId' => !empty($classType) ? $classType->Id : null,
+                'date' => $value->Date,
+                'schoolDay' => $value->SchoolDay,
+                'fullMonth' => $value->FullMonth,
+                'paymentFormCode' => $value->paymentForm->Code,
+                'idPaymentForm' => $value->paymentForm->Id,
+                'actualWeek' => $value->ActualWeek
+            ];
+            $data[$classType->Id][] = $value->Id;
+            $totalMonthCaseTwo += 1;
+        }
+
+        $data['dataClassType']['totalMonth'] = $numberMonthVariableOne + $numberMonthVariableTwo;
+        $data['dataClassType']['totalMonthCaseTwo'] = $totalMonthCaseTwo;
+        $data['countClassType'] = array_values(array_unique($data['countClassType']));
+
         return $data;
     }
 }

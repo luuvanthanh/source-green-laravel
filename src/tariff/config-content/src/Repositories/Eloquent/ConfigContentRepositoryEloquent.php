@@ -58,7 +58,7 @@ class ConfigContentRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return $configContent;
     }
-    
+
     public function create(array $attributes)
     {
         $configContent = ConfigContent::first();
@@ -76,6 +76,8 @@ class ConfigContentRepositoryEloquent extends CoreRepositoryEloquent implements 
                 $value['ConfigContentId'] = $configContent->Id;
                 ConfigContentDetail::create($value);
             }
+        } else {
+            $configContent->configContentDetail()->delete();
         }
 
         return parent::find($configContent->Id);

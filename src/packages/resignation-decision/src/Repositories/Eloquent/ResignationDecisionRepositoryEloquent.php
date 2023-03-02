@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\ResignationDecision\Presenters\ResignationDecisionPresenter;
@@ -106,7 +107,7 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     public function create(array $attributes)
     {
         $resignationDecision = ResignationDecision::create($attributes);
-
+        resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($resignationDecision, $attributes);
         $employee = User::where('Id', $attributes['employeeId'])->first();
 
         $employee->update([
@@ -116,6 +117,15 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
 
         $employee->labourContract()->update(['IsEffect' => false]);
         $employee->probationaryContract()->update(['IsEffect' => false]);
+
+        return parent::find($resignationDecision->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $resignationDecision = ResignationDecision::findOrFail($id);
+        resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($resignationDecision->refresh(), $attributes);
+        $resignationDecision->update($attributes);
 
         return parent::find($resignationDecision->Id);
     }

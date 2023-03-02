@@ -4,6 +4,7 @@ namespace GGPHP\Reward\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\DecisionNumberSample\Repositories\Eloquent\DecisionNumberSampleRepositoryEloquent;
 use GGPHP\Reward\Models\DecisionReward;
 use GGPHP\Reward\Presenters\DecisionRewardPresenter;
 use GGPHP\Reward\Repositories\Contracts\DecisionRewardRepository;
@@ -11,6 +12,7 @@ use GGPHP\Reward\Services\DecisionRewardDetailServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DecisionRewardRepositoryEloquent.
@@ -66,12 +68,14 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $decisionReward = DecisionReward::create($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfCreated($decisionReward, $attributes);
             DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
 
             \DB::commit();
         } catch (\Exception $e) {
 
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($decisionReward->Id);
@@ -83,6 +87,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $decisionReward->update($attributes);
+            resolve(DecisionNumberSampleRepositoryEloquent::class)->updateOrdinalNumberOfUpdated($decisionReward->refresh(), $attributes);
             $decisionReward->decisionRewardDetails()->delete();
             DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
 
@@ -90,6 +95,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         } catch (\Exception $e) {
 
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($decisionReward->Id);

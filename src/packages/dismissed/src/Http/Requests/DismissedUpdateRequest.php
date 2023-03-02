@@ -2,6 +2,8 @@
 
 namespace GGPHP\Dismissed\Http\Requests;
 
+use GGPHP\DecisionNumberSample\Models\DecisionNumberSample;
+use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Models\DismissedDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -36,6 +38,23 @@ class DismissedUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'ordinalNumber' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $dismissed = Dismissed::where('NumberForm', $this->numberForm)->where('Id', '!=', $this->id)->first();
+
+                    if (is_null($dismissed)) {
+                        return true;
+                    }
+
+                    if ($value == $dismissed->OrdinalNumber) {
+                        return $fail('Số thứ tự phải khác số đã có.');
+                    }
+
+                    return true;
+                }
+            ]
         ];
     }
 }

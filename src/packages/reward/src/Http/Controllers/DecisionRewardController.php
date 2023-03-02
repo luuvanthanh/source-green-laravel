@@ -4,6 +4,7 @@ namespace GGPHP\Reward\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Reward\Http\Requests\DecisionRewardCreateRequest;
+use GGPHP\Reward\Http\Requests\DecisionRewardUpdateRequest;
 use GGPHP\Reward\Repositories\Contracts\DecisionRewardRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -69,7 +70,7 @@ class DecisionRewardController extends Controller
      * @param $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(DecisionRewardUpdateRequest $request, $id)
     {
         $decisionRewards = $this->decisionRewardRepository->update($request->all(), $id);
         return $this->success($decisionRewards, trans('lang::messages.common.modifySuccess'));
