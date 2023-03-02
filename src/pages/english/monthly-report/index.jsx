@@ -835,7 +835,6 @@ class Index extends PureComponent {
       location: { pathname },
       loading: { effects },
       years,
-      user,
     } = this.props;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -906,7 +905,7 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [...classes]}
+                    data={classes}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
