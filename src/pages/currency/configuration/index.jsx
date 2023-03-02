@@ -10,6 +10,7 @@ import { head, isEmpty } from 'lodash';
 import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import Quill from '@/components/CommonComponent/Quill';
+import EditorToolbar, { modules, formats } from '@/components/CommonComponent/EditorToolbar';
 import { Helmet } from 'react-helmet';
 import csx from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
@@ -56,14 +57,14 @@ const Students = memo(() => {
             type: 'currencyConfiguration/GET_DATA',
             payload: params,
             callback: (response) => {
-                if (response) {
+                if (!isEmpty(response?.parsePayload)) {
                     form.setFieldsValue({
-                        paymentTime: response?.parsePayload[0]?.paymentTime,
-                        detail: response?.parsePayload[0]?.configContentDetail?.map(i =>
+                        paymentTime: head(response?.parsePayload)?.paymentTime,
+                        detail: head(response?.parsePayload)?.configContentDetail?.map(i =>
                             ({ ...i })
                         ),
                     });
-                    mountedSet(setContent, response?.parsePayload[0]?.content);
+                    setContent(head(response?.parsePayload)?.content);
                 }
             },
         });
@@ -89,7 +90,7 @@ const Students = memo(() => {
                                         ({ ...i })
                                     ),
                                 });
-                                mountedSet(setContent, response?.parsePayload[0]?.content);
+                                setContent(response?.parsePayload[0]?.content);
                             }
                         },
                     });
@@ -111,7 +112,7 @@ const Students = memo(() => {
     };
 
     const onChangeEditor = (e) => {
-        mountedSet(setContent, e);
+        setContent(e);
     };
 
     useEffect(() => {
@@ -249,7 +250,14 @@ const Students = memo(() => {
                                                     <span>Nội dung</span>
                                                 </label>
                                             </div>
-                                            <Quill onChange={onChangeEditor} value={content} />
+                                            <EditorToolbar />
+                                            <Quill
+                                                onChange={onChangeEditor}
+                                                value={content}
+                                                theme="snow"
+                                                modules={modules}
+                                                formats={formats}
+                                            />
                                         </div>
                                     </div>
                                 </Pane>
