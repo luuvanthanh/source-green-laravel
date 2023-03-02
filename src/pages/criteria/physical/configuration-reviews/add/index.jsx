@@ -155,7 +155,7 @@ const Index = memo(() => {
             callback: (response) => {
               if (response) {
                 setBranches(response?.parsePayload?.branch);
-                setDataClass(response?.parsePayload?.classes);
+                setDataClass(response?.parsePayload?.classes?.filter(item => form.getFieldValue('branchIds')?.includes(item?.branchId)));
               }
             },
           });
