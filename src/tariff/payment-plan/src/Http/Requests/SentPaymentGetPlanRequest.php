@@ -17,15 +17,16 @@ class SentPaymentGetPlanRequest extends FormRequest
         $status = implode(',', array_values(PaymentPlan::STATUS));
         
         return [
-            'status' => 'required|in:' . $status
+            'status' => 'in:' . $status
         ];
     }
 
     public function all($keys = null)
     {
         $data = parent::all();
-
-        $data['status'] = array_key_exists($data['status'], PaymentPlan::STATUS) ? PaymentPlan::STATUS[$data['status']] : 0;
+        if (isset($data['status'])) {
+            $data['status'] = array_key_exists($data['status'], PaymentPlan::STATUS) ? PaymentPlan::STATUS[$data['status']] : 0;
+        }
 
         return $data;
     }
