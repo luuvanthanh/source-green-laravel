@@ -2,7 +2,10 @@
 
 namespace GGPHP\Tariff\PaymentPlan\Repositories\Eloquent;
 
+use Carbon\Carbon;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Fee\Models\ChargeOldStudent;
 use GGPHP\Tariff\PaymentPlan\Models\PaymentPlan;
 use GGPHP\Tariff\PaymentPlan\Models\PaymentPlanDetail;
 use GGPHP\Tariff\PaymentPlan\Presenters\PaymentPlanPresenter;
@@ -67,8 +70,12 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
         if (!empty($attributes['studentId'])) {
             $this->model = $this->model->whereHas('paymentPlanDetail.chargeOldStudent', function ($query) use ($attributes) {
-                $query->where('StudentId', $attributes);
+                $query->where('StudentId', $attributes['studentId']);
             });
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status', $attributes['status']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -129,8 +136,61 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
     public function sentPaymentPlan($attributes)
     {
+        $arrayStudentId = [];
         $paymentPlan = PaymentPlan::findOrFail($attributes['id']);
+        $arrayPaymentPlanDetailId = $paymentPlan->paymentPlanDetail()->pluck('ChargeOldStudentId')->toArray();
+        $chargeOldStudents = ChargeOldStudent::whereIn('Id', $arrayPaymentPlanDetailId)->get();
 
-        return $paymentPlan;
+        foreach ($chargeOldStudents as $chargeOldStudent) {
+            $arrayStudentId[] = $chargeOldStudent->StudentId;
+        }
+        $students = Student::whereIn('Id', $arrayStudentId)->get();
+
+        foreach ($students as $student) {
+            $this->sentNotification($student, $paymentPlan, $arrayPaymentPlanDetailId);
+        }
+
+        $paymentPlan->update(['Status' => $attributes['status']]);
+
+        return parent::parserResult($paymentPlan);
+    }
+
+    public function sentNotification($student, $paymentPlan, $arrayPaymentPlanDetailId)
+    {
+        $parent = $student->parent()->with('account')->get();
+
+        if (!empty($parent)) {
+            $arrId = array_column(array_column($parent->ToArray(), 'account'), 'AppUserId');
+
+            $images =  json_decode($student->FileImage);
+            $urlImage = '';
+
+            if (!empty($images)) {
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
+            $month = Carbon::parse($paymentPlan->ChargeMonth);
+            $chargeOldStudents = ChargeOldStudent::whereIn('Id', $arrayPaymentPlanDetailId)->where('StudentId', $student->Id)->first();
+            $collection = collect($chargeOldStudents->ExpectedToCollectMoney);
+            $expectedToCollectMoney = $collection->filter(function ($value, $key) use ($month) {
+                return $value['month'] == $month->format('Y-m');
+            })->toArray();;
+
+
+            $message = 'Biểu phí tháng ' . $month->format('m/Y') . ' của bé ' . $student->FullName . ' là ' . $expectedToCollectMoney[0]['total_money_month'];
+
+            if (!empty($arrId)) {
+                $dataNotifiCation = [
+                    'users' => $arrId,
+                    'title' => 'Biểu Phí',
+                    'imageURL' => $urlImage,
+                    'message' => $message,
+                    'moduleType' => 30,
+                    'refId' => $paymentPlan->Id,
+                ];
+
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+            }
+        }
     }
 }
