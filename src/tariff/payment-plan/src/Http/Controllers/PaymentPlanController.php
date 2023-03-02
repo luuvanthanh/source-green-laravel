@@ -5,6 +5,7 @@ namespace GGPHP\Tariff\PaymentPlan\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Tariff\PaymentPlan\Http\Requests\PaymentPlanCreateRequest;
 use GGPHP\Tariff\PaymentPlan\Http\Requests\PaymentPlanUpdateRequest;
+use GGPHP\Tariff\PaymentPlan\Http\Requests\SentPaymentGetPlanRequest;
 use GGPHP\Tariff\PaymentPlan\Http\Requests\SentPaymentPlanRequest;
 use GGPHP\Tariff\PaymentPlan\Repositories\Contracts\PaymentPlanRepository;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class PaymentPlanController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(SentPaymentGetPlanRequest $request)
     {
         $paymentPlan = $this->paymentPlanRepository->getAll($request->all());
 
@@ -90,7 +91,7 @@ class PaymentPlanController extends Controller
     public function sentPaymentPlan(SentPaymentPlanRequest $request)
     {
         $paymentPlan = $this->paymentPlanRepository->sentPaymentPlan($request->all());
-
+        
         return $this->success($paymentPlan, trans('lang::messages.common.modifySuccess'));
     }
 }
