@@ -74,7 +74,7 @@ class ScriptReviewTransformer extends BaseTransformer
 
     public function includeNameAssessmentPeriod(ScriptReview $scriptReview)
     {
-        if (!is_null($scriptReview->NameAssessmentPeriodId)) {
+        if (!is_null($scriptReview->nameAssessmentPeriod)) {
             return $this->item($scriptReview->nameAssessmentPeriod, new NameAssessmentPeriodTransformer, 'NameAssessmentPeriod');
         } else {
             return null;
