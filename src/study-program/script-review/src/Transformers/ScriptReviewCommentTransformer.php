@@ -42,7 +42,7 @@ class ScriptReviewCommentTransformer extends BaseTransformer
      * @return array
      */
     public function customAttributes($model): array
-    {   
+    {
         return [];
     }
 
@@ -53,6 +53,10 @@ class ScriptReviewCommentTransformer extends BaseTransformer
 
     public function includeSampleComment(ScriptReviewComment $scriptReviewComment)
     {
+        if (is_null($scriptReviewComment->sampleComment)) {
+            return  null;
+        }
+
         return $this->item($scriptReviewComment->sampleComment, new SampleCommentTransformer, 'SampleComment');
     }
 }

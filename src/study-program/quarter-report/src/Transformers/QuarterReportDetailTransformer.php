@@ -53,7 +53,7 @@ class QuarterReportDetailTransformer extends BaseTransformer
 
     public function includeScriptReviewSubject(QuarterReportDetail $quarterReportDetail)
     {
-        if (!is_null($quarterReportDetail->ScriptReviewSubjectId)) {
+        if (!is_null($quarterReportDetail->scriptReviewSubject)) {
             return $this->item($quarterReportDetail->scriptReviewSubject, new ScriptReviewSubjectTransformer, 'ScriptReviewSubject');
         } else {
             return null;
@@ -62,7 +62,7 @@ class QuarterReportDetailTransformer extends BaseTransformer
 
     public function includeScriptReviewComment(QuarterReportDetail $quarterReportDetail)
     {
-        if (!is_null($quarterReportDetail->ScriptReviewCommentId)) {
+        if (!is_null($quarterReportDetail->scriptReviewComment)) {
             return $this->item($quarterReportDetail->scriptReviewComment, new ScriptReviewCommentTransformer, 'ScriptReviewComment');
         } else {
             return null;

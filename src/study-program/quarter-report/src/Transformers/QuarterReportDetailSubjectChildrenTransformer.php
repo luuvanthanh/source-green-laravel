@@ -49,11 +49,19 @@ class QuarterReportDetailSubjectChildrenTransformer extends BaseTransformer
 
     public function includeScriptReviewSubjectDetailChildren(QuarterReportDetailSubjectChildren $quarterReportDetailSubjectChildren)
     {
+        if (is_null($quarterReportDetailSubjectChildren->scriptReviewSubjectDetailChildren)) {
+            return null;
+        }
+
         return $this->item($quarterReportDetailSubjectChildren->scriptReviewSubjectDetailChildren, new ScriptReviewSubjectDetailChildrenTransformer, 'ScriptReviewSubjectDetailChildren');
     }
 
     public function includeEvaluationCriteria(QuarterReportDetailSubjectChildren $quarterReportDetailSubjectChildren)
     {
+        if (is_null($quarterReportDetailSubjectChildren->evaluationCriteria)) {
+            return null;
+        }
+
         return $this->item($quarterReportDetailSubjectChildren->evaluationCriteria, new EvaluationCriteriaTransformer, 'EvaluationCriteria');
     }
 }
