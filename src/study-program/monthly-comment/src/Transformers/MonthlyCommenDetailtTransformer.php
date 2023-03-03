@@ -47,7 +47,7 @@ class MonthlyCommentDetailTransformer extends BaseTransformer
 
     public function includeScriptReviewComment(MonthlyCommentDetail $monthlyCommentDetail)
     {
-        if (is_null($monthlyCommentDetail->ScriptReviewCommentId)) {
+        if (is_null($monthlyCommentDetail->scriptReviewComment)) {
             return null;
         }
 
