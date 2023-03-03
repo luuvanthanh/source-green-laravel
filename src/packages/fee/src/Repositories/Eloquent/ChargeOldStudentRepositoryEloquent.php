@@ -13,6 +13,8 @@ use GGPHP\Fee\Models\SchoolYear;
 use GGPHP\Fee\Presenters\ChargeOldStudentPresenter;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use GGPHP\Fee\Services\ChargeOldStudentService;
+use GGPHP\Tariff\PaymentPlan\Models\PaymentPlan;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -107,6 +109,23 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
             $this->model = $this->model->whereHas('student', function ($query) use ($attributes) {
                 $query->where('ClassId', $attributes['classId']);
             });
+        }
+
+        //dùng để gọi bên biểu phí, lấy những học sinh chưa tạo biểu phí
+        if (
+            !empty($attributes['month_payment_plan']) && !empty($attributes['is_payment_plan'])
+            && !empty($attributes['branchId']) && !empty($attributes['schoolYearId']) && !empty($attributes['classId'])
+        ) {
+            $paymentPlans = PaymentPlan::where('BranchId', $attributes['branchId'])->whereMonth('ChargeMonth', Carbon::parse($attributes['month_payment_plan']))
+                ->where('SchoolYearId', $attributes['schoolYearId'])->where('ClassId', $attributes['classId'])->get();
+
+            $arrStudentId = $paymentPlans->map((function ($paymentPlan) {
+                return $paymentPlan->paymentPlanDetail->map(function ($item) {
+                    return $item->StudentId;
+                });
+            }));
+           
+            $this->model = $this->model->whereNotIn('StudentId', $arrStudentId->flatten(1)->toArray());
         }
 
         if (!empty($attributes['limit'])) {

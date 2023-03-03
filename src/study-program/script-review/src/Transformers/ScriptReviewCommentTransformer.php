@@ -42,7 +42,7 @@ class ScriptReviewCommentTransformer extends BaseTransformer
      * @return array
      */
     public function customAttributes($model): array
-    {
+    {   
         return [];
     }
 
