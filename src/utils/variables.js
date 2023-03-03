@@ -92,6 +92,7 @@ export const variables = {
     YEAR_TO: 'Đến Năm không được nhỏ hơn Từ Năm',
     INVALID_DATE: 'Ngày không hợp lệ',
     ERR_STUDY_PLANE: 'Data has changed, do you want to delete the data?',
+    TEXT_WARNING_CATEGORY: 'Bạn có chắc chắn muốn xóa danh mục này không?',
   },
   // PAGINATION
   PAGINATION: {
