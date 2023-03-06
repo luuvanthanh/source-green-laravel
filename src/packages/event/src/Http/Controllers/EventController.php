@@ -343,4 +343,11 @@ class EventController extends Controller
 
         return $this->success([], trans('lang::messages.common.modifySuccess'));
     }
+
+    public function countEventByStatus()
+    {
+        $event = $this->eventRepository->countEventByStatus();
+
+        return $this->success($event, trans('lang::messages.common.getListSuccess'));
+    }
 }
