@@ -8,6 +8,7 @@ use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Event\Models\Event;
 use GGPHP\TourGuide\Transformers\TourGuideTransformer;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class EventTransformer.
@@ -24,7 +25,7 @@ class EventTransformer extends BaseTransformer
      */
     protected $availableIncludes = [
         'eventHandle', 'eventType', 'touristDestination',
-        'camera', 'tourGuide', 'eventHandleResult'
+        'camera', 'tourGuide', 'eventHandleResult', 'objectHandelFlow'
     ];
 
     /**
@@ -167,5 +168,14 @@ class EventTransformer extends BaseTransformer
         }
 
         return $this->item($event->tourGuide, new TourGuideTransformer, 'TourGuide');
+    }
+
+    public function includeObjectHandelFlow(Event $event)
+    {
+        if (is_null($event->objectHandelFlow)) {
+            return null;
+        }
+
+        return $this->item($event->objectHandelFlow, new ObjectHandelFlowTransformer, 'ObjectHandelFlow');
     }
 }
