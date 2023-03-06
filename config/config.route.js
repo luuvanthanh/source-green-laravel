@@ -3375,6 +3375,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet',
+            component: './crm/child-rearing/category-children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/tao-moi',
+            component: './crm/child-rearing/category-children/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
+            component: './crm/child-rearing/category-children/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-muc',
+            component: './crm/child-rearing/list-posts-children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-muc/tao-moi',
+            component: './crm/child-rearing/list-posts-children/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
+            component: './crm/child-rearing/list-posts-children/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
