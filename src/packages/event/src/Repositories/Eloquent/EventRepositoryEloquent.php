@@ -232,7 +232,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
                 $attributes['status_show'] = true;
             }
         }
-        
+
         if (is_null($event)) {
             $event = $this->model()::create($attributes);
 
@@ -658,5 +658,20 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             }
         }
         return null;
+    }
+
+    public function countEventByStatus()
+    {
+        $countEventStatusPending = Event::where('status', Event::STATUS['PENDING'])->where('status_show', 1)->count();
+        $countEventStatusDoing = Event::where('status', Event::STATUS['DOING'])->where('status_show', 1)->count();
+        $countEventStatusDone = Event::where('status', Event::STATUS['DONE'])->where('status_show', 1)->count();
+
+        $result['data'] = [
+            'countEventStatusPending' => $countEventStatusPending,
+            'countEventStatusDoing' => $countEventStatusDoing,
+            'countEventStatusDone' => $countEventStatusDone,
+        ];
+
+        return $result;
     }
 }

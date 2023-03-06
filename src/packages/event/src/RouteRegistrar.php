@@ -68,6 +68,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('config_hour_status_show_events', 'EventController@configHourStatusShowEvent');
 
             \Route::post('event-status-show', 'EventController@updateStatusShow');
+
+            \Route::get('count-event-by-status', 'EventController@countEventByStatus');
         });
     }
 
