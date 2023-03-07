@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Clover\Models\EmployeeHrm;
 use GGPHP\Crm\Clover\Transformers\EmployeeHrmTransformer;
 use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
@@ -32,7 +33,7 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['categoryKnowledgeToTeachChildren', 'employee'];
+    protected $availableIncludes = ['categoryKnowledgeToTeachChildren'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -44,9 +45,18 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        $employee = $this->getEmployeeInfo($model);
         return [
-            'status' => array_search($model->status, PostKnowledgeToTeachChildren::STATUS)
+            'status' => array_search($model->status, PostKnowledgeToTeachChildren::STATUS),
+            'employee' => !is_null($employee) ? $employee : []
         ];
+    }
+
+    public function getEmployeeInfo($model)
+    {
+        $employee = EmployeeHrm::where('Id', $model->employee_id)->first();
+
+        return $employee;
     }
 
     public function includeCategoryKnowledgeToTeachChildren(PostKnowledgeToTeachChildren $postKnowledgeToTeachChildren)
@@ -56,14 +66,5 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
         }
 
         return $this->item($postKnowledgeToTeachChildren->categoryKnowledgeToTeachChildren, new CategoryKnowledgeToTeachChildrenTransformer, 'CategoryKnowldgeToTeachChildren');
-    }
-
-    public function includeEmployee(PostKnowledgeToTeachChildren $postKnowledgeToTeachChildren)
-    {
-        if ($postKnowledgeToTeachChildren->employee) {
-            return null;
-        }
-
-        return $this->item($postKnowledgeToTeachChildren->employee, new EmployeeHrmTransformer, 'Employee');
     }
 }

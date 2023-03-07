@@ -33,9 +33,4 @@ class PostKnowledgeToTeachChildren extends UuidModel
     {
         return $this->belongsTo(CategoryKnowledgeToTeachChildren::class);
     }
-
-    public function employee()
-    {
-        return $this->belongsTo(EmployeeHrm::class);
-    }
 }
