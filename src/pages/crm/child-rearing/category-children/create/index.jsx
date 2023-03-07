@@ -125,7 +125,7 @@ const Index = memo(() => {
           id: params.id,
           name: values?.name,
           category_knowledge_to_teach_children_id: values?.category_knowledge_to_teach_children_id,
-          status: ValidateModules.STATUS.DRAFT,
+          status: detail?.status === ValidateModules.STATUS.POSTED ? ValidateModules.STATUS.POSTED : ValidateModules.STATUS.DRAFT,
           employee_id: user?.objectInfo?.id,
           content,
           image: fileImage,
@@ -149,6 +149,37 @@ const Index = memo(() => {
         },
       });
     });
+  };
+
+  const formBtnSave = () => (
+    <>
+      <Button
+        className="ml-auto px25 mr5"
+        color="primary"
+        size="large"
+        loading={loadingSubmit}
+        onClick={() => saveDraft()}
+      >
+        {params?.id ? "Lưu cập nhập" : "Lưu nháp"}
+      </Button>
+    </>
+  );
+
+  const formBtnSend = () => {
+    if (detail?.status !== ValidateModules.STATUS.POSTED) {
+      return (
+        <Button
+          className="ml-auto px25"
+          color="success"
+          htmlType="submit"
+          size="large"
+          loading={loadingSubmit}
+        >
+          Đăng bài viết
+        </Button>
+      );
+    }
+    return "";
   };
 
   return (
@@ -217,27 +248,8 @@ const Index = memo(() => {
                       Hủy
                     </p>
                     <Pane className="d-flex" style={{ marginLeft: 'auto' }}>
-                      {
-                        detail?.status === ValidateModules.STATUS.DRAFT || !params?.id &&
-                        <Button
-                          className="ml-auto px25 mr5"
-                          color="primary"
-                          size="large"
-                          loading={loadingSubmit}
-                          onClick={() => saveDraft()}
-                        >
-                          {params?.id ? "Lưu cập nhập" : "Lưu nháp"}
-                        </Button>
-                      }
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                        loading={loadingSubmit}
-                      >
-                        Đăng bài viết
-                      </Button>
+                      {formBtnSave()}
+                      {formBtnSend()}
                     </Pane>
                   </Pane>
                 </Pane>

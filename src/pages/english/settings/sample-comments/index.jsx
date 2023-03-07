@@ -332,7 +332,7 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYCOMMEN_DETAIL")) {
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYCOMMENT_DETAIL")) {
                     history.push(`${pathname}/${record.id}/detail`);
                   }
                 },
