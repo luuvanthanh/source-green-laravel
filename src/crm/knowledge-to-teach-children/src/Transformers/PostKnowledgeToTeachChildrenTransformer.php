@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Clover\Transformers\EmployeeHrmTransformer;
 use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\KnowledgeToTeachChildren\Models\PostKnowledgeToTeachChildren;
@@ -31,7 +32,7 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['categoryKnowledgeToTeachChildren'];
+    protected $availableIncludes = ['categoryKnowledgeToTeachChildren', 'employee'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -43,19 +44,9 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $employee = $this->getEmployee($model);
-
         return [
-            'employee' => $employee ? $employee->full_name : '',
-            'status' => array_search($model->status,PostKnowledgeToTeachChildren::STATUS)
+            'status' => array_search($model->status, PostKnowledgeToTeachChildren::STATUS)
         ];
-    }
-
-    public function getEmployee($model)
-    {
-        $employee = Employee::where('employee_id_hrm', $model->employee_id)->select('full_name')->first();
-        
-        return $employee;
     }
 
     public function includeCategoryKnowledgeToTeachChildren(PostKnowledgeToTeachChildren $postKnowledgeToTeachChildren)
@@ -65,5 +56,14 @@ class PostKnowledgeToTeachChildrenTransformer extends BaseTransformer
         }
 
         return $this->item($postKnowledgeToTeachChildren->categoryKnowledgeToTeachChildren, new CategoryKnowledgeToTeachChildrenTransformer, 'CategoryKnowldgeToTeachChildren');
+    }
+
+    public function includeEmployee(PostKnowledgeToTeachChildren $postKnowledgeToTeachChildren)
+    {
+        if ($postKnowledgeToTeachChildren->employee) {
+            return null;
+        }
+
+        return $this->item($postKnowledgeToTeachChildren->employee, new EmployeeHrmTransformer, 'Employee');
     }
 }

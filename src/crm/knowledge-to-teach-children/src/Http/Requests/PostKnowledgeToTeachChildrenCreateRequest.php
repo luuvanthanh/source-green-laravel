@@ -25,13 +25,13 @@ class PostKnowledgeToTeachChildrenCreateRequest extends FormRequest
      */
     public function rules()
     {
-        $status = implode(',',array_values(PostKnowledgeToTeachChildren::STATUS));
-        
+        $status = implode(',', array_values(PostKnowledgeToTeachChildren::STATUS));
+
         return [
             'name' => 'required|string|unique:post_knowledge_to_teach_childrens,name',
             'category_knowledge_to_teach_children_id' => 'required',
-            'status' => 'required|in:'. $status,
-            'employee_id' => 'required|exists:employees,employee_id_hrm'
+            'status' => 'required|in:' . $status,
+            'employee_id' => 'required|check_exists:hrm.Employees,Id'
         ];
     }
 
@@ -41,5 +41,12 @@ class PostKnowledgeToTeachChildrenCreateRequest extends FormRequest
         $data['status'] = array_key_exists($data['status'], PostKnowledgeToTeachChildren::STATUS) ? PostKnowledgeToTeachChildren::STATUS[$data['status']] : 0;
 
         return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'employee_id.check_exists' => 'Giá trị đã chọn trong trường không hợp lệ.'
+        ];
     }
 }

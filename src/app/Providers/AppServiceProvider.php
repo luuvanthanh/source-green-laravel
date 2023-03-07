@@ -15,6 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Twilio\Jwt\AccessToken;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
@@ -89,6 +90,16 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return false;
+        });
+
+        Validator::extend('check_exists ', function ($attribute, $value, $parameters, $validator) {
+            $data = DB::table($parameters[0])->where($parameters[1], $value)->first();
+
+            if (is_null($data)) {
+                return false;
+            }
+
+            return true;
         });
     }
 }
