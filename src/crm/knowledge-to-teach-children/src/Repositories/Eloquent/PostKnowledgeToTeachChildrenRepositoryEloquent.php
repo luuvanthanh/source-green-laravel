@@ -54,7 +54,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     public function getAll(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereLike('name', $attributes['key'])->orWhereLike('code', $attributes['key'])->orWhereLike('description', $attributes['key']);
+            $this->model = $this->model->whereLike('name', $attributes['key'])->orWhereLike('content', $attributes['key']);
         }
 
         if (!empty($attributes['category_knowledge_to_teach_children_id'])) {

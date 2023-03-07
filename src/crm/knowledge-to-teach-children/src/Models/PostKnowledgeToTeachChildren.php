@@ -19,7 +19,6 @@ class PostKnowledgeToTeachChildren extends UuidModel
     protected $table = 'post_knowledge_to_teach_childrens';
 
     protected $fillable = [
-        'code',
         'name',
         'category_knowledge_to_teach_children_id',
         'image',
