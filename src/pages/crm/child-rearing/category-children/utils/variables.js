@@ -4,8 +4,8 @@ export const variables = {
     POSTED: 'POSTED',
   },
   STATUS_NAME_SEND: {
-    POSTED: 'Đã gửi',
-    DRAFT: 'Chưa gửi',
+    POSTED: 'Đã đăng',
+    DRAFT: 'Lưu nháp',
   },
 };
 

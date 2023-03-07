@@ -3,9 +3,9 @@ import { variables } from './variables';
 
 export default class Helpers {
   static tagStatusSend = (type) => {
-    if (type) {
-      return <Tag color="success">{variables.STATUS_NAME_SEND.SEND}</Tag>;
+    if (type === variables.STATUS.POSTED) {
+      return <Tag color="success">{variables.STATUS_NAME_SEND.POSTED}</Tag>;
     }
-    return <Tag color="yellow">{variables.STATUS_NAME_SEND.NOT_SEND}</Tag>;
+    return <Tag color="primary">{variables.STATUS_NAME_SEND.DRAFT}</Tag>;
   };
 }

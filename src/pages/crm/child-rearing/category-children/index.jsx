@@ -16,6 +16,7 @@ import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
 import HelperModules from './utils/Helper';
+import VariablesModules from './utils/variables';
 import stylesModule from './styles.module.scss';
 
 
@@ -147,7 +148,7 @@ const Index = memo(() => {
       key: 'code',
       className: 'min-width-150',
       width: 150,
-      render: (record) => <Text size="normal">{record.code}</Text>,
+      render: (record) => <Text size="normal">{record?.categoryKnowledgeToTeachChildren?.name}</Text>,
     },
     {
       title: 'Hình ảnh',
@@ -156,56 +157,53 @@ const Index = memo(() => {
       width: 150,
       render: (record) => (
         <AvatarTable
-          fileImage={Helper.getPathAvatarJson(record?.image)}
+          fileImage={record?.image}
         />
       ),
     },
     {
       title: 'Bài viết',
       key: 'name',
-      width: 400,
+      width: 300,
       className: 'min-width-300',
-      render: (record) => (
-        <div
-          className={stylesModule['wrapper-content']}
-          style={{ maxHeight: '100px', overflowY: 'auto' }}
-          dangerouslySetInnerHTML={{ __html: record?.content }}
-        />
-      ),
+      render: (record) => <Text size="normal">{record?.name}</Text>,
     },
     {
       title: 'Thời gian tạo',
       key: 'description',
       className: 'min-width-150',
-      width: 500,
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      width: 150,
+      render: (record) => Helper.getDate(record?.created_at, variables.DATE_FORMAT.DATE_VI)
     },
     {
       title: 'Người tạo',
       key: 'description',
-      className: 'min-width-150',
-      width: 500,
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => <Text size="normal">{record?.employee?.FullName}</Text>,
     },
     {
       title: 'Trạng thái',
       key: 'description',
       className: 'min-width-150',
-      width: 100,
-      render: (record) => HelperModules.tagStatusSend(record.sentDate),
+      width: 150,
+      render: (record) => HelperModules.tagStatusSend(record.status),
     },
     {
       key: 'action',
       className: 'min-width-100',
       width: 100,
       render: (record) => (
-        <div className={styles['list-button']}>
+        <div className="d-flex justify-content-end">
           <Button
             color="primary"
             icon="edit"
             onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
           />
-          <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          {
+            record?.status === VariablesModules?.STATUS?.DRAFT &&
+            <Button className='ml10' color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          }
         </div>
       ),
     },
