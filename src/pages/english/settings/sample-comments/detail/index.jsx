@@ -127,6 +127,7 @@ const General = memo(() => {
                       onClick={() => {
                         history.push(`/english/settings/sampleComments/${details?.id}/edit`);
                       }}
+                      permission="WEB_TIENGANH_QUANLYCOMMENT_EDIT"
                     >
                       Edit
                     </Button>

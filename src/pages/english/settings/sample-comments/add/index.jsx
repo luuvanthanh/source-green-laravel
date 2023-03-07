@@ -217,7 +217,7 @@ const General = memo(() => {
                       htmlType="submit"
                       size="large"
                       loading={loadingSubmit}
-                    // permission={"WEB_TIENGANH_QUANLYCOMMENT_UPDATE" || "WEB_TIENGANH_QUANLYCOMMENT_DELETE"}
+                      permission={params?.id ? "WEB_TIENGANH_QUANLYCOMMENT_EDIT" : "WEB_TIENGANH_QUANLYCOMMENT_CREATE"}
                     >
                       Save
                     </Button>

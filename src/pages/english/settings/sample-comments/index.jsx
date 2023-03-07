@@ -26,12 +26,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingSampleComments, loading }) => ({
+const mapStateToProps = ({ englishSettingSampleComments, loading, user }) => ({
   data: englishSettingSampleComments.data,
   error: englishSettingSampleComments.error,
   pagination: englishSettingSampleComments.pagination,
   skill: englishSettingSampleComments.skill,
   loading,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -236,13 +237,13 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-            // permission="WEB_TIENGANH_QUANLYCOMMENT_UPDATE"
+              permission="WEB_TIENGANH_QUANLYCOMMENT_EDIT"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-            // permission="WEB_TIENGANH_QUANLYCOMMENT_DELETE"
+              permission="WEB_TIENGANH_QUANLYCOMMENT_DELETE"
             />
           </div>
         ),
@@ -277,6 +278,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search } = this.state;
     const loading = effects['englishSettingSampleComments/GET_DATA'];
@@ -290,7 +292,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-            // permission="WEB_TIENGANH_QUANLYCOMMENT_CREATE"
+              permission="WEB_TIENGANH_QUANLYCOMMENT_CREATE"
             >
               Create new
             </Button>
@@ -330,7 +332,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYCOMMEN_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -350,6 +354,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -359,6 +364,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  user: {},
   error: {},
 };
 

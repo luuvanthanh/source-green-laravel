@@ -26,10 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingevaluationCriteria, loading }) => ({
+const mapStateToProps = ({ englishSettingevaluationCriteria, loading, user }) => ({
   data: englishSettingevaluationCriteria.data,
   error: englishSettingevaluationCriteria.error,
   pagination: englishSettingevaluationCriteria.pagination,
+  user: user.user,
   skill: englishSettingevaluationCriteria.skill,
   loading,
 });
@@ -218,13 +219,13 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-            // permission="WEB_TIENGANH_QUANLYTIEUCHI_UPDATE"
+              permission="WEB_TIENGANH_QUANLYTIEUCHI_EDIT"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-            // permission="WEB_TIENGANH_QUANLYTIEUCHI_DELETE"
+              permission="WEB_TIENGANH_QUANLYTIEUCHI_DELETE"
             />
           </div>
         ),
@@ -259,6 +260,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search } = this.state;
     const loading = effects['englishSettingevaluationCriteria/GET_DATA'];
@@ -272,7 +274,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-            // permission="WEB_TIENGANH_QUANLYTIEUCHI_CREATE"
+              permission="WEB_TIENGANH_QUANLYTIEUCHI_CREATE"
             >
               Create new
             </Button>
@@ -312,7 +314,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYTIEUCHI_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -331,6 +335,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -340,6 +345,7 @@ Index.defaultProps = {
   pagination: {},
   loading: {},
   dispatch: {},
+  user: {},
   location: {},
   error: {},
 };

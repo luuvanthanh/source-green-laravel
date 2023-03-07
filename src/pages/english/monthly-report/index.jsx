@@ -10,7 +10,7 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-// import ability from '@/utils/ability';
+import ability from '@/utils/ability';
 
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -489,9 +489,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
 
-    // if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE')) {
-    if (search?.status === 'NOT_REVIEW') {
-
+    if (search?.status === 'NOT_REVIEW' && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE')) {
       return (
         <Button
           icon="edit"
@@ -500,8 +498,7 @@ class Index extends PureComponent {
         />
       );
     }
-    // if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE', 'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE')) {
-    if (search?.status === 'NOT_YET_CONFIRM') {
+    if (search?.status === 'NOT_YET_CONFIRM' && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADUYET_EDIT', 'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_EDIT')) {
 
       return (
         <Button
@@ -525,7 +522,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM
-      //  && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE')
+      && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE')
     ) {
       return (
         <Button
@@ -537,7 +534,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_SEND
-      // && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE')
+      && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUAGUI_SEND', 'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_SEND')
     ) {
       return (
         <Button
@@ -805,7 +802,7 @@ class Index extends PureComponent {
           className="ml-2"
           onClick={() => this.addSent('much')}
           loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL'] || effects['EnglishMonthlyReport/ADD_SENT_ALL'] || effects['EnglishMonthlyReport/ADD_CONFIRM']}
-        // permission={"WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" || "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" : "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
         </Button>
@@ -816,7 +813,7 @@ class Index extends PureComponent {
           disabled={!data?.length > 0}
           loading={effects['EnglishMonthlyReport/ADD_CONFIRMED_ALL'] || effects['EnglishMonthlyReport/ADD_SENT_ALL'] || effects['EnglishMonthlyReport/ADD_CONFIRM']}
           onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
-        // permission={"WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" || "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" : "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
         </Button>
@@ -835,6 +832,7 @@ class Index extends PureComponent {
       location: { pathname },
       loading: { effects },
       years,
+      user,
     } = this.props;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -981,16 +979,16 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (search.status === variablesModules.STATUS.REVIEWED) {
+                  if (search.status === variablesModules.STATUS.REVIEWED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-review`);
                   }
-                  if (search.status === variablesModules.STATUS.CONFIRMED) {
+                  if (search.status === variablesModules.STATUS.CONFIRMED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-confirmed`);
                   }
-                  if (search.status === variablesModules.STATUS.NOT_YET_SEND) {
+                  if (search.status === variablesModules.STATUS.NOT_YET_SEND && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done`);
                   }
-                  if (search.status === variablesModules.STATUS.SENT) {
+                  if (search.status === variablesModules.STATUS.SENT && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=send`);
                   }
                 },

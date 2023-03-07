@@ -195,7 +195,7 @@ const Index = memo(({
                 type="primary"
                 onClick={() => setCheckEdit(true)}
                 loading={loading['englishStudyPlan/ADD_STUDY_PLAN']}
-              // permission="WEB_TIENGANH_THOIKHOABIEU_UPDATE"
+                permission="WEB_TIENGANH_THOIKHOABIEU_EDIT"
               >
                 Edit
               </Button> :
@@ -205,7 +205,7 @@ const Index = memo(({
                   type="primary"
                   onClick={() => handleSave()}
                   loading={loading['englishStudyPlan/ADD_STUDY_PLAN']}
-                // permission="WEB_TIENGANH_THOIKHOABIEU_UPDATE"
+                  permission="WEB_TIENGANH_THOIKHOABIEU_EDIT"
                 >
                   Save
                 </Button>
