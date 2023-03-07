@@ -982,13 +982,13 @@ class Index extends PureComponent {
                   if (search.status === variablesModules.STATUS.REVIEWED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-review`);
                   }
-                  if (search.status === variablesModules.STATUS.CONFIRMED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
+                  if (search.status === variablesModules.STATUS.CONFIRMED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADUYET_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done-confirmed`);
                   }
-                  if (search.status === variablesModules.STATUS.NOT_YET_SEND && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
+                  if (search.status === variablesModules.STATUS.NOT_YET_SEND && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=done`);
                   }
-                  if (search.status === variablesModules.STATUS.SENT && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DADANHGIA_DETAIL")) {
+                  if (search.status === variablesModules.STATUS.SENT && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIATHANG_DAGUI_DETAIL")) {
                     history.push(`${pathname}/${head(record.monthlyComment)?.id}/detail?type=send`);
                   }
                 },
