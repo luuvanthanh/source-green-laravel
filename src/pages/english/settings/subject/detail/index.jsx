@@ -187,6 +187,7 @@ const Index = memo(() => {
                         onClick={() => {
                           history.push(`/english/settings/subject/${details?.id}/edit`);
                         }}
+                        permission="WEB_TIENGANH_QUANLYPHANMUC_CREATE"
                       >
                         Edit
                       </Button>

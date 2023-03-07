@@ -418,7 +418,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['EnglishMonthlyReport/DELETE_CONFIRM']}
-                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_EDIT"
                   >
                     Refuse
                   </Button>
@@ -428,7 +428,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_UPDATE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_EDIT"
                   >
                     Save
                   </Button>
@@ -438,7 +438,7 @@ const Index = memo(() => {
                     onClick={() => addSent()}
                     size="large"
                     loading={effects['EnglishMonthlyReportAdd/UPDATE_CONFIRMED']}
-                  // permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE"
+                    permission="WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE"
                   >
                     Accept
                   </Button>

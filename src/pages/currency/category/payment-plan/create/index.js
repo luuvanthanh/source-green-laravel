@@ -4,6 +4,7 @@ import { useParams, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { isEmpty, get, head } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
+import { Helmet } from 'react-helmet';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
 import { Helper } from '@/utils';
@@ -245,6 +246,9 @@ const General = memo(() => {
   }, [dataType.length > 0]);
 
   const changeYear = (value) => {
+    formData.setFieldsValue({
+      chargeMonth: undefined,
+    });
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -292,6 +296,10 @@ const General = memo(() => {
       type: 'currencyPaymentPlanAdd/GET_CLASSES',
       payload: { branch: e },
     });
+    formData.setFieldsValue({
+      classId: undefined,
+      classTypeId: undefined,
+    });
   };
 
   const onChangeTotal = () => {
@@ -306,7 +314,8 @@ const General = memo(() => {
   };
 
   return (
-    <>
+    <Pane className={stylesModule['disabled-container']}>
+      <Helmet title="Kế hoạch đóng phí" />
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCurrency} />
       <Pane className="p20">
         <Pane>
@@ -325,7 +334,7 @@ const General = memo(() => {
                         name="datePlan"
                         type={variables.DATE_PICKER}
                         onChange={changeDate}
-                        disabled={params?.id}
+                        disabledDate={(current) => current <= moment() || params?.id}
                       />
                     </Pane>
                     {params?.id ? (
@@ -384,7 +393,8 @@ const General = memo(() => {
                               current >=
                                 moment(details?.endDate, variables.DATE_FORMAT.DATE_VI).endOf(
                                   'day',
-                                ))
+                                )) ||
+                            current <= moment()
                           }
                           disabled={params?.id}
                         />
@@ -649,7 +659,7 @@ const General = memo(() => {
           </Pane>
         </Pane>
       </Pane>
-    </>
+    </Pane>
   );
 });
 

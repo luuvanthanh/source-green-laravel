@@ -4,7 +4,6 @@ import * as services from './services';
 export default {
   namespace: 'teachingToolsStudent',
   state: {
-    data: [],
     years: [],
     assessmentPeriod: [],
     pagination: {
@@ -17,7 +16,6 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
       pagination: payload.pagination,
     }),
     SET_BRANCHES: (state, { payload }) => ({
@@ -39,10 +37,7 @@ export default {
     }),
     SET_ASESSMENT_PERIOD: (state, { payload }) => ({
       ...state,
-      assessmentPeriod: payload.parsePayload?.map((i) => ({
-        ...i,
-        name: i?.nameAssessmentPeriod.name,
-      })),
+      assessmentPeriod: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -83,13 +78,17 @@ export default {
         });
       }
     },
-    *GET_DATA({ payload, callback }, saga) {
+    *GET_NO_SENDING({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getNoSending, payload);
         callback(response);
         yield saga.put({
           type: 'SET_DATA',
-          payload: response,
+          payload: {
+            pagination: {
+              total: response.totalCount,
+            },
+          },
         });
       } catch (error) {
         yield saga.put({
@@ -98,42 +97,39 @@ export default {
         });
       }
     },
-    *ADD_ONE_ITEM_REVIEW({ payload, callback }, saga) {
+    *GET_SENDING({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addOneItem, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *ADD_REVIEW({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.addReview, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *REMOVE({ payload }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
+        const response = yield saga.call(services.getSending, payload);
+        callback(response);
         yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
+          type: 'SET_DATA',
+          payload: {
+            pagination: {
+              total: response.totalCount,
+            },
+          },
         });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_ALL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addAll, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
     *GET_YEARS({ payload }, saga) {
@@ -157,7 +153,7 @@ export default {
         const response = yield saga.call(services.getAssessmentPeriod, payload);
         yield saga.put({
           type: 'SET_ASESSMENT_PERIOD',
-          payload: response,
+          payload: response.items,
         });
       } catch (error) {
         yield saga.put({

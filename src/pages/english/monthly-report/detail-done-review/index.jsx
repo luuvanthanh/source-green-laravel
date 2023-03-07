@@ -402,6 +402,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  permission="WEB_TIENGANH_DANHGIATHANG_CHUAGUI_SEND"
                   loading={loadingSubmit}
                 >
                   Save

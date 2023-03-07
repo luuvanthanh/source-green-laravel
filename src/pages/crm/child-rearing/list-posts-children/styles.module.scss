@@ -1,0 +1,12 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table-header {
+  :global(.ant-table-thead > tr > th) {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    background: #ffffff !important;
+  }
+}

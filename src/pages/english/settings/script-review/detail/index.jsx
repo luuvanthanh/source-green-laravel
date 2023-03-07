@@ -269,6 +269,7 @@ const Index = memo(() => {
                   onClick={() => {
                     history.push(`/english/settings/scriptReview/${details?.id}/edit`);
                   }}
+                  permission="WEB_TIENGANH_KICHBANDANHGIA_EDIT"
                 >
                   Edit
                 </Button>
