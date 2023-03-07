@@ -99,6 +99,7 @@ const Index = memo(() => {
                   onClick={() => {
                     history.push(`/english/settings/evaluationCriteria/${details?.id}/edit`);
                   }}
+                  permission="WEB_TIENGANH_QUANLYTIEUCHI_EDIT"
                 >
                   Edit
                 </Button>

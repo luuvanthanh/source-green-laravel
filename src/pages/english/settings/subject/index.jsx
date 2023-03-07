@@ -26,11 +26,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ englishSettingSubject, loading }) => ({
+const mapStateToProps = ({ englishSettingSubject, loading, user }) => ({
   data: englishSettingSubject.data,
   error: englishSettingSubject.error,
   pagination: englishSettingSubject.pagination,
   skill: englishSettingSubject.skill,
+  user: user.user,
   loading,
 });
 @connect(mapStateToProps)
@@ -218,10 +219,10 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-            // permission="WEB_TIENGANH_QUANLYPHANMUC_UPDATE"
+              permission="WEB_TIENGANH_QUANLYPHANMUC_EDIT"
             />
             <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-            // permission="WEB_TIENGANH_QUANLYPHANMUC_DELETE"
+              permission="WEB_TIENGANH_QUANLYPHANMUC_DELETE"
             />
           </div>
         ),
@@ -256,6 +257,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search } = this.state;
     const loading = effects['englishSettingSubject/GET_DATA'];
@@ -269,7 +271,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-            // permission="WEB_TIENGANH_QUANLYPHANMUC_CREATE"
+              permission="WEB_TIENGANH_QUANLYPHANMUC_CREATE"
             >
               Create new
             </Button>
@@ -309,7 +311,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYPHANMUC_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -327,6 +331,7 @@ Index.propTypes = {
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
 };
@@ -338,6 +343,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  user: {},
   error: {},
 };
 

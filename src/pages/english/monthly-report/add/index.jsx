@@ -309,7 +309,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
-                // permission="WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE"
+                  permission="WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE"
                 >
                   Save
                 </Button>

@@ -14,7 +14,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 // import HelperModules from './utils/Helper';
-// import ability from '@/utils/ability';
+import ability from '@/utils/ability';
 
 import variablesModules from './utils/variables';
 import stylesModule from './styles.module.scss';
@@ -491,7 +491,7 @@ class Index extends PureComponent {
     } = this.props;
 
     if (search?.status === 'NOT_REVIEW'
-      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE')
+      && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADANHGIA_CREATE')
     ) {
       return (
         <Button
@@ -502,7 +502,7 @@ class Index extends PureComponent {
       );
     }
     if (search?.status === 'NOT_YET_CONFIRM'
-      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_UPDATE')
+      && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_EDIT', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_EDIT')
     ) {
       return (
         <Button
@@ -526,7 +526,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_CONFIRM
-      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE')
+      && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE')
     ) {
       return (
         <Button
@@ -538,7 +538,7 @@ class Index extends PureComponent {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_YET_SEND
-      // && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE')
+      && ability.can('WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_SEND', 'WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_SEND')
     ) {
       return (
         <Button
@@ -806,7 +806,7 @@ class Index extends PureComponent {
           className="ml-2"
           onClick={() => this.addSent('much')}
           loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
-        // permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE" : "WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept selected reviews" : "Send selected reviews"}
         </Button>
@@ -817,7 +817,7 @@ class Index extends PureComponent {
           disabled={!data?.length > 0}
           loading={effects['EnglishQuarterReport/ADD_CONFIRMED_ALL'] || effects['EnglishQuarterReport/ADD_SENT_ALL'] || effects['EnglishQuarterReport/ADD_CONFIRM']}
           onClick={() => this.addSent(search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? 'allConfirmed' : "allConfirmed")}
-        // permission={"WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_APPROVE" || "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "WEB_TIENGANH_DANHGIADINHKY_CHUADUYET_APPROVE" : "WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_YET_CONFIRM ? "Accept all" : "Send all"}
         </Button>
@@ -836,6 +836,7 @@ class Index extends PureComponent {
       location: { pathname },
       loading: { effects },
       years,
+      user,
     } = this.props;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -979,16 +980,16 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (search.status === variablesModules.STATUS.REVIEWED) {
+                  if (search.status === variablesModules.STATUS.REVIEWED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIADINHKY_DADANHGIA_DETAIL")) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-review`);
                   }
-                  if (search.status === variablesModules.STATUS.CONFIRMED) {
+                  if (search.status === variablesModules.STATUS.CONFIRMED && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIADINHKY_DADUYET_DETAIL")) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done-confirmed`);
                   }
-                  if (search.status === variablesModules.STATUS.NOT_YET_SEND) {
+                  if (search.status === variablesModules.STATUS.NOT_YET_SEND && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIADINHKY_CHUAGUI_DETAIL")) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=done`);
                   }
-                  if (search.status === variablesModules.STATUS.SENT) {
+                  if (search.status === variablesModules.STATUS.SENT && user?.permissions?.find(i => i === "WEB_TIENGANH_DANHGIADINHKY_DAGUI_DETAIL")) {
                     history.push(`${pathname}/${head(record.quarterReport)?.id}/detail?type=send`);
                   }
                 },
