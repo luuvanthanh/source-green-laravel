@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Clover\Models\EmployeeHrm;
 use GGPHP\Crm\Employee\Models\Employee;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -31,5 +32,10 @@ class PostKnowledgeToTeachChildren extends UuidModel
     public function categoryKnowledgeToTeachChildren()
     {
         return $this->belongsTo(CategoryKnowledgeToTeachChildren::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(EmployeeHrm::class);
     }
 }

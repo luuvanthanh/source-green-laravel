@@ -197,7 +197,8 @@ return [
         GGPHP\Crm\Fee\Providers\FeeServiceProvider::class,
         GGPHP\Crm\CallCenter\Providers\CallCenterServiceProvider::class,
         GGPHP\Crm\KnowledgeToTeachChildren\Providers\KnowledgeToTeachChildrenServiceProvider::class,
-        
+        GGPHP\Crm\Clover\Providers\CloverServiceProvider::class,
+
     ],
 
     /*
