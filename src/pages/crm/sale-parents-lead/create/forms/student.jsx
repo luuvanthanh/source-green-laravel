@@ -217,7 +217,7 @@ const Students = memo(() => {
                                         <Form.Item label="Hình ảnh">
                                           <ImageUpload
                                             callback={(res) => {
-                                              onSetImage(res.fileInfo.url, index);
+                                              onSetImage(res?.fileInfo?.url, index);
                                             }}
                                             fileImage={fileImage[index]}
                                           />

@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Upload, Modal } from 'antd';
-import { CloudUploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'dva';
 import PropTypes from "prop-types";
 
@@ -87,6 +87,7 @@ const ImageUpload = memo(({ callback, fileImage }) => {
               <Upload {...uploadProps}>
                 <CloudUploadOutlined />
               </Upload>
+              <DeleteOutlined onClick={() => { callback(get(undefined)); setImage(undefined); }} />
             </Pane>
           </Pane>
         ) : (

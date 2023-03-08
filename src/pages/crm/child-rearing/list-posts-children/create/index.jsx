@@ -42,12 +42,12 @@ const Index = memo(() => {
             history.goBack();
           }
           if (error) {
-            if (!isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
                 form.setFields([
                   {
-                    name: get(item, 'member').toLowerCase(),
-                    errors: [get(item, 'message')],
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
                   },
                 ]);
               });
@@ -84,7 +84,7 @@ const Index = memo(() => {
     <>
       <Breadcrumbs last={params.id ? 'Sửa' : 'Thêm mới'} menu={menuLeftCRM} />
       <div className="col-lg-6 offset-lg-3">
-        <Helmet title="Program" />
+        <Helmet title="Danh mục" />
         <Pane className="pl20 pr20 pb20">
           <Pane >
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
@@ -101,6 +101,7 @@ const Index = memo(() => {
                         name="name"
                         placeholder="Nhập"
                         type={variables.INPUT}
+                        rules={[variables.RULES.EMPTY]}
                         label="Tên danh mục"
                       />
                     </Pane>

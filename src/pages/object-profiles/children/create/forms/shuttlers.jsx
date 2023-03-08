@@ -132,7 +132,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                         <Form.Item name={[key, 'fileImage']} label="Hình ảnh">
                           <ImageUpload
                             callback={(res) => {
-                              onSetImage(res.fileInfo.url, index);
+                              onSetImage(res?.fileInfo?.url, index);
                             }}
                             fileImage={fileImage[index]}
                           />
@@ -231,7 +231,7 @@ Shuttlers.propTypes = {
 Shuttlers.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
 };

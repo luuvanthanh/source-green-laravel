@@ -52,7 +52,7 @@ const Index = memo(() => {
         status: ValidateModules.STATUS.POSTED,
         employee_id: user?.objectInfo?.id,
         content,
-        image: fileImage,
+        image: fileImage || "",
       },
       callback: (response, error) => {
         if (response) {
@@ -128,19 +128,19 @@ const Index = memo(() => {
           status: detail?.status === ValidateModules.STATUS.POSTED ? ValidateModules.STATUS.POSTED : ValidateModules.STATUS.DRAFT,
           employee_id: user?.objectInfo?.id,
           content,
-          image: fileImage,
+          image: fileImage || "",
         },
         callback: (response, error) => {
           if (response) {
             history.goBack();
           }
           if (error) {
-            if (!isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
                 form.setFields([
                   {
-                    name: get(item, 'member').toLowerCase(),
-                    errors: [get(item, 'message')],
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
                   },
                 ]);
               });
@@ -186,7 +186,7 @@ const Index = memo(() => {
     <>
       <Breadcrumbs last={params.id ? 'Sửa' : 'Thêm mới'} menu={menuLeftCRM} />
       <div className="col-lg-8 offset-lg-2">
-        <Helmet title="Program" />
+        <Helmet title="Danh sách bài viết" />
         <Pane className="pl20 pr20 pb20">
           <Pane >
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
@@ -233,10 +233,10 @@ const Index = memo(() => {
                       />
                     </Pane>
                     <Pane className="col-lg-12">
-                      <Form.Item label="Hình ảnh">
+                      <Form.Item label="Ảnh đại diện">
                         <ImageUpload
                           callback={(res) => {
-                            onSetImage(res.fileInfo.url);
+                            onSetImage(res?.fileInfo?.url);
                           }}
                           fileImage={fileImage}
                         />
