@@ -98,7 +98,7 @@ const Parents = memo(
                       callback={(res) => {
                         mountedSet(setFileImage, {
                           ...fileImage,
-                          [`${key}`]: res.fileInfo.url,
+                          [`${key}`]: res?.fileInfo?.url,
                         });
                       }}
                       fileImage={fileImage[`${key}`]}

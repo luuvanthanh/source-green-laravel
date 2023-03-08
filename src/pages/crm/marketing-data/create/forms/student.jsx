@@ -216,7 +216,7 @@ const Students = memo(() => {
                                       <Form.Item label="Hình ảnh">
                                         <ImageUpload
                                           callback={(res) => {
-                                            onSetImage(res.fileInfo.url, index);
+                                            onSetImage(res?.fileInfo?.url, index);
                                           }}
                                           fileImage={fileImage[index]}
                                         />
@@ -247,7 +247,7 @@ const Students = memo(() => {
                                       />
                                     </Pane>
                                     <Pane className="col-lg-4">
-                                    {
+                                      {
                                         dayOfBirth?.[index] ? (
                                           <Form.Item label="Tuổi (tháng)" >
                                             {dayOfBirth?.[index]?.e &&
@@ -292,7 +292,7 @@ const Students = memo(() => {
                                         remove(index);
                                         mountedSet(
                                           setFileImage,
-                                          fileImage.splice(index - 1 , 1)
+                                          fileImage.splice(index - 1, 1)
                                         );
                                       }}
                                     />
