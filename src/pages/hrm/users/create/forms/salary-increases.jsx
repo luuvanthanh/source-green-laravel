@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -16,11 +16,15 @@ import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
+import variablesModules from '../../../utils/variables';
+
 
 const Index = memo(() => {
     const [visible, setVisible] = useState(false);
     const [objects, setObjects] = useState({});
     const [form] = Form.useForm();
+    const [dataFormContarct, setDataFormContarct] = useState(undefined);
+
 
     const {
         loading: { effects },
@@ -76,7 +80,10 @@ const Index = memo(() => {
             timeApply: undefined,
             note: undefined,
             details: [{}],
+            ordinalNumber: undefined
         });
+        setDataFormContarct(undefined);
+        setObjects(undefined);
     };
 
     const cancelModal = () => {
@@ -86,6 +93,7 @@ const Index = memo(() => {
     const onEdit = (record) => {
         mountedSet(setVisible, true);
         mountedSet(setObjects, record);
+        setDataFormContarct([record]);
         if (!isEmpty(record)) {
             form.setFieldsValue({
                 ...record,
@@ -128,10 +136,14 @@ const Index = memo(() => {
     const save = () => {
         form.validateFields().then((values) => {
             dispatch({
-                type: objects.id ? 'salaryIncreasesAdd/UPDATE' : 'salaryIncreasesAdd/ADD',
+                type: objects?.id ? 'salaryIncreasesAdd/UPDATE' : 'salaryIncreasesAdd/ADD',
                 payload: {
-                    id: objects.id,
+                    id: objects?.id,
                     ...values,
+                    ordinalNumber: values.ordinalNumber,
+                    numberForm: head(dataFormContarct)?.numberForm,
+                    decisionNumberSampleId: head(dataFormContarct)?.id,
+                    type: variablesModules?.STATUS_TYPE_DECISION?.SALARY_INCREASES,
                     employeeId: details?.id,
                     detail: values?.details?.map((item) => ({
                         ...item,
@@ -190,7 +202,23 @@ const Index = memo(() => {
                 key: 'insurrance_number',
                 className: 'min-width-100',
                 width: 100,
-                render: (record) => get(record, 'decisionNumber'),
+                render: (record) => (
+                    <>
+                        {record?.contractNumber ? (
+                            <>{record?.contractNumber}</>
+                        ) : (
+                            <>
+                                {record?.ordinalNumber ? (
+                                    <>
+                                        {record?.ordinalNumber}/{record?.numberForm}
+                                    </>
+                                ) : (
+                                    ''
+                                )}
+                            </>
+                        )}
+                    </>
+                ),
             },
             {
                 title: 'Ngày QĐ',
@@ -284,6 +312,28 @@ const Index = memo(() => {
         }
     };
 
+
+    const converNumber = (input) => {
+        const pad = input;
+        if ((Number(input) + 1)?.toString().length < pad?.length) {
+            return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+        }
+        return input ? `${Number(input) + 1}` : "";
+    };
+
+    const onChangeNumber = (e) => {
+        dispatch({
+            type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
+            payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.SALARY_INCREASES },
+            callback: (response) => {
+                setDataFormContarct(response?.parsePayload);
+                form.setFieldsValue({
+                    ordinalNumber: converNumber(head(response?.parsePayload)?.ordinalNumber),
+                });
+            }
+        });
+    };
+
     return (
         <>
             <Modal
@@ -318,11 +368,8 @@ const Index = memo(() => {
                 <Form
                     layout="vertical"
                     form={form}
-                    initialValues={{
-                        details: [{}],
-                    }}
                 >
-                    <div className={styles['content-form']}>
+                    <div >
                         <div className={classnames(styles['content-children'])}>
                             <Text color="dark" size="large-medium">
                                 THÔNG TIN CHUNG
@@ -330,20 +377,30 @@ const Index = memo(() => {
                             <div className="row">
                                 <div className="col-lg-6">
                                     <FormItem
-                                        label="Số quyết định"
-                                        name="decisionNumber"
-                                        type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                                    />
-                                </div>
-                                <div className="col-lg-6">
-                                    <FormItem
                                         label="Ngày quyết định"
                                         name="decisionDate"
                                         disabledDate={Helper.disabledDate}
                                         type={variables.DATE_PICKER}
+                                        onChange={onChangeNumber}
                                         rules={[variables.RULES.EMPTY]}
                                     />
+                                </div>
+                                <div className="col-lg-3">
+                                    <FormItem
+                                        label="Số quyết định"
+                                        name="ordinalNumber"
+                                        type={variables.INPUT}
+                                        rules={[variables.RULES.EMPTY,
+                                        variables.RULES.ONLY_TEXT_NUMBER,
+                                        variables.RULES.MAX_ONLY_TEXT_NUMBER,
+                                        variables.RULES.MIN_ONLY_TEXT_NUMBER]}
+                                        disabled={isEmpty(dataFormContarct)}
+                                    />
+                                </div>
+                                <div className="col-lg-3">
+                                    <p className="mb0 font-size-13 mt35 font-weight-bold">
+                                        {!isEmpty(dataFormContarct) ? `/${head(dataFormContarct)?.numberForm}` : ''}
+                                    </p>
                                 </div>
                                 <div className="col-lg-12">
                                     <FormItem
