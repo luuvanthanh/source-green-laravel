@@ -57,7 +57,7 @@ class Index extends PureComponent {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       data: [],
       search: {
-        key: query?.key,
+        keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -108,7 +108,7 @@ class Index extends PureComponent {
     this.setStateData(
       {
         search: {
-          key: query?.key,
+          keyWord: query?.keyWord,
           branchId: query?.branchId,
           classId: query?.classId,
           from: query?.from
@@ -168,34 +168,32 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    if(search?.approvalStatus === variablesModules?.STATUS?.PENDING_APPROVED) {
+    if (search?.approvalStatus === variablesModules?.STATUS?.PENDING_APPROVED) {
       this.props.dispatch({
         type: 'teachingToolsStudent/GET_NO_SENDING',
         payload: {
           ...search,
         },
         callback: (response) => {
-          console.log("response",response);
-          // if (response) {
-          //   this.setStateData({
-          //     data: response.parsePayload, 
-          //   });
-          // }
+          if (response) {
+            this.setStateData({
+              data: response,
+            });
+          }
         },
       });
-    }else {
+    } else {
       this.props.dispatch({
         type: 'teachingToolsStudent/GET_SENDING',
         payload: {
           ...search,
         },
         callback: (response) => {
-          console.log("response",response);
-          // if (response) {
-          //   this.setStateData({
-          //     data: response.parsePayload,
-          //   });
-          // }
+          if (response) {
+            this.setStateData({
+              data: response?.items,
+            });
+          }
         },
       });
     }
@@ -393,7 +391,7 @@ class Index extends PureComponent {
   onChangeItem = (record) => {
     const self = this;
     this.props.dispatch({
-      type: 'teachingToolsStudent/ADD_ONE_ITEM_REVIEW',
+      type: 'teachingToolsStudent/ADD',
       payload: {
         id: record?.id,
       },
@@ -406,18 +404,13 @@ class Index extends PureComponent {
   };
 
   onClickAddReview = (type) => {
-    const { data, search } = this.state;
+    const { data } = this.state;
     const { dispatch } = this.props;
     const self = this;
     dispatch({
-      type: 'teachingToolsStudent/ADD_REVIEW',
+      type: 'teachingToolsStudent/ADD',
       payload: {
-        id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
-        status: type === 'all' ? true : null,
-        schoolYearId: type === 'all' ? search?.schoolYearId : null,
-        branchId: type === 'all' ? search?.branchId : null,
-        classId: type === 'all' ? search?.classId : null,
-        sensitivePeriodId: type === 'all' ? search?.sensitivePeriodId : null,
+        id: type === 'one' ? data?.filter((item) => item?.isActive)?.map((item) => item.id) : data?.map((item) => item.id),
       },
       callback: (response) => {
         if (response) {
@@ -437,7 +430,7 @@ class Index extends PureComponent {
         title: 'Thời gian phát hiện TKNC',
         key: 'name',
         width: 250,
-        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.timePendingApproved : record?.timeApproved, variables.DATE_FORMAT.DATE_TIME),
+        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.creationTime : record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Họ và Tên',
@@ -455,20 +448,24 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.branch?.name,
+        render: (record) => record?.student?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.name,
+        render: (record) => record?.student?.class?.name,
       },
       {
         title: 'Thời kỳ nhạy cảm',
         key: 'email',
         width: 200,
-        render: (record) => record?.assessmentPeriod?.nameAssessmentPeriod?.name,
+        render: (record) => <Text size="normal">  {record?.sensitivePeriods?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.sensitivePeriods.length ? "" : ",  "}
+          </div>
+        )}</Text>,
       },
       {
         key: 'action',
@@ -534,7 +531,7 @@ class Index extends PureComponent {
             {
               search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
                 <div className='d-flex'>
-                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
+                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview('one')}>
                     Gửi đánh giá đã chọn
                   </Button>
                   <Button
@@ -542,6 +539,7 @@ class Index extends PureComponent {
                     icon="redo2"
                     className="ml-2"
                     onClick={() => this.onClickAddReview('all')}
+                    disabled={isEmpty(data)}
                   >
                     Gửi tất cả
                   </Button>
@@ -613,7 +611,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={ [{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
+                    data={[{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
                     name="sensitivePeriodId"
                     options={['id', 'name']}
                     onChange={(event) => this.onChangeSelect(event, 'sensitivePeriodId')}
@@ -623,8 +621,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa tìm kiếm theo tên"
                     type={variables.INPUT_SEARCH}
                   />

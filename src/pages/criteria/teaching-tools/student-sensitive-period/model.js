@@ -1,4 +1,6 @@
 import * as categories from '@/services/categories';
+import { v4 as uuidv4 } from 'uuid';
+
 import * as services from './services';
 
 export default {
@@ -10,6 +12,7 @@ export default {
       total: 0,
     },
     branches: [],
+    detail: {},
     classes: [],
   },
   reducers: {
@@ -25,6 +28,27 @@ export default {
     SET_CLASSES: (state, { payload }) => ({
       ...state,
       classes: payload.items,
+    }),
+    SET_DETAIL: (state, { payload }) => ({
+      ...state,
+      detail: {
+        ...payload,
+        studentHasSensitivePeriodDetailGroupSensitivePeriods: payload?.studentHasSensitivePeriodDetailGroupSensitivePeriods?.map(
+          (item) => ({
+            ...item,
+            studentHasSensitivePeriodDetails: item?.studentHasSensitivePeriodDetails?.map(
+              (itemChild) => ({
+                ...itemChild,
+                id: uuidv4(),
+                children: itemChild.reviewJson?.map((itemChildReview) => ({
+                  id: uuidv4(),
+                  ...itemChildReview,
+                })),
+              }),
+            ),
+          }),
+        ),
+      },
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
@@ -124,14 +148,6 @@ export default {
         callback(null, error?.data?.error);
       }
     },
-    *ADD_ALL({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.addAll, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
     *GET_YEARS({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getYears, payload);
@@ -154,6 +170,20 @@ export default {
         yield saga.put({
           type: 'SET_ASESSMENT_PERIOD',
           payload: response.items,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DETAIL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDetail, payload);
+        yield saga.put({
+          type: 'SET_DETAIL',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

@@ -15,8 +15,8 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
-import HelperModules from './utils/Helper';
-import VariablesModules from './utils/variables';
+import HelperModules from '../utils/Helper';
+import VariablesModules from '../utils/variables';
 import stylesModule from './styles.module.scss';
 
 

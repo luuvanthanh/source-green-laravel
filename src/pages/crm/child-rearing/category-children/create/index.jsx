@@ -14,7 +14,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import EditorToolbar, { modules, formats } from '@/components/CommonComponent/EditorToolbar';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import ValidateModules from '../utils/variables';
+import ValidateModules from '../../utils/variables';
 
 
 const Index = memo(() => {
