@@ -93,7 +93,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
-
+            
             \DB::rollback();
             throw new HttpException(500, $e->getMessage());
         }
