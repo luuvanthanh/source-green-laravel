@@ -15,8 +15,8 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
-import HelperModules from './utils/Helper';
-import VariablesModules from './utils/variables';
+import HelperModules from '../utils/Helper';
+import VariablesModules from '../utils/variables';
 import stylesModule from './styles.module.scss';
 
 
@@ -112,11 +112,17 @@ const Index = memo(() => {
         to_date: moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
       });
     }
-    return loadData();
+    else {
+      setSearch({
+        ...search,
+        from_date: undefined,
+        to_date: undefined,
+      });
+    }
   };
 
   const onRemove = (id) => {
-    const text = variables?.RULES?.TEXT_WARNING_CATEGORY;
+    const text = VariablesModules?.RULES?.TEXT_WARNING_POST;
     Helper.confirmDelete({
       callback: () => {
         dispatch({

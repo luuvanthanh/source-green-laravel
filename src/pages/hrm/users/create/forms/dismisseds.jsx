@@ -11,10 +11,12 @@ import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
+import variablesModules from '../../../utils/variables';
 
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [objects, setObjects] = useState({});
+  const [dataFormContarct, setDataFormContarct] = useState(undefined);
 
   const {
     loading: { effects },
@@ -42,7 +44,7 @@ const Index = memo(() => {
   const params = useParams();
   const formRef = useRef();
   const mounted = useRef(false);
-  const formRefModal = useRef();
+  const [formRefModal] = Form.useForm();
   const mountedSet = (action, value) => {
     if (mounted.current) {
       action(value);
@@ -58,6 +60,19 @@ const Index = memo(() => {
 
   const handleOk = () => {
     mountedSet(setVisible, true);
+    formRefModal.setFieldsValue({
+      decisionDate: undefined,
+      ordinalNumber: undefined,
+      timeApply: undefined,
+      reason: undefined,
+      branchId: undefined,
+      divisionId: undefined,
+      positionId: undefined,
+      note: undefined,
+    }
+    );
+    setDataFormContarct(undefined);
+    setObjects(undefined);
   };
 
   const cancelModal = () => {
@@ -68,21 +83,27 @@ const Index = memo(() => {
   const onEdit = (record) => {
     mountedSet(setVisible, true);
     mountedSet(setObjects, record);
-    if (formRefModal.current) {
-      formRefModal.current.setFieldsValue({
+    if (formRefModal) {
+      formRefModal.setFieldsValue({
         ...record,
         ...head(record.dismissedDetails),
         decisionDate: record.decisionDate && moment(record.decisionDate),
+        timeApply: record?.timeApply && moment(record?.timeApply),
       });
     }
+    setDataFormContarct([record]);
   };
 
   const save = () => {
-    formRefModal.current.validateFields().then((values) => {
+    formRefModal.validateFields().then((values) => {
       dispatch({
-        type: objects.id ? 'HRMusersAdd/UPDATE_DIMISSEDS' : 'HRMusersAdd/ADD_DIMISSEDS',
+        type: objects?.id ? 'HRMusersAdd/UPDATE_DIMISSEDS' : 'HRMusersAdd/ADD_DIMISSEDS',
         payload: {
-          id: objects.id,
+          id: objects?.id,
+          ordinalNumber: values.ordinalNumber,
+          numberForm: head(dataFormContarct)?.numberForm,
+          decisionNumberSampleId: head(dataFormContarct)?.id,
+          type: variablesModules?.STATUS_TYPE_DECISION?.DISMISSED,
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
           timeApply: values.timeApply,
@@ -108,7 +129,7 @@ const Index = memo(() => {
           if (error) {
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {
-                formRefModal.current.setFields([
+                formRefModal.setFields([
                   {
                     name: get(item, 'source.pointer'),
                     errors: [get(item, 'detail')],
@@ -167,7 +188,23 @@ const Index = memo(() => {
         key: 'insurrance_number',
         className: 'min-width-100',
         width: 100,
-        render: (record) => get(record, 'decisionNumber'),
+        render: (record) => (
+          <>
+            {record?.contractNumber ? (
+              <>{record?.contractNumber}</>
+            ) : (
+              <>
+                {record?.ordinalNumber ? (
+                  <>
+                    {record?.ordinalNumber}/{record?.numberForm}
+                  </>
+                ) : (
+                  ''
+                )}
+              </>
+            )}
+          </>
+        ),
       },
       {
         title: 'Ngày QĐ',
@@ -293,6 +330,27 @@ const Index = memo(() => {
     });
   }, []);
 
+  const converNumber = (input) => {
+    const pad = input;
+    if ((Number(input) + 1)?.toString().length < pad?.length) {
+      return pad?.substring(0, pad?.length - (Number(input) + 1).toString()?.length) + (Number(input) + 1);
+    }
+    return input ? `${Number(input) + 1}` : "";
+  };
+
+  const onChangeNumber = (e) => {
+    dispatch({
+      type: 'transfersAdd/GET_NUMBER_DECISION_DENOMINATOR',
+      payload: { decisionDate: moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type: variablesModules?.STATUS_TYPE_DECISION?.DISMISSED },
+      callback: (response) => {
+        setDataFormContarct(response?.parsePayload);
+        formRefModal.setFieldsValue({
+          ordinalNumber: converNumber(head(response?.parsePayload)?.ordinalNumber),
+        });
+      }
+    });
+  };
+
   return (
     <>
       <Modal
@@ -326,23 +384,9 @@ const Index = memo(() => {
       >
         <Form
           layout="vertical"
-          ref={formRefModal}
-          initialValues={{
-            ...objects,
-            ...head(objects.dismissedDetails),
-            decisionDate: objects.decisionDate && moment(objects.decisionDate),
-            timeApply: objects.timeApply && moment(objects.timeApply),
-          }}
+          form={formRefModal}
         >
           <Pane className="row">
-            <Pane className="col-lg-6">
-              <FormItem
-                label="Số quyết định"
-                name="decisionNumber"
-                type={variables.INPUT}
-                rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-              />
-            </Pane>
             <Pane className="col-lg-6">
               <FormItem
                 label="Ngày quyết định"
@@ -350,8 +394,26 @@ const Index = memo(() => {
                 disabledDate={Helper.disabledDate}
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
+                onChange={onChangeNumber}
               />
             </Pane>
+            <div className="col-lg-3">
+              <FormItem
+                label="Số quyết định"
+                name="ordinalNumber"
+                type={variables.INPUT}
+                rules={[variables.RULES.EMPTY,
+                variables.RULES.ONLY_TEXT_NUMBER,
+                variables.RULES.MAX_ONLY_TEXT_NUMBER,
+                variables.RULES.MIN_ONLY_TEXT_NUMBER]}
+                disabled={isEmpty(dataFormContarct)}
+              />
+            </div>
+            <div className="col-lg-3">
+              <p className="mb0 font-size-13 mt35 font-weight-bold">
+                {!isEmpty(dataFormContarct) ? `/${head(dataFormContarct)?.numberForm}` : ''}
+              </p>
+            </div>
             <Pane className="col-lg-6">
               <FormItem
                 label="Ngày áp dụng"
