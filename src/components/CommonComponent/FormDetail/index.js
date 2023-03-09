@@ -80,7 +80,15 @@ class FormDetail extends Component {
           </div>
           <div size="normal" className={styles['general-detail']}>
             {name?.map((i) => (
-              <Tag className={i?.branch?.name === 'Scenic Valley 2' || i?.name === 'Scenic Valley 2' ? styles.tag__green : styles.tag__blue}>{i?.name}</Tag>
+              <Tag
+                className={
+                  i?.branch?.name === 'Scenic Valley 2' || i?.name === 'Scenic Valley 2'
+                    ? styles.tag__green
+                    : styles.tag__blue
+                }
+              >
+                {i?.name}
+              </Tag>
             ))}
           </div>
         </div>
@@ -113,6 +121,18 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'HTML') {
+      return (
+        <div className="mb20">
+          <div className={styles['wrapper-title']}>
+            <label className={styles.text}>{label}</label>
+          </div>
+          <div size="normal" className={styles['general-detail']} style={{ background: name }}>
+            <div className={styles['wrapper-content']} dangerouslySetInnerHTML={{ __html: name }} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mb20">
         <div className={styles['wrapper-title']}>
@@ -130,13 +150,13 @@ FormDetail.propTypes = {
   name: PropTypes.any,
   type: PropTypes.any,
   data: PropTypes.any,
-  label: PropTypes.string
+  label: PropTypes.string,
 };
 FormDetail.defaultProps = {
   name: '',
   label: '',
   data: [],
-  type: ''
+  type: '',
 };
 
 export default FormDetail;

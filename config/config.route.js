@@ -3389,6 +3389,12 @@ export default [
           },
           {
             path: '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
+            component: './crm/child-rearing/category-children/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
             component: './crm/child-rearing/category-children/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
@@ -3407,6 +3413,12 @@ export default [
           },
           {
             path: '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
+            component: './crm/child-rearing/list-posts-children/detail',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
             component: './crm/child-rearing/list-posts-children/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],

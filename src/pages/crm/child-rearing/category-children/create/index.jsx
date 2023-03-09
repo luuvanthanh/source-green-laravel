@@ -11,7 +11,7 @@ import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
 import Pane from '@/components/CommonComponent/Pane';
-import EditorToolbar, { modules, formats } from '@/components/CommonComponent/EditorToolbar';
+import EditorToolbar, { modules, formats } from '@/components/CommonComponent/EditorToolbarNoUploadVideo';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import ValidateModules from '../../utils/variables';
