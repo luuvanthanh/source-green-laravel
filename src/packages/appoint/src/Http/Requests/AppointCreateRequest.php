@@ -49,7 +49,7 @@ class AppointCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $labourContract = null;
                     $now = Carbon::now();
-                    $labourContractUnlimited = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->orWhereHas('typeOfContract', function ($query) {
+                    $labourContractUnlimited = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->whereHas('typeOfContract', function ($query) {
                         $query->where('IsUnlimited', true);
                     })->first();
 
