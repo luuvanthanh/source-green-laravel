@@ -35,9 +35,13 @@ export function add(data = {}) {
 }
 
 export function addAll(data = {}) {
-  return request('/notes', {
-    method: 'POST',
-    data,
+  return request('/student-has-sensitive-periods/send-items', {
+    method: 'PUT',
+    data: {},
+    params: {
+      isAll: true,
+      ...data,
+    },
   });
 }
 
