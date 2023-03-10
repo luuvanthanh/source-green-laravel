@@ -99,7 +99,7 @@ const renderChildren = (
       onChange={onChange}
       value={value}
       min={0}
-      placeholder={language === variables.LANGUAGE.ENGLISH ? "Select month" : "Nhập"}
+      placeholder={language === variables.LANGUAGE.ENGLISH ? "Input number" : "Nhập"}
     />
   ),
   inputCountForm: (
@@ -567,16 +567,16 @@ FormItem.defaultProps = {
   rules: [],
   placeholder: '',
   data: [],
-  handleScroll: () => {},
-  onChange: () => {},
-  onSearch: () => {},
-  onBlur: () => {},
+  handleScroll: () => { },
+  onChange: () => { },
+  onSearch: () => { },
+  onBlur: () => { },
   disabled: null,
   disabledDate: () => false,
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
-  onSelect: () => {},
+  onSelect: () => { },
   allowClear: true,
   picker: 'date',
   disabledHours: null,
