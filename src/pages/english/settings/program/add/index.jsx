@@ -204,7 +204,7 @@ const Index = memo(() => {
                                                 <p className={stylesModule.norm}>Lesson name</p>
                                               </div>
                                               <div className={stylesModule.col}>
-                                                <p className={stylesModule.norm}>Activities</p>
+                                                <p className={stylesModule.norm}>Lesson content</p>
                                               </div>
                                               <div className={stylesModule.cols}>
                                                 <p className={stylesModule.norm}>Week</p>
@@ -232,7 +232,7 @@ const Index = memo(() => {
                                                               fieldKey={[fieldItem.fieldKey, 'name']}
                                                               name={[fieldItem.name, 'name']}
                                                               placeholder="Input text"
-                                                              type={variables.INPUT}
+                                                              type={variables.TEXTAREA}
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.col)}>
@@ -241,7 +241,7 @@ const Index = memo(() => {
                                                               fieldKey={[fieldItem.fieldKey, 'activities']}
                                                               name={[fieldItem.name, 'activities']}
                                                               placeholder="Input text"
-                                                              type={variables.INPUT}
+                                                              type={variables.TEXTAREA}
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.cols)}>
@@ -252,7 +252,6 @@ const Index = memo(() => {
                                                               type={variables.INPUT_COUNT}
                                                               language={variables.LANGUAGE.ENGLISH}
                                                               rules={[variables.RULES.NUMBER_ENGLISH]}
-
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.cols)}>
@@ -263,6 +262,7 @@ const Index = memo(() => {
                                                               type={variables.INPUT_COUNT}
                                                               language={variables.LANGUAGE.ENGLISH}
                                                               rules={[variables.RULES.NUMBER_ENGLISH]}
+                                                              placeholder="Input number"
                                                             />
                                                           </div>
                                                           <div className={classnames(stylesModule.cols)}>
