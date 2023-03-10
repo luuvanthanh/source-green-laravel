@@ -171,9 +171,16 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
-            onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`${pathname}/${record.id}/chinh-sua`);
+            }}
           />
-          <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          <Button color="danger" icon="remove" onClick={(e) => {
+            e.stopPropagation();
+            onRemove(record.id);
+          }
+          } />
         </div>
       ),
     },
@@ -232,6 +239,11 @@ const Index = memo(() => {
                   header: header(),
                   type: 'table',
                 }}
+                onRow={(record) => ({
+                  onClick: () => {
+                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                  },
+                })}
               />
             </div>
           </Pane>
