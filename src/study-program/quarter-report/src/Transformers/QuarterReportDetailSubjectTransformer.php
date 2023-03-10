@@ -53,7 +53,7 @@ class QuarterReportDetailSubjectTransformer extends BaseTransformer
 
     public function includeScriptReviewSubjectDetail(QuarterReportDetailSubject $quarterReportDetailSubject)
     {
-        if (!is_null($quarterReportDetailSubject->ScriptReviewSubjectDetailId)) {
+        if (!is_null($quarterReportDetailSubject->scriptReviewSubjectDetail)) {
             return $this->item($quarterReportDetailSubject->scriptReviewSubjectDetail, new ScriptReviewSubjectDetailTransformer, 'ScriptReviewSubjectDetail');
         } else {
             return null;

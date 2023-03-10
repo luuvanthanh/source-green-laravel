@@ -49,12 +49,20 @@ class DismissedCreateRequest extends FormRequest
             'data.*.employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
-                    $employeeId = $value;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
+                    $labourContract = null;
+                    $now = Carbon::now();
+                    $labourContractUnlimited = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->whereHas('typeOfContract', function ($query) {
+                        $query->where('IsUnlimited', true);
+                    })->first();
 
-                    if (is_null($labourContract)  && is_null($probationaryContract)) {
-                        return $fail('Chưa có hợp đồng không được tạo quyết định.');
+                    if (is_null($labourContractUnlimited)) {
+                        $labourContract = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
+                    }
+
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
+
+                    if (is_null($labourContract)  && is_null($probationaryContract) && is_null($labourContractUnlimited)) {
+                        return $fail('Chưa có hợp đồng không được tạo điều chuyển.');
                     }
                 },
             ],

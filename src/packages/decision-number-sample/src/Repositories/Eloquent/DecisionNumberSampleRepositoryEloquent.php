@@ -78,8 +78,12 @@ class DecisionNumberSampleRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function updateOrdinalNumberOfUpdated($model, $attributes)
     {
-        $typeDecision = DecisionNumberSample::TYPE[$attributes['type']];
+        if (!empty($attributes['typeDecisionNumberSample'])) {
+            $attributes['type'] = $attributes['typeDecisionNumberSample'];
+        }
         
+        $typeDecision = DecisionNumberSample::TYPE[$attributes['type']];
+       
         $decisionNumberSample = DecisionNumberSample::whereDate('StartDate', '<=', $model->DecisionDate)
             ->whereDate('EndDate', '>=', $model->DecisionDate)
             ->where('Type', $typeDecision)->first();

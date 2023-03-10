@@ -95,7 +95,7 @@ class QuarterReportTransformer extends BaseTransformer
 
     public function includeSchoolYear(QuarterReport $quarterReport)
     {
-        if (is_null($quarterReport->SchoolYearId)) {
+        if (is_null($quarterReport->schoolYear)) {
             return null;
         }
         return $this->item($quarterReport->schoolYear, new SchoolYearTransformer, 'SchoolYear');
