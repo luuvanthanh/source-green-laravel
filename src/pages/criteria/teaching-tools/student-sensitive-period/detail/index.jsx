@@ -8,10 +8,15 @@ import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import ImgDetail from '@/components/CommonComponent/imageDetail';
 import Text from '@/components/CommonComponent/Text';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Button from '@/components/CommonComponent/Button';
+import { variables, Helper } from '@/utils';
 import stylesModule from '../styles.module.scss';
+import HelperModules from '../utils/Helper';
+import VariableModules from '../utils/variables';
+
 
 
 const Index = memo(() => {
@@ -44,31 +49,23 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
-  // useEffect(() => {
-  //   if (params.id) {
-  //     form.setFieldsValue({
-  //       ...details,
-  //     });
-  //   }
-  // }, [details]);
-
   const header = () => {
     const columns = [
       {
         title: 'Thời gian học',
         key: 'day',
-        className: 'max-width-200',
-        width: 200,
+        className: 'max-width-120',
+        width: 120,
         render: (value) => {
-          const count = value?.reviewJson?.length + 1;
+          const count = value?.children?.length + 1;
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {/* { Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME)} */}
+                {Helper.getDate(value?.information?.creationTime, variables.DATE_FORMAT.DATE_TIME)}
               </div>
             ),
             props: {},
-          }; if (value?.reviewJson) {
+          }; if (value?.children) {
             obj.props.rowSpan = count;
           }
           else {
@@ -82,15 +79,15 @@ const Index = memo(() => {
         key: 'statusParent',
         className: 'min-width-150',
         render: (value) => {
-          const count = value?.reviewJson?.length + 1;
+          const count = value?.children?.length + 1;
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                <Text size="normal">{value?.toolDetail?.name}</Text>
+                <Text size="normal">{value?.information?.toolDetail?.name}</Text>
               </div>
             ),
             props: {},
-          }; if (value?.reviewJson) {
+          }; if (value?.children) {
             obj.props.rowSpan = count;
           }
           else {
@@ -102,17 +99,19 @@ const Index = memo(() => {
       {
         title: 'Cấp độ',
         key: 'level',
-        className: 'min-width-150',
+        className: 'min-width-100',
+        align: 'center',
+        width: 100,
         render: (value) => {
-          const count = value?.reviewJson?.length + 1;
+          const count = value?.children?.length + 1;
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                <Text size="normal">{value?.level}</Text>
+                <Text size="normal">{value?.information?.level}</Text>
               </div>
             ),
             props: {},
-          }; if (value?.reviewJson) {
+          }; if (value?.children) {
             obj.props.rowSpan = count;
           }
           else {
@@ -124,17 +123,19 @@ const Index = memo(() => {
       {
         title: 'Số phút học',
         key: 'totalMinutes',
-        className: 'min-width-150',
+        align: 'center',
+        className: 'min-width-120',
+        width: 120,
         render: (value) => {
-          const count = value?.reviewJson?.length + 1;
+          const count = value?.children?.length + 1;
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                <Text size="normal">{value?.totalMinutes}</Text>
+                <Text size="normal">{value?.information?.totalMinutes}</Text>
               </div>
             ),
             props: {},
-          }; if (value?.reviewJson) {
+          }; if (value?.children) {
             obj.props.rowSpan = count;
           }
           else {
@@ -146,7 +147,7 @@ const Index = memo(() => {
       {
         title: 'Hành động cụ thể',
         key: 'statusParent',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (value) => {
 
           const obj = {
@@ -159,7 +160,7 @@ const Index = memo(() => {
             ),
             props: {},
           };
-          if (value?.reviewJson) {
+          if (value?.children) {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -168,7 +169,7 @@ const Index = memo(() => {
       {
         title: 'Tham gia phụ huynh',
         key: 'statusParent',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (value) => {
 
           const obj = {
@@ -181,7 +182,7 @@ const Index = memo(() => {
             ),
             props: {},
           };
-          if (value?.reviewJson) {
+          if (value?.children) {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -203,7 +204,7 @@ const Index = memo(() => {
             ),
             props: {},
           };
-          if (value?.reviewJson) {
+          if (value?.children) {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -213,10 +214,22 @@ const Index = memo(() => {
     return columns;
   };
 
+  const onChangeItem = () => {
+    dispatch({
+      type: 'teachingToolsStudent/ADD',
+      payload: [params?.id],
+      callback: (response) => {
+        if (response) {
+          history.goBack();
+        }
+      },
+    });
+  };
+
   return (
     <div className={stylesModule['wraper-container']}>
       <Breadcrumbs last="Chi tiết" menu={menuLeftCriteria} />
-      <Helmet title="Subject" />
+      <Helmet title="Học sinh có TKNC" />
       <Pane className="pl20 pr20">
         <Pane >
           <Form layout="vertical" form={form} initialValues={{
@@ -225,24 +238,39 @@ const Index = memo(() => {
             ],
           }}>
             <Loading
+              params={{ type: 'container' }}
               loading={effects['teachingToolsStudent/GET_DETAIL']}
             >
               <Pane className="card p20">
-                <Heading type="form-title" className="mb15">
-                  Thông tin chung
-                </Heading>
+                <div className={stylesModule['wrapper-header']}>
+                  <Heading type="form-title" className="mb15">
+                    Thông tin chung
+                  </Heading>
+                  <div className={stylesModule['header-tag']}>
+                    {HelperModules.tagStatus(detail?.isSent ? VariableModules.STATUS.SEND : VariableModules.STATUS.NOT_SEND)}
+                    <p className={stylesModule.time}>Lúc {Helper.getDate(detail?.sentDate, variables.DATE_FORMAT.DATE_TIME)} </p>
+                  </div>
+                </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
-                    <FormDetail name={detail?.student?.fullName} label="32 tháng tuổi" />
+                    <div className={stylesModule['wrapper-student']}>
+                      <ImgDetail
+                        fileImage={detail?.student?.fileImage}
+                      />
+                      <div className={stylesModule?.content}>
+                        <h3 className={stylesModule?.lable}>{detail?.student?.fullName}</h3>
+                        <p className={stylesModule?.age}>{detail?.student?.age} Tháng tuổi</p>
+                      </div>
+                    </div>
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={detail?.student?.branch?.name} label="Cơ sở" type="text" />
+                    <FormDetail name={detail?.student?.branch?.name} label="Cơ sở" type={variables.TYPE.TEXT} />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={detail?.student?.class?.name} label="Lớp" />
+                    <FormDetail name={detail?.student?.class?.name} label="Lớp" type={variables.TYPE.TEXT} />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name="" label="Thời gian phát hiện TKNC" />
+                    <FormDetail name={Helper.getDate(detail?.creationTime, variables.DATE_FORMAT.DATE_TIME)} label="Thời gian phát hiện TKNC" type={variables.TYPE.TEXT} />
                   </Pane>
                 </Pane>
               </Pane>
@@ -258,7 +286,7 @@ const Index = memo(() => {
                           <Table
                             columns={header()}
                             bordered
-                            dataSource={item?.studentHasSensitivePeriodDetails}
+                            dataSource={item?.groupBy}
                             pagination={false}
                             className="table-normal"
                             defaultExpandAllRows
@@ -277,25 +305,28 @@ const Index = memo(() => {
                   </Pane>
                 ))
               }
-              <Pane className="d-flex justify-content-between align-items-center mb20">
+              <Pane className="d-flex justify-content-between align-items-center pb20">
                 <p
                   className="btn-delete"
                   role="presentation"
-
                   onClick={() => history.goBack()}
                 >
                   Đóng
                 </p>
-                <Button
-                  className="ml-auto px25"
-                  color="success"
-                  size="large"
-                  onClick={() => {
-                    history.push(`/chuong-trinh-hoc/settings/evaluationCriteria/${detail?.id}/edit`);
-                  }}
-                >
-                  Gửi TKNC
-                </Button>
+                {
+                  !detail?.isSent && (
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      size="large"
+                      onClick={() =>
+                        onChangeItem()
+                      }
+                    >
+                      Gửi TKNC
+                    </Button>
+                  )
+                }
               </Pane>
             </Loading>
           </Form>

@@ -21,35 +21,82 @@
   }
 }
 
-.wrapper-checkBox {
-  font-family: $base__font-family;
-  margin-bottom: 8px;
-  font-style: normal;
-  height: 22px;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 20px;
-  color: #35373a;
-}
-
-.checkBox-item {
-  :global(.checkbox-small) {
-    margin-bottom: 0px !important;
-    height: 32px !important;
+.wrapper-header {
+  display: flex;
+  justify-content: space-between;
+  .header-tag {
+    span {
+      margin: 0px !important;
+    }
+    .time {
+      font-family: "Proxima Nova";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 20px;
+      color: #6d7177;
+    }
   }
 }
 
-.wrapper-tag {
-  :global(.ant-tag) {
-    margin: 5px !important;
+.wrapper-student {
+  display: flex;
+  align-items: center;
+  :global(img) {
+    margin: 0px !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .content {
+    margin-left: 15px;
+    display: block;
+    .lable {
+      font-family: "Proxima Nova";
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      color: #36383a;
+    }
+    .age {
+      font-family: "Proxima Nova";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #36383a;
+    }
   }
 }
+// .wrapper-checkBox {
+//   font-family: $base__font-family;
+//   margin-bottom: 8px;
+//   font-style: normal;
+//   height: 22px;
+//   font-weight: normal;
+//   font-size: 14px;
+//   line-height: 20px;
+//   color: #35373a;
+// }
 
-.wraper-container {
-  :global(.ant-collapse-arrow) {
-    top: -25px !important;
-  }
-  :global(.ant-collapse-header) {
-    padding: 0px !important;
-  }
-}
+// .checkBox-item {
+//   :global(.checkbox-small) {
+//     margin-bottom: 0px !important;
+//     height: 32px !important;
+//   }
+// }
+
+// .wrapper-tag {
+//   :global(.ant-tag) {
+//     margin: 5px !important;
+//   }
+// }
+
+// .wraper-container {
+//   :global(.ant-collapse-arrow) {
+//     top: -25px !important;
+//   }
+//   :global(.ant-collapse-header) {
+//     padding: 0px !important;
+//   }
+// }

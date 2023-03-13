@@ -35,17 +35,15 @@ export default {
         ...payload,
         studentHasSensitivePeriodDetailGroupSensitivePeriods: payload?.studentHasSensitivePeriodDetailGroupSensitivePeriods?.map(
           (item) => ({
-            ...item,
-            studentHasSensitivePeriodDetails: item?.studentHasSensitivePeriodDetails?.map(
-              (itemChild) => ({
-                ...itemChild,
+            sensitivePeriod: item?.sensitivePeriod,
+            groupBy: item?.groupBy?.map((itemChild) => ({
+              ...itemChild,
+              id: uuidv4(),
+              children: itemChild?.details?.map((itemChildReview) => ({
+                ...itemChildReview,
                 id: uuidv4(),
-                children: itemChild.reviewJson?.map((itemChildReview) => ({
-                  id: uuidv4(),
-                  ...itemChildReview,
-                })),
-              }),
-            ),
+              })),
+            })),
           }),
         ),
       },
@@ -143,6 +141,14 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_ALL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addAll, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);

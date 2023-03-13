@@ -56,6 +56,7 @@ class Index extends PureComponent {
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       data: [],
+      dataTotal: {},
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
@@ -177,7 +178,11 @@ class Index extends PureComponent {
         callback: (response) => {
           if (response) {
             this.setStateData({
-              data: response,
+              data: response?.items,
+              dataTotal: {
+                not_send: response?.totalCount,
+                send: response?.summary
+              },
             });
           }
         },
@@ -192,6 +197,10 @@ class Index extends PureComponent {
           if (response) {
             this.setStateData({
               data: response?.items,
+              dataTotal: {
+                send: response?.totalCount,
+                not_send: response?.summary
+              },
             });
           }
         },
@@ -392,9 +401,7 @@ class Index extends PureComponent {
     const self = this;
     this.props.dispatch({
       type: 'teachingToolsStudent/ADD',
-      payload: {
-        id: record?.id,
-      },
+      payload: [record?.id],
       callback: (response) => {
         if (response) {
           self.onLoad();
@@ -404,14 +411,21 @@ class Index extends PureComponent {
   };
 
   onClickAddReview = (type) => {
-    const { data } = this.state;
+    const { data, search } = this.state;
     const { dispatch } = this.props;
     const self = this;
     dispatch({
-      type: 'teachingToolsStudent/ADD',
-      payload: {
-        id: type === 'one' ? data?.filter((item) => item?.isActive)?.map((item) => item.id) : data?.map((item) => item.id),
-      },
+      type: type === 'one' ? 'teachingToolsStudent/ADD' : 'teachingToolsStudent/ADD_ALL',
+      payload:
+        type === 'one' ?
+          data?.filter((item) => item?.isActive)?.map((item) => item.id) :
+          {
+            branchId: search?.branchId,
+            classId: search?.classId,
+            sensitivePeriodId: search?.sensitivePeriodId,
+            keyWord: search?.keyWord,
+
+          },
       callback: (response) => {
         if (response) {
           self.onLoad();
@@ -511,7 +525,7 @@ class Index extends PureComponent {
       years,
       user,
     } = this.props;
-    const { data } = this.state;
+    const { data, dataTotal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -520,7 +534,7 @@ class Index extends PureComponent {
       }),
     };
     const { search, defaultBranchs } = this.state;
-    const loading = effects['teachingToolsStudent/GET_DATA'];
+    const loading = effects['teachingToolsStudent/GET_DATA'] || effects['teachingToolsStudent/GET_SENDING'];
     return (
       <>
         <Helmet title="Học sinh có thời kỳ nhạy cảm" />
@@ -553,7 +567,10 @@ class Index extends PureComponent {
               onChange={(event) => this.onChangeSelectStatus(event, 'approvalStatus')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={`${item.name}`} key={item.id} />
+                <TabPane tab={`${item.name}  ${(!isEmpty(dataTotal))
+                  ?
+                  `(${dataTotal?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})`
+                  : ""}  `} key={item.id} />
               ))}
             </Tabs>
             <Form

@@ -374,6 +374,12 @@ export const variables = {
     VIETNAM: 'VIETNAM',
     ENGLISH: 'ENGLISH',
   },
+  TYPE: {
+    TEXT: 'text',
+    DAY: 'day',
+    SELECT: 'select',
+    IMG: 'img',
+  },
 };
 
 export default variables;

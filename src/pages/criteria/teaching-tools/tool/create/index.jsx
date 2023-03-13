@@ -20,6 +20,9 @@ import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/Ed
 import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
 import Select from '@/components/CommonComponent/Select';
+import stylesModule from '../styles.module.scss';
+
+
 
 
 const Index = memo(() => {
@@ -223,7 +226,7 @@ const Index = memo(() => {
         title: 'Thời kỳ nhạy cảm',
         key: 'sensitivePeriodId',
         dataIndex: 'sensitivePeriodId',
-        className: 'min-width-200',
+        className: 'labelRequired',
         width: 200,
         editable: true,
         type: variables.SELECT,
@@ -253,7 +256,7 @@ const Index = memo(() => {
         title: 'Hành động của trẻ',
         key: 'activity',
         dataIndex: 'activity',
-        className: 'min-width-200',
+        className: 'labelRequired',
         width: 200,
         editable: true,
         type: variables.TEXTAREA,
@@ -265,7 +268,7 @@ const Index = memo(() => {
         title: 'Tham gia phụ huynh',
         key: 'parentInvolvement',
         dataIndex: 'parentInvolvement',
-        className: 'min-width-200',
+        className: 'labelRequired',
         width: 200,
         editable: true,
         type: variables.TEXTAREA,
@@ -320,6 +323,7 @@ const Index = memo(() => {
   const onAddLevels = async () => {
     const objects = {
       id: uuidv4(),
+      level: undefined
     };
     await setToolDetailLevels((prevState) => [...prevState, objects]);
 
@@ -357,19 +361,19 @@ const Index = memo(() => {
       {
         title: 'Cấp độ',
         key: 'level',
-        className: 'min-width-200',
+        className: 'labelRequired',
         width: 200,
         render: (record) =>
           <FormItem
             value={record?.level}
             placeholder="Nhập"
-            rules={[variables.RULES.EMPTY]}
+            rules={[variables.RULES.EMPTY_INPUT]}
             type={variables.NUMBER_INPUT}
             onChange={(e) => onChangeInput(record, e, 'level')}
           />,
       },
       {
-        title: 'Diễn giải',
+        title: 'Chi tiết cấp độ giáo cụ',
         key: 'explain',
         dataIndex: 'explain',
         className: 'min-width-200',
@@ -421,12 +425,13 @@ const Index = memo(() => {
       }),
     };
   });
+
   return (
     <>
       <Helmet title="Tạo giáo cụ" />
       <Pane style={{ paddingTop: 20 }}>
         <Breadcrumbs last="Tạo giáo cụ" menu={menuLeftCriteria} />
-        <Pane style={{ padding: 20, paddingTop: 0 }}>
+        <Pane style={{ padding: 20, paddingTop: 0 }} className={stylesModule['wrapper-table']} >
           <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
             <Pane className="my20 mb0 card">
               <Loading
@@ -443,16 +448,18 @@ const Index = memo(() => {
                       <label className="ant-col ant-form-item-label d-block">
                         <span>Hình ảnh</span>
                       </label>
-                      <Upload {...props}>
+                    </Pane>
+                    <div className={stylesModule['wrapper-upload']}>
+                      {!isEmpty(files) && (
+                        <CustomListUpload data={files} remove={(item) => onRemoFile(item)} />
+                      )}
+                      <Upload {...props} className="mt25 ml10">
                         <Pane className="upload-container">
                           <CloudUploadOutlined />
                         </Pane>
                       </Upload>
-                    </Pane>
+                    </div>
                   </Pane>
-                  {!isEmpty(files) && (
-                    <CustomListUpload data={files} remove={(item) => onRemoFile(item)} />
-                  )}
                   <Pane className="row mt20">
                     <Pane className="col-lg-6">
                       <FormItem
@@ -536,9 +543,18 @@ const Index = memo(() => {
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
               {params.id && (
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Xóa
-                </p>
+                <>
+                  <p
+                    className="btn-delete mr20"
+                    role="presentation"
+                    onClick={() => history.goBack()}
+                  >
+                    Hủy
+                  </p>
+                  <p className="btn-delete" role="presentation" onClick={remove}>
+                    Xóa
+                  </p>
+                </>
               )}
               <Button
                 className="ml-auto px25"
@@ -546,7 +562,10 @@ const Index = memo(() => {
                 htmlType="submit"
                 size="large"
                 loading={loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']}
-                disabled={!!toolDetailSensitives.find((item) => !item.sensitivePeriodId)}
+                disabled={
+                  !!toolDetailSensitives.find((item) => !item.sensitivePeriodId || !item.activity || !item.parentInvolvement)
+                  || !isEmpty(toolDetailLevels?.find(item => !item?.level))
+                }
               >
                 Lưu
               </Button>

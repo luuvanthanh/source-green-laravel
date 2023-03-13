@@ -1,41 +1,26 @@
 export const variables = {
   STATUS: {
-    NEW: 'NEW',
-    CLOSED: 'CLOSED',
-    EXPIRE: 'EXPIRE',
-    VALIDATING: 'VALIDATING',
-    IN_PROGRESS: 'IN_PROGRESS',
-    SENT: 'SENT',
-    CONFIRMING: 'CONFIRMING',
-    CONFIRMED: 'CONFIRMED',
     PENDING_APPROVED: 'PENDING_APPROVED',
     APPROVED: 'APPROVED',
+    NOT_SEND: 'NOT_SEND',
+    SEND: 'SEND',
   },
   STATUS_NAME: {
-    IN_PROGRESS: 'Đang trao đổi',
-    CLOSED: 'Đã xác nhận',
-    VALIDATING: 'Đang xác nhận',
-    NEW: 'Mới',
-    EXPIRE: 'Hết hạn',
-    CONFIRMING: 'Chờ xác nhận',
-    CONFIRMED: 'Đã nhận',
+    NOT_SEND: 'Chưa gửi',
+    SEND: 'Đã gửi',
   },
   STATUS_TABS: [
     {
       id: 'PENDING_APPROVED',
       name: 'Chờ gửi',
+      type: 'not_send',
     },
     {
       id: 'APPROVED',
       name: 'Đã gửi',
+      type: 'send',
     },
   ],
-  PARENT: 'PARENT',
-  TEACHER: 'TEACHER',
-  NAME_ROLES: {
-    TEACHER: 'Giáo viên',
-    PARENT: 'Phụ huynh',
-  },
 };
 
 export default variables;
