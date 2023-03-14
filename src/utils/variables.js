@@ -93,6 +93,7 @@ export const variables = {
     INVALID_DATE: 'Ngày không hợp lệ',
     ERR_STUDY_PLANE: 'Data has changed, do you want to delete the data?',
     TEXT_WARNING_CATEGORY: 'Bạn có chắc chắn muốn xóa danh mục này không?',
+    NUMBER_INTEGER: { pattern: /^\d+$/, message: 'Trường này là số nguyên' },
   },
   // PAGINATION
   PAGINATION: {

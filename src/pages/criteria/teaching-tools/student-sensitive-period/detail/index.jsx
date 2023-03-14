@@ -248,7 +248,7 @@ const Index = memo(() => {
                   </Heading>
                   <div className={stylesModule['header-tag']}>
                     {HelperModules.tagStatus(detail?.isSent ? VariableModules.STATUS.SEND : VariableModules.STATUS.NOT_SEND)}
-                    <p className={stylesModule.time}>Lúc {Helper.getDate(detail?.sentDate, variables.DATE_FORMAT.DATE_TIME)} </p>
+                    {detail?.isSent && (<p className={stylesModule.time}>Lúc {Helper.getDate(detail?.sentDate, variables.DATE_FORMAT.DATE_TIME)} </p>)}
                   </div>
                 </div>
                 <Pane className="row">

@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
 
-import { Helper } from '@/utils';
+import { variables, Helper } from '@/utils';
 
 export function getNoSending(params = {}) {
   return request('/student-has-sensitive-periods/items-with-no-sending', {
@@ -50,7 +50,7 @@ export function getAssessmentPeriod(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      ...Helper.getPagination(params.page, params.limit),
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
 }

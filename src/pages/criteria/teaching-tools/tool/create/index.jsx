@@ -439,7 +439,7 @@ const Index = memo(() => {
                 isError={error.isError}
                 params={{ error, type: 'container', goBack: '/chuong-trinh-hoc/cau-hinh/giao-cu' }}
               >
-                <Pane className="border-bottom p20">
+                <Pane className="p20">
                   <Heading type="form-title" className="mb20">
                     Thông tin chung
                   </Heading>
@@ -515,7 +515,7 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="my20 mb0 card">
-              <Pane className="border-bottom p20">
+              <Pane className="p20">
                 <Heading type="form-title" className="mb20">
                   Thời kỳ nhạy cảm
                 </Heading>
@@ -542,15 +542,15 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
+              <p
+                className="btn-delete mr20"
+                role="presentation"
+                onClick={() => history.goBack()}
+              >
+                Hủy
+              </p>
               {params.id && (
                 <>
-                  <p
-                    className="btn-delete mr20"
-                    role="presentation"
-                    onClick={() => history.goBack()}
-                  >
-                    Hủy
-                  </p>
                   <p className="btn-delete" role="presentation" onClick={remove}>
                     Xóa
                   </p>
@@ -563,7 +563,7 @@ const Index = memo(() => {
                 size="large"
                 loading={loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']}
                 disabled={
-                  !!toolDetailSensitives.find((item) => !item.sensitivePeriodId || !item.activity || !item.parentInvolvement)
+                  !!toolDetailSensitives.find((item) => !item?.sensitivePeriodId || isEmpty(item?.activity?.trim()) || isEmpty(item?.parentInvolvement?.trim()))
                   || !isEmpty(toolDetailLevels?.find(item => !item?.level))
                 }
               >

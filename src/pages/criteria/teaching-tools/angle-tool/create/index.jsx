@@ -214,15 +214,15 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
+                <p
+                  className="btn-delete mr20"
+                  role="presentation"
+                  onClick={() => history.goBack()}
+                >
+                  Hủy
+                </p>
                 {params.id && (
                   <>
-                    <p
-                      className="btn-delete mr20"
-                      role="presentation"
-                      onClick={() => history.goBack()}
-                    >
-                      Hủy
-                    </p>
                     <p className="btn-delete" role="presentation" onClick={remove}>
                       Xóa
                     </p>
