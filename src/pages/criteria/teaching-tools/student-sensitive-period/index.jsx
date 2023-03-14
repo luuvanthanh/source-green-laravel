@@ -443,8 +443,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian phát hiện TKNC',
         key: 'name',
-        width: 250,
-        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.creationTime : record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
+        width: 200,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Họ và Tên',
@@ -474,32 +474,36 @@ class Index extends PureComponent {
       {
         title: 'Thời kỳ nhạy cảm',
         key: 'email',
-        width: 200,
+        width: 150,
         render: (record) => <Text size="normal">  {record?.sensitivePeriods?.map((item, index) =>
           <div size="normal" key={index} className='d-flex'>
             {item?.name}{index + 1 === record.sensitivePeriods.length ? "" : ",  "}
           </div>
         )}</Text>,
       },
-      {
-        key: 'action',
-        width: 80,
-        fixed: 'right',
-        render: (record) => (
-          <div className="d-flex flex-row-reverse">
-            {
-              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
-                <Button
-                  color="success"
-                  className="ml5"
-                  icon="redo2"
-                  onClick={(e) => { e.stopPropagation(); this.onChangeItem(record); }}
-                />
-              )
-            }
-          </div>
-        ),
-      },
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          title: "Thời gian gửi",
+          key: 'text',
+          width: 200,
+          render: (record) => Helper.getDate(record?.sentDate, variables.DATE_FORMAT.DATE_TIME),
+        },] : []),
+      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          key: 'action',
+          width: 80,
+          fixed: 'right',
+          render: (record) => (
+            <div className="d-flex flex-row-reverse">
+              <Button
+                color="success"
+                className="ml5"
+                icon="redo2"
+                onClick={(e) => { e.stopPropagation(); this.onChangeItem(record); }}
+              />
+            </div>
+          ),
+        },] : []),
     ];
     return columns;
   };
