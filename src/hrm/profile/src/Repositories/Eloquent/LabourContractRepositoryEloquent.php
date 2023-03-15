@@ -179,7 +179,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         try {
             $labourContract = LabourContract::create($attributes);
 
-            $this->created($labourContract, $attributes);
+            // $this->created($labourContract, $attributes);
 
             $totalAllowance = 0;
             $basicSalary = 0;

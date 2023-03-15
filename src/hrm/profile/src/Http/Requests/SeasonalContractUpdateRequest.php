@@ -65,12 +65,12 @@ class SeasonalContractUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
-            'ordinalNumber' => [
-                'nullable',
-                'string',
-                new ContractUpdateRule($seasonalContract, $this->numberForm, $this->id)
-            ]
+            // 'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            // 'ordinalNumber' => [
+            //     'nullable',
+            //     'string',
+            //     new ContractUpdateRule($seasonalContract, $this->numberForm, $this->id)
+            // ]
         ];
     }
 }
