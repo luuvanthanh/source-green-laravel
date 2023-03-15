@@ -83,14 +83,14 @@ class ProbationaryContractCreateRequest extends FormRequest
             'work' => 'required|string',
             'workTime' => 'required|string',
             'branchId' => 'required|exists:Branches,Id',
-            'numberForm' => 'required|exists:NumberFormContracts,NumberForm',
-            'type' => 'required|in:' . NumberFormContract::TYPE['PROBATIONARY'],
-            'numberFormContractId' => 'required|uuid|exists:NumberFormContracts,Id',
-            'ordinalNumber' => [
-                'required',
-                'string',
-                new ContractCreateRule($this->numberFormContractId),
-            ]
+            // 'numberForm' => 'required|exists:NumberFormContracts,NumberForm',
+            // 'type' => 'required|in:' . NumberFormContract::TYPE['PROBATIONARY'],
+            // 'numberFormContractId' => 'required|uuid|exists:NumberFormContracts,Id',
+            // 'ordinalNumber' => [
+            //     'required',
+            //     'string',
+            //     new ContractCreateRule($this->numberFormContractId),
+            // ]
         ];
     }
 
