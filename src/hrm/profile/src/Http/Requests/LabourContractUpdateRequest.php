@@ -61,13 +61,13 @@ class LabourContractUpdateRequest extends FormRequest
                 },
             ],
             'contractTo' => 'nullable|date',
-            'contractDate' => 'required|date|date_format:Y-m-d',
-            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
-            'ordinalNumber' => [
-                'nullable',
-                'string',
-                new ContractUpdateRule($labourContract, $this->numberForm, $this->labours_contract)
-            ]
+            // 'contractDate' => 'required|date|date_format:Y-m-d',
+            // 'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            // 'ordinalNumber' => [
+            //     'nullable',
+            //     'string',
+            //     new ContractUpdateRule($labourContract, $this->numberForm, $this->labours_contract)
+            // ]
         ];
     }
 

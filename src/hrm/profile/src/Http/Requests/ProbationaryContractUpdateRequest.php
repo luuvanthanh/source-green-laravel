@@ -60,12 +60,12 @@ class ProbationaryContractUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
-            'ordinalNumber' => [
-                'nullable',
-                'string',
-                new ContractUpdateRule($probationaryContract, $this->numberForm, $this->id)
-            ]
+            // 'numberForm' => 'nullable|exists:NumberFormContracts,NumberForm',
+            // 'ordinalNumber' => [
+            //     'nullable',
+            //     'string',
+            //     new ContractUpdateRule($probationaryContract, $this->numberForm, $this->id)
+            // ]
         ];
     }
 }
