@@ -61,7 +61,12 @@ const Index = memo(() => {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {Helper.getDate(value?.information?.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+                {Helper.getDate(value?.information?.reportDate, variables.DATE_FORMAT.DATE)}
+                <div className='d-flex'>
+                  <p> {value?.information?.checkin?.hours}:{value?.information?.checkin?.minutes}</p>
+                  <p className='ml5 mr5'>-</p>
+                  <p> {value?.information?.checkout?.hours}:{value?.information?.checkout?.minutes}</p>
+                </div>
               </div>
             ),
             props: {},
@@ -84,6 +89,7 @@ const Index = memo(() => {
             children: (
               <div className={stylesModule['table-name']}>
                 <Text size="normal">{value?.information?.toolDetail?.name}</Text>
+                <p style={{ color: "#6D7177", fontweight: 400, fontSize: 14 }}>{value?.information?.toolGroup?.name}</p>
               </div>
             ),
             props: {},
