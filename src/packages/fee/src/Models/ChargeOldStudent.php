@@ -80,7 +80,7 @@ class ChargeOldStudent extends UuidModel
 
     public function class()
     {
-        return $this->belongsTo(Classes::class, 'ClassId');
+        return $this->belongsTo(Classes::class, 'ClassId')->where('IsLastest', true);
     }
 
     public function expectedToCollectMoney()
