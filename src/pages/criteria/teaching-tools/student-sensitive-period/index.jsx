@@ -39,7 +39,6 @@ const mapStateToProps = ({ teachingToolsStudent, loading, user }) => ({
   branches: teachingToolsStudent.branches,
   assessmentPeriod: teachingToolsStudent.assessmentPeriod,
   defaultBranch: user.defaultBranch,
-  years: teachingToolsStudent.years,
   user: user.user,
 });
 @connect(mapStateToProps)
@@ -61,7 +60,6 @@ class Index extends PureComponent {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
-        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
@@ -148,17 +146,11 @@ class Index extends PureComponent {
       });
     }
     this.props.dispatch({
-      type: 'teachingToolsStudent/GET_YEARS',
-      payload: {},
+      type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
+      payload: {
+        schoolYearId: search.schoolYearId,
+      },
     });
-    if (search.schoolYearId) {
-      this.props.dispatch({
-        type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
-        payload: {
-          schoolYearId: search.schoolYearId,
-        },
-      });
-    }
   };
 
   /**
@@ -287,31 +279,6 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
-    const {
-      years,
-    } = this.props;
-    if (type === 'schoolYearId') {
-      const data = years?.find(i => i.id === e);
-      this.setStateData({
-        dataYear: data,
-      });
-      this.setState(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            from: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            to: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
-          },
-        }),
-      );
-      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
-      this.props.dispatch({
-        type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
-        payload: {
-          schoolYearId: e,
-        },
-      });
-    }
     this.debouncedSearch(e, type);
   };
 
@@ -526,7 +493,6 @@ class Index extends PureComponent {
       assessmentPeriod,
       match: { params },
       loading: { effects },
-      years,
       user,
     } = this.props;
     const { data, dataTotal } = this.state;
@@ -591,12 +557,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
-                    name="schoolYearId"
-                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
-                    type={variables.SELECT}
-                    placeholder="Chọn năm học"
-                    allowClear={false}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm theo tên"
+                    type={variables.INPUT_SEARCH}
                   />
                 </div>
                 {!defaultBranch?.id && (
@@ -640,14 +604,6 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm theo tên"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
               </div>
             </Form>
             <Table
@@ -685,7 +641,6 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
   assessmentPeriod: PropTypes.arrayOf(PropTypes.any),
 };
@@ -699,7 +654,6 @@ Index.defaultProps = {
   classes: [],
   branches: [],
   defaultBranch: {},
-  years: [],
   user: {},
   assessmentPeriod: [],
 };

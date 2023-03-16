@@ -10,6 +10,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
+import FormDetail from '@/components/CommonComponent/FormDetail';
+
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import variablesModules from '../../../utils/variables';
@@ -20,6 +22,17 @@ const genders = [
 ];
 
 const marginProps = { style: { marginBottom: 12 } };
+const styleListStudent = {
+  style:
+  {
+    cursor: 'pointer',
+    fontSize: '13px',
+    fontWeight: 400,
+    lineHeight: '22px',
+    color: '#3b5cad',
+  }
+};
+
 const mapStateToProps = ({ loading, OPParentsAdd }) => ({
   loading,
   details: OPParentsAdd.details,
@@ -192,7 +205,25 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 />
               </Pane>
             </Pane>
-
+            <Pane className="row border-bottom" {...marginProps}>
+              <Pane className="col-lg-3">
+                {
+                  isEmpty(details?.students) ?
+                    <div className='pt10 pb10'>
+                      <FormDetail label="Phụ huynh chưa có học sinh" type="label" />
+                    </div>
+                    :
+                    <>
+                      <FormDetail label="Danh sách học sinh" type="label" />
+                      <ul>
+                        {details?.students?.map(i => (
+                          <li {...styleListStudent} role="presentation" onClick={() => history?.push(`/ho-so-doi-tuong/hoc-sinh/${i?.id}/chinh-sua`)}>{i?.fullName}</li>
+                        ))}
+                      </ul>
+                    </>
+                }
+              </Pane>
+            </Pane>
             <Pane className="row border-bottom" {...marginProps}>
               <Pane className="col-lg-12">
                 <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
