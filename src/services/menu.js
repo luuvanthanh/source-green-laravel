@@ -1964,7 +1964,7 @@ export async function getLeftMenuFeePolicy() {
     //   permission: [permissions.CHINHSACHPHI],
     // },
     {
-      title: 'Tính phí học sinh cũ',
+      title: 'Tính phí học sinh',
       key: 'old-student',
       url: [
         '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
