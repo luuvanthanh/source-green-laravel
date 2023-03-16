@@ -22,7 +22,7 @@ class ClassStudent extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ClassId', 'StudentId', 'JoinDate', 'Description', 'CreatorId', 'SchoolYearId',
+        'ClassId', 'StudentId', 'JoinDate', 'Description', 'CreatorId', 'SchoolYearId', 'IsLastest'
     ];
 
     public function classes()
