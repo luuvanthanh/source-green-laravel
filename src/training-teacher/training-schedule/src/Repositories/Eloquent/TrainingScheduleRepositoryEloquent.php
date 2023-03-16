@@ -25,6 +25,9 @@ class TrainingScheduleRepositoryEloquent extends CoreRepositoryEloquent implemen
         'CreationTime',
     ];
 
+    protected $trainingModuleRepositoryEloquent;
+    protected $userRepositoryEloquent;
+
     public function __construct(
         TrainingModuleRepositoryEloquent $trainingModuleRepositoryEloquent,
         UserRepositoryEloquent $userRepositoryEloquent,

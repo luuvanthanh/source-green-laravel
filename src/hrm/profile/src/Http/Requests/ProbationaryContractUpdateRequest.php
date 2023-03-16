@@ -27,8 +27,7 @@ class ProbationaryContractUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $probationaryContract = ProbationaryContract::findOrFail($this->id);
-
+        $probationaryContract = ProbationaryContract::findOrFail($this->probationary_contract);
         return [
             'employeeId' => [
                 'exists:Employees,Id',
