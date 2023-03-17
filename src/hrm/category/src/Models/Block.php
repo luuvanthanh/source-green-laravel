@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Models;
 
+use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Models\UuidModel;
 
 class Block extends UuidModel

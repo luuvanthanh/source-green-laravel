@@ -3,6 +3,8 @@
 namespace GGPHP\Category\Repositories\Eloquent;
 
 use GGPHP\Category\Models\Block;
+use GGPHP\Category\Models\BlockClassProject;
+use GGPHP\Category\Models\BlockDetail;
 use GGPHP\Category\Presenters\BlockPresenter;
 use GGPHP\Category\Repositories\Contracts\BlockRepository;
 use GGPHP\Clover\Models\ClassProject;
@@ -86,7 +88,24 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
 
     public function created($data, $blockId)
     {
-        $classProjects = ClassProject::get();
-        dd($classProjects);
+        $array = [];
+        foreach ($data['module'] as $key => $value) {
+            $array[] = $value['id'];
+        }
+        $classProjects = ClassProject::whereIn('ItemId', $array)->get()->toArray();
+
+        foreach ($classProjects as $key => $value) {
+            BlockClassProject::create([
+                'BlockId' => $blockId,
+                'ProjectId' => $value['Id']
+            ]);
+        }
+
+        foreach ($data['classes'] as $key => $value) {
+            BlockDetail::create([
+                'BlockId' => $blockId,
+                'Name' => $value['name']
+            ]);
+        }
     }
 }
