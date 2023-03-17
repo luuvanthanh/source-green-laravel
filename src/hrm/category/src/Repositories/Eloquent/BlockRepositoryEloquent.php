@@ -5,6 +5,7 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\Block;
 use GGPHP\Category\Presenters\BlockPresenter;
 use GGPHP\Category\Repositories\Contracts\BlockRepository;
+use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -64,5 +65,28 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         }
 
         return $degree;
+    }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $a = Block::get();
+            $block = Block::create($attributes);
+
+            $this->created($attributes, $block->Id);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($block->Id);
+    }
+
+    public function created($data, $blockId)
+    {
+        $classProjects = ClassProject::get();
+        dd($classProjects);
     }
 }

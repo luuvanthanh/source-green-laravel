@@ -45,7 +45,11 @@ class BlockCreateRequest extends FormRequest
                     }
                 },
             ],
-            'note' => 'nullable|max:255'
+            'note' => 'nullable|max:255',
+            'module' => 'array|nullable',
+            'module.*.id' => 'required|check_exists:distribution.ClassProjects,Id',
+            'classes' => 'array|nullable',
+            'classes.*.name' => 'required|string'
         ];
     }
 }
