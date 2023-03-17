@@ -86,14 +86,21 @@ class MenuLeft extends React.Component {
     if (/^\/bao-cao-erp(?=\/|$)/i.test(pathname)) {
       this.props.dispatch({
         type: 'menu/GET_MENU_REPORT',
-        payload: { code: 'BAO_CAO_ERP' },
+        payload: { type: 'METABASE' },
         callback: (response) => {
           if (response) {
             const dataMenu = response?.map((item) => ({
               title: item.name,
               key: `report-${item.id}`,
-              url: [`/bao-cao-erp/${item.id}`],
+              url: [],
               permission: [],
+              children: item?.children?.map(i=> ({
+                title: i.name,
+                key: `report-${i.id}`,
+                url: [`/bao-cao-erp/${i.id}`],
+                permission: [],
+              pro: true,
+              })),
               pro: true,
             }));
             this.onSetMenu(dataMenu);
