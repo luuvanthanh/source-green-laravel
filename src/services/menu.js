@@ -2537,38 +2537,38 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
-    {
-      title: 'Kiến thức nuôi dạy trẻ',
-      key: 'child rearing',
-      icon: 'icon icon-list',
-      permission: [permissions.CRM],
-      children: [
-        {
-          title: 'Danh sách bài viết',
-          key: 'list-posts-children',
-          url: [
-            '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet',
-            '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/tao-moi',
-            '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
-            '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Danh mục',
-          key: 'category-children',
-          url: [
-            '/crm/kien-thuc-nuoi-day-tre/danh-muc',
-            '/crm/kien-thuc-nuoi-day-tre/danh-muc/tao-moi',
-            '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
-            '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-      ],
-    },
+    // {
+    //   title: 'Kiến thức nuôi dạy trẻ',
+    //   key: 'child rearing',
+    //   icon: 'icon icon-list',
+    //   permission: [permissions.CRM],
+    //   children: [
+    //     {
+    //       title: 'Danh sách bài viết',
+    //       key: 'list-posts-children',
+    //       url: [
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/tao-moi',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Danh mục',
+    //       key: 'category-children',
+    //       url: [
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/tao-moi',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'Cấu hình',
       key: 'configurationCrm',
