@@ -6,6 +6,7 @@ export default {
   state: {
     data: [],
     years: [],
+    branches: [],
     pagination: {
       total: 0,
     },
@@ -23,10 +24,15 @@ export default {
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
-      years: payload.parsePayload?.map((item) => ({
-        id: item.id,
-        name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
-      })) || [],
+      years:
+        payload.parsePayload?.map((item) => ({
+          id: item.id,
+          name: `Năm học  ${item.yearFrom} - ${item.yearTo}`,
+        })) || [],
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -66,6 +72,20 @@ export default {
           payload: {
             parsePayload: response,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

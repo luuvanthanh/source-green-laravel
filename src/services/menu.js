@@ -1964,7 +1964,7 @@ export async function getLeftMenuFeePolicy() {
     //   permission: [permissions.CHINHSACHPHI],
     // },
     {
-      title: 'Tính phí học sinh cũ',
+      title: 'Tính phí học sinh',
       key: 'old-student',
       url: [
         '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
@@ -2537,6 +2537,38 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    // {
+    //   title: 'Kiến thức nuôi dạy trẻ',
+    //   key: 'child rearing',
+    //   icon: 'icon icon-list',
+    //   permission: [permissions.CRM],
+    //   children: [
+    //     {
+    //       title: 'Danh sách bài viết',
+    //       key: 'list-posts-children',
+    //       url: [
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/tao-moi',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //     {
+    //       title: 'Danh mục',
+    //       key: 'category-children',
+    //       url: [
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/tao-moi',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
+    //         '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
+    //       ],
+    //       permission: [permissions.CRM],
+    //       pro: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'Cấu hình',
       key: 'configurationCrm',
@@ -2766,8 +2798,7 @@ export async function getLeftMenuEnglish() {
         '/english/monthly-report/:id/edit',
         '/english/monthly-report/:id/confirmed',
       ],
-      // permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_DANHGIATHANG_VIEW],
       pro: true,
     },
     {
@@ -2780,23 +2811,27 @@ export async function getLeftMenuEnglish() {
         '/english/quarter-report/:id/edit',
         '/english/quarter-report/:id/confirmed',
       ],
-      // permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_DANHGIADINHKY_VIEW],
       pro: true,
     },
     {
       title: 'Study Plan',
       key: 'study-plan',
       url: ['/english/study-plan'],
-      // permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_THOIKHOABIEU_VIEW],
       pro: true,
     },
     {
       title: 'Settings',
       key: 'Settings',
-      // permission: [permissions.WEB_TIENGANH_VIEW],
-      permission: [permissions.CTH],
+      permission: [
+        permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW,
+        permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW,
+        permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW,
+        permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW,
+        permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW,
+        permissions.WEB_TIENGANH_SCHEDULE_VIEW,
+      ],
       children: [
         {
           title: 'Program',
@@ -2807,8 +2842,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/program/:id/detail',
             '/english/settings/program/:id/edit',
           ],
-          // permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_QUANLYBAIGIANG_VIEW],
           pro: true,
         },
         {
@@ -2820,8 +2854,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/subject/:id/detail',
             '/english/settings/subject/:id/edit',
           ],
-          // permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_QUANLYPHANMUC_VIEW],
           pro: true,
         },
         {
@@ -2833,8 +2866,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/evaluationCriteria/:id/detail',
             '/english/settings/evaluationCriteria/:id/edit',
           ],
-          // permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_QUANLYTIEUCHI_VIEW],
           pro: true,
         },
         {
@@ -2846,8 +2878,7 @@ export async function getLeftMenuEnglish() {
             '/english/settings/sampleComments/:id/detail',
             '/english/settings/sampleComments/:id/edit',
           ],
-          // permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_QUANLYCOMMENT_VIEW],
           pro: true,
         },
         {
@@ -2859,17 +2890,14 @@ export async function getLeftMenuEnglish() {
             '/english/settings/scriptReview/:id/detail',
             '/english/settings/scriptReview/:id/edit',
           ],
-          // permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
-          permission: [permissions.CTH],
-
+          permission: [permissions.WEB_TIENGANH_KICHBANDANHGIA_VIEW],
           pro: true,
         },
         {
           title: 'Schedule',
           key: 'tkb',
           url: ['/english/settings/cau-hinh'],
-          // permission: [permissions.WEB_TIENGANH_VIEW],
-          permission: [permissions.CTH],
+          permission: [permissions.WEB_TIENGANH_SCHEDULE_VIEW],
           pro: true,
         },
       ],

@@ -187,7 +187,7 @@ const Students = memo(() => {
                                               file?.file_image ?
                                                 <ImageUpload
                                                   callback={(res) => {
-                                                    onSetImage(res.fileInfo.url, index);
+                                                    onSetImage(res?.fileInfo?.url, index);
                                                   }}
                                                   fileImage={fileImage[index]}
                                                 /> :

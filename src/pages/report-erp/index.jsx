@@ -7,10 +7,10 @@ const Index = () => {
   const params = useParams();
   const [{ dataReport }] = useSelector(({ menu }) => [menu]);
   const [path, setPath] = useState();
-
   useEffect(() => {
     if (params.type && !isEmpty(dataReport)) {
-      setPath(dataReport.find((item) => item.id === params.type));
+      const data = dataReport?.map(i=> i?.children?.map(k=> ({...k, idParent: i?.id}))).flat(Infinity);
+      setPath(data.find((item) => item?.idParent === params.type ||  item.id === params.type));
     }
   }, [params.type, dataReport]);
 

@@ -339,7 +339,7 @@ const Index = memo(() => {
                         htmlType="submit"
                         size="large"
                         loading={loadingSubmit}
-                      // permission={"WEB_TIENGANH_QUANLYBAIGIANG_UPDATE" || "WEB_TIENGANH_QUANLYBAIGIANG_CREATE"}
+                        permission={params?.id ? "WEB_TIENGANH_QUANLYBAIGIANG_EDIT" : "WEB_TIENGANH_QUANLYBAIGIANG_CREATE"}
                       >
                         Save
                       </Button>

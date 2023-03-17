@@ -1,7 +1,7 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Upload, Modal } from 'antd';
-import { CloudUploadOutlined, EyeOutlined } from '@ant-design/icons';
-import { useDispatch } from 'dva';
+import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useSelector, useDispatch } from 'dva';
 import PropTypes from "prop-types";
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -16,6 +16,11 @@ const { beforeUpload, ...otherProps } = imageUploadProps;
 const ImageUpload = memo(({ callback, fileImage }) => {
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
+  const {
+    loading: { effects },
+  } = useSelector(({ loading }) => ({
+    loading,
+  }));
 
   const dispatch = useDispatch();
   const [image, setImage] = useState();
@@ -41,7 +46,7 @@ const ImageUpload = memo(({ callback, fileImage }) => {
     () => ({
       ...otherProps,
       customRequest({ file }) {
-        if(beforeUpload(file)) uploadAction(file);
+        if (beforeUpload(file)) uploadAction(file);
       },
     }),
     [uploadAction],
@@ -82,11 +87,12 @@ const ImageUpload = memo(({ callback, fileImage }) => {
               <Upload {...uploadProps}>
                 <CloudUploadOutlined />
               </Upload>
+              <DeleteOutlined onClick={() => { callback(get(undefined)); setImage(undefined); }} />
             </Pane>
           </Pane>
         ) : (
           <Upload {...uploadProps}>
-            <Button color="success" ghost>
+            <Button color="success" ghost loading={effects['upload/UPLOAD']}>
               <CloudUploadOutlined /> Tải lên
             </Button>
           </Upload>
@@ -104,6 +110,6 @@ ImageUpload.propTypes = {
 };
 
 ImageUpload.defaultProps = {
-  callback: () => {},
+  callback: () => { },
   fileImage: "",
 };

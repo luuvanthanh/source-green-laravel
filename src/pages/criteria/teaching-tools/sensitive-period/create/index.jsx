@@ -89,7 +89,7 @@ const Index = memo(() => {
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
-              criterias: response.criterias.map((item) => ({
+              criterias: response?.criterias?.map((item) => ({
                 name: item,
               })),
             });
@@ -160,10 +160,19 @@ const Index = memo(() => {
                 </Loading>
               </Pane>
               <Pane className="d-flex justify-content-between align-items-center mb20">
+                <p
+                  className="btn-delete mr20"
+                  role="presentation"
+                  onClick={() => history.goBack()}
+                >
+                  Hủy
+                </p>
                 {params.id && (
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Xóa
-                  </p>
+                  <>
+                    <p className="btn-delete" role="presentation" onClick={remove}>
+                      Xóa
+                    </p>
+                  </>
                 )}
                 <Button
                   className="ml-auto px25"

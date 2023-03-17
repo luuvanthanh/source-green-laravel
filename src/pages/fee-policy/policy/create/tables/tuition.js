@@ -141,7 +141,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
       ),
     },
     {
-      title: 'Học sinh cũ (đ)',
+      title: 'Tiền phí (đ)',
       key: 'oldStudent',
       className: 'min-width-150',
       render: (record) => (
@@ -159,25 +159,25 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
         </>
       ),
     },
-    {
-      title: 'Học sinh mới (đ)',
-      key: 'newStudent',
-      className: 'min-width-150',
-      render: (record) => (
-        <>
-          <FormItem
-            className="mb-0"
-            type={variables.INPUT_NUMBER}
-            rules={[variables.RULES.EMPTY]}
-            value={record?.newStudent}
-            onChange={(e) => onChange(e, record, 'newStudent')}
-          />
-          {error && !record?.newStudent && (
-            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-          )}
-        </>
-      ),
-    },
+    // {
+    //   title: 'Học sinh mới (đ)',
+    //   key: 'newStudent',
+    //   className: 'min-width-150',
+    //   render: (record) => (
+    //     <>
+    //       <FormItem
+    //         className="mb-0"
+    //         type={variables.INPUT_NUMBER}
+    //         rules={[variables.RULES.EMPTY]}
+    //         value={record?.newStudent}
+    //         onChange={(e) => onChange(e, record, 'newStudent')}
+    //       />
+    //       {error && !record?.newStudent && (
+    //         <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+    //       )}
+    //     </>
+    //   ),
+    // },
     {
       title: '',
       key: 'delete',

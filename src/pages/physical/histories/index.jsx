@@ -4,7 +4,7 @@ import { Form, Spin } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce, isEmpty, map } from 'lodash';
+import { debounce, isEmpty, map,head } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -17,10 +17,10 @@ import { variables, Helper } from '@/utils';
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [
-    { pagination, error, data, years },
+    { pagination, error, data, branches },
     loading,
-    {user}
-  ] = useSelector(({ loading: { effects }, physicalHistory,user }) => [physicalHistory, effects, user]);
+    { defaultBranch }
+  ] = useSelector(({ loading: { effects }, physicalHistory, user }) => [physicalHistory, effects, user]);
 
   const mounted = useRef(false);
   const history = useHistory();
@@ -30,11 +30,13 @@ const Index = memo(() => {
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     employeeId: query?.employeeId,
-    fromDate: query?.fromDate || '',
-    toDate: query?.toDate || '',
-    schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
+    fromDate: query?.fromDate || moment().startOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
+    toDate: query?.toDate ||  moment().endOf('weeks')?.format(variables.DATE_FORMAT.DATE_AFTER),
+    branchId: query?.branchId || defaultBranch?.id,
+    // schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
   });
   const [employee, setEmployee] = useState([]);
+  const [defaultBranchs] = useState(defaultBranch?.id ? [defaultBranch] : []);
 
   const columns = [
     {
@@ -62,9 +64,16 @@ const Index = memo(() => {
       render: (record) =>
         !isEmpty(record?.editedStudentPhysicals)
           ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(
-              ', ',
-            )}`
+            ', ',
+          )}`
           : '',
+    },
+    {
+      title: 'Cơ sở',
+      key: 'branch',
+      className: 'min-width-200',
+      with: 200,
+      render: (record) => <Text size="normal">{head(record?.editedStudentPhysicals)?.student?.branch?.name || ''}</Text>,
     },
   ];
 
@@ -149,10 +158,14 @@ const Index = memo(() => {
     getEmployees(val);
   }, 300);
 
-  
+
   useEffect(() => {
     dispatch({
       type: 'physicalHistory/GET_YEARS',
+      payload: {},
+    });
+    dispatch({
+      type: 'physicalHistory/GET_BRANCHES',
       payload: {},
     });
   }, []);
@@ -206,7 +219,7 @@ const Index = memo(() => {
                     onChange={changeFilterDate}
                   />
                 </Pane>
-                <Pane className="col-lg-3">
+                {/* <Pane className="col-lg-3">
                   <FormItem
                     name="schoolYearId"
                     type={variables.SELECT}
@@ -214,7 +227,31 @@ const Index = memo(() => {
                     onChange={(value) => changeFilter('schoolYearId', value)}
                     allowClear={false}
                   />
-                </Pane>
+                </Pane> */}
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: '', name: 'Tất cả cơ sở' }, ...branches]}
+                      name="branchId"
+                      placeholder="Chọn cơ sở"
+                      onChange={(event) => changeFilter('branchId', event)}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      placeholder="Chọn cơ sở"
+                      onChange={(event) => changeFilter('branchId', event)}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
               </Pane>
             </Form>
 

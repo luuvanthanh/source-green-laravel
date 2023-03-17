@@ -133,6 +133,7 @@ const Index = memo(() => {
                         htmlType="submit"
                         size="large"
                         loading={loadingSubmit}
+                        permission="WEB_TIENGANH_SCHEDULE_CREATE"
                       >
                         Save
                       </Button>
@@ -144,6 +145,7 @@ const Index = memo(() => {
                       size="large"
                       htmlType="edit"
                       onClick={() => setCheckEdit(true)}
+                      permission="WEB_TIENGANH_SCHEDULE_EDIT"
                     >
                       Edit
                     </Button>

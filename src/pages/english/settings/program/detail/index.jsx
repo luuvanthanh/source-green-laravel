@@ -184,6 +184,7 @@ const Index = memo(() => {
                         onClick={() => {
                           history.push(`/english/settings/program/${details?.id}/edit`);
                         }}
+                        permission="WEB_TIENGANH_QUANLYBAIGIANG_EDIT"
                       >
                         Edit
                       </Button>

@@ -36,6 +36,7 @@ const mapStateToProps = ({ englishSettingScriptReview, loading, user }) => ({
   error: englishSettingScriptReview.error,
   pagination: englishSettingScriptReview.pagination,
   skill: englishSettingScriptReview.skill,
+  user: user.user,
   defaultBranch: user.defaultBranch,
   loading,
 });
@@ -273,13 +274,13 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
-            // permission="WEB_TIENGANH_KICHBANDANHGIA_UPDATE"
+              permission="WEB_TIENGANH_KICHBANDANHGIA_EDIT"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
-            // permission="WEB_TIENGANH_KICHBANDANHGIA_DELETE"
+              permission="WEB_TIENGANH_KICHBANDANHGIA_DELETE"
             />
           </div>
         ),
@@ -318,6 +319,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      user,
     } = this.props;
     const { search } = this.state;
 
@@ -332,7 +334,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/add`)}
-            // permission="WEB_TIENGANH_KICHBANDANHGIA_CREATE"
+              permission="WEB_TIENGANH_KICHBANDANHGIA_CREATE"
             >
               Create new
             </Button>
@@ -382,7 +384,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_KICHBANDANHGIA_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -402,6 +406,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -411,6 +416,7 @@ Index.defaultProps = {
   pagination: {},
   loading: {},
   dispatch: {},
+  user: {},
   location: {},
   error: {},
   defaultBranch: {},

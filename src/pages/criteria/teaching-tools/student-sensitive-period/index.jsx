@@ -39,7 +39,6 @@ const mapStateToProps = ({ teachingToolsStudent, loading, user }) => ({
   branches: teachingToolsStudent.branches,
   assessmentPeriod: teachingToolsStudent.assessmentPeriod,
   defaultBranch: user.defaultBranch,
-  years: teachingToolsStudent.years,
   user: user.user,
 });
 @connect(mapStateToProps)
@@ -55,18 +54,12 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
-      data: [{ id: 2 }],
+      data: [],
+      dataTotal: {},
       search: {
-        key: query?.key,
+        keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
-        schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
-        // from: query?.from
-        //   ? query?.from
-        //   : moment(user?.schoolYear?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        // to: query?.to
-        //   ? query?.to
-        //   : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
@@ -114,7 +107,7 @@ class Index extends PureComponent {
     this.setStateData(
       {
         search: {
-          key: query?.key,
+          keyWord: query?.keyWord,
           branchId: query?.branchId,
           classId: query?.classId,
           from: query?.from
@@ -153,17 +146,11 @@ class Index extends PureComponent {
       });
     }
     this.props.dispatch({
-      type: 'teachingToolsStudent/GET_YEARS',
-      payload: {},
+      type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
+      payload: {
+        schoolYearId: search.schoolYearId,
+      },
     });
-    if (search.schoolYearId) {
-      this.props.dispatch({
-        type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
-        payload: {
-          schoolYearId: search.schoolYearId,
-        },
-      });
-    }
   };
 
   /**
@@ -174,19 +161,43 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    // this.props.dispatch({
-    //   type: 'teachingToolsStudent/GET_DATA',
-    //   payload: {
-    //     ...search,
-    //   },
-    //   callback: (response) => {
-    //     if (response) {
-    //       this.setStateData({
-    //         data: response.parsePayload,
-    //       });
-    //     }
-    //   },
-    // });
+    if (search?.approvalStatus === variablesModules?.STATUS?.PENDING_APPROVED) {
+      this.props.dispatch({
+        type: 'teachingToolsStudent/GET_NO_SENDING',
+        payload: {
+          ...search,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              data: response?.items,
+              dataTotal: {
+                not_send: response?.totalCount,
+                send: response?.summary
+              },
+            });
+          }
+        },
+      });
+    } else {
+      this.props.dispatch({
+        type: 'teachingToolsStudent/GET_SENDING',
+        payload: {
+          ...search,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              data: response?.items,
+              dataTotal: {
+                send: response?.totalCount,
+                not_send: response?.summary
+              },
+            });
+          }
+        },
+      });
+    }
     history.push({
       pathname,
       query: Helper.convertParamSearch({
@@ -268,31 +279,6 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
-    const {
-      years,
-    } = this.props;
-    if (type === 'schoolYearId') {
-      const data = years?.find(i => i.id === e);
-      this.setStateData({
-        dataYear: data,
-      });
-      this.setState(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            from: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            to: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
-          },
-        }),
-      );
-      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
-      this.props.dispatch({
-        type: 'teachingToolsStudent/GET_ASESSMENT_PERIOD',
-        payload: {
-          schoolYearId: e,
-        },
-      });
-    }
     this.debouncedSearch(e, type);
   };
 
@@ -381,10 +367,8 @@ class Index extends PureComponent {
   onChangeItem = (record) => {
     const self = this;
     this.props.dispatch({
-      type: 'teachingToolsStudent/ADD_ONE_ITEM_REVIEW',
-      payload: {
-        id: record?.id,
-      },
+      type: 'teachingToolsStudent/ADD',
+      payload: [record?.id],
       callback: (response) => {
         if (response) {
           self.onLoad();
@@ -398,15 +382,17 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     const self = this;
     dispatch({
-      type: 'teachingToolsStudent/ADD_REVIEW',
-      payload: {
-        id: data?.filter((item) => item?.isActive)?.map((item) => item.id),
-        status: type === 'all' ? true : null,
-        schoolYearId: type === 'all' ? search?.schoolYearId : null,
-        branchId: type === 'all' ? search?.branchId : null,
-        classId: type === 'all' ? search?.classId : null,
-        assessmentPeriodId: type === 'all' ? search?.assessmentPeriodId : null,
-      },
+      type: type === 'one' ? 'teachingToolsStudent/ADD' : 'teachingToolsStudent/ADD_ALL',
+      payload:
+        type === 'one' ?
+          data?.filter((item) => item?.isActive)?.map((item) => item.id) :
+          {
+            branchId: search?.branchId,
+            classId: search?.classId,
+            sensitivePeriodId: search?.sensitivePeriodId,
+            keyWord: search?.keyWord,
+
+          },
       callback: (response) => {
         if (response) {
           self.onLoad();
@@ -424,8 +410,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian phát hiện TKNC',
         key: 'name',
-        width: 250,
-        render: (record) => Helper.getDate(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? record?.timePendingApproved : record?.timeApproved, variables.DATE_FORMAT.DATE_TIME),
+        width: 200,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Họ và Tên',
@@ -443,40 +429,48 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.branch?.name,
+        render: (record) => record?.student?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.student?.classStudent?.class?.name,
+        render: (record) => record?.student?.class?.name,
       },
       {
         title: 'Thời kỳ nhạy cảm',
         key: 'email',
-        width: 200,
-        render: (record) => record?.assessmentPeriod?.nameAssessmentPeriod?.name,
-      },
-      {
-        key: 'action',
-        width: 80,
-        fixed: 'right',
-        render: (record) => (
-          <div className="d-flex flex-row-reverse">
-            {
-              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
-                <Button
-                  color="success"
-                  className="ml5"
-                  icon="redo2"
-                  onClick={(e) => { e.stopPropagation(); this.onChangeItem(record); }}
-                />
-              )
-            }
+        width: 150,
+        render: (record) => <Text size="normal">  {record?.sensitivePeriods?.map((item, index) =>
+          <div size="normal" key={index} className='d-flex'>
+            {item?.name}{index + 1 === record.sensitivePeriods.length ? "" : ",  "}
           </div>
-        ),
+        )}</Text>,
       },
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          title: "Thời gian gửi",
+          key: 'text',
+          width: 200,
+          render: (record) => Helper.getDate(record?.sentDate, variables.DATE_FORMAT.DATE_TIME),
+        },] : []),
+      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ?
+        [{
+          key: 'action',
+          width: 80,
+          fixed: 'right',
+          render: (record) => (
+            <div className="d-flex flex-row-reverse">
+              <Button
+                color="success"
+                className="ml5"
+                icon="redo2"
+                onClick={(e) => { e.stopPropagation(); this.onChangeItem(record); }}
+              />
+            </div>
+          ),
+        },] : []),
     ];
     return columns;
   };
@@ -499,10 +493,9 @@ class Index extends PureComponent {
       assessmentPeriod,
       match: { params },
       loading: { effects },
-      years,
       user,
     } = this.props;
-    const { data } = this.state;
+    const { data, dataTotal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
@@ -511,7 +504,7 @@ class Index extends PureComponent {
       }),
     };
     const { search, defaultBranchs } = this.state;
-    const loading = effects['teachingToolsStudent/GET_DATA'];
+    const loading = effects['teachingToolsStudent/GET_DATA'] || effects['teachingToolsStudent/GET_SENDING'];
     return (
       <>
         <Helmet title="Học sinh có thời kỳ nhạy cảm" />
@@ -522,7 +515,7 @@ class Index extends PureComponent {
             {
               search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
                 <div className='d-flex'>
-                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview()}>
+                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview('one')}>
                     Gửi đánh giá đã chọn
                   </Button>
                   <Button
@@ -530,6 +523,7 @@ class Index extends PureComponent {
                     icon="redo2"
                     className="ml-2"
                     onClick={() => this.onClickAddReview('all')}
+                    disabled={isEmpty(data)}
                   >
                     Gửi tất cả
                   </Button>
@@ -543,7 +537,10 @@ class Index extends PureComponent {
               onChange={(event) => this.onChangeSelectStatus(event, 'approvalStatus')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={`${item.name}`} key={item.id} />
+                <TabPane tab={`${item.name}  ${(!isEmpty(dataTotal))
+                  ?
+                  `(${dataTotal?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})`
+                  : ""}  `} key={item.id} />
               ))}
             </Tabs>
             <Form
@@ -552,7 +549,7 @@ class Index extends PureComponent {
                 date: search.from && search.to && [moment(search.from), moment(search.to)],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                assessmentPeriodId: search.assessmentPeriodId || null,
+                sensitivePeriodId: search.sensitivePeriodId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -560,12 +557,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả năm học' }, ...years]}
-                    name="schoolYearId"
-                    onChange={(event) => this.onChangeSelect(event, 'schoolYearId')}
-                    type={variables.SELECT}
-                    placeholder="Chọn năm học"
-                    allowClear={false}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm theo tên"
+                    type={variables.INPUT_SEARCH}
                   />
                 </div>
                 {!defaultBranch?.id && (
@@ -601,20 +596,12 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...assessmentPeriod?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
-                    name="assessmentPeriodId"
+                    data={[{ name: 'Chọn Tất cả thời kỳ nhạy cảm', id: null }, ...assessmentPeriod]}
+                    name="sensitivePeriodId"
                     options={['id', 'name']}
-                    onChange={(event) => this.onChangeSelect(event, 'assessmentPeriodId')}
+                    onChange={(event) => this.onChangeSelect(event, 'sensitivePeriodId')}
                     type={variables.SELECT}
                     allowClear={false}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa tìm kiếm theo tên"
-                    type={variables.INPUT_SEARCH}
                   />
                 </div>
               </div>
@@ -654,7 +641,6 @@ Index.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
-  years: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
   assessmentPeriod: PropTypes.arrayOf(PropTypes.any),
 };
@@ -668,7 +654,6 @@ Index.defaultProps = {
   classes: [],
   branches: [],
   defaultBranch: {},
-  years: [],
   user: {},
   assessmentPeriod: [],
 };

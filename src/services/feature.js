@@ -175,7 +175,7 @@ export const feature = {
       src: '/images/home/english.svg',
       animation: animationImage.english,
       url: '/english',
-      permission: [permissions.CTH],
+      permission: [permissions.WEB_TIENGANH_VIEW],
     },
     {
       title: 'Báo cáo ERP',

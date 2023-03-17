@@ -23,13 +23,13 @@ class Index extends PureComponent {
 
   componentDidMount() {
     if (this.props.location.pathname.includes('bao-cao-erp') && !isEmpty(this.props.dataReport)) {
-      this.props.history.push(`/bao-cao-erp/${head(this.props.dataReport)?.id}`);
+      this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
     }
   }
 
   componentDidUpdate(prevProps) {
     if (size(this.props.dataReport) !== size(prevProps.dataReport)) {
-      this.props.history.push(`/bao-cao-erp/${head(this.props.dataReport)?.id}`);
+      this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
     }
   }
 
