@@ -73,39 +73,56 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
     {
         \DB::beginTransaction();
         try {
-            $a = Block::get();
             $block = Block::create($attributes);
 
-            $this->created($attributes, $block->Id);
+            $this->created($attributes, $block);
 
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::find($block->Id);
     }
 
-    public function created($data, $blockId)
+    public function created($data, $block)
     {
-        $array = [];
-        foreach ($data['module'] as $key => $value) {
-            $array[] = $value['id'];
-        }
-        $classProjects = ClassProject::whereIn('ItemId', $array)->get()->toArray();
-
-        foreach ($classProjects as $key => $value) {
-            BlockClassProject::create([
-                'BlockId' => $blockId,
-                'ProjectId' => $value['Id']
-            ]);
-        }
-
+        $block->classProject()->attach($data['projects']);
         foreach ($data['classes'] as $key => $value) {
-            BlockDetail::create([
-                'BlockId' => $blockId,
-                'Name' => $value['name']
-            ]);
+            $value['blockId'] = $block->Id;
+            BlockDetail::create($value);
+        }
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $block = Block::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $block->update($attributes);
+
+            $this->updated($attributes, $block);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            throw new HttpException(500, $th->getMessage());
+        }
+        return parent::parserResult($block);
+    }
+
+    public function updated($data, $block)
+    {
+        $block->classProject()->detach();
+        $block->classProject()->attach($data['projects']);
+        $block->blockDetail()->delete();
+        foreach ($data['classes'] as $key => $value) {
+            $value['blockId'] = $block->Id;
+            BlockDetail::create($value);
         }
     }
 }

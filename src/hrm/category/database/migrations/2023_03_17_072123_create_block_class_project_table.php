@@ -15,15 +15,10 @@ class CreateBlockClassProjectTable extends Migration
     {
         if (!Schema::hasTable('BlockClassProjects')) {
             Schema::create('BlockClassProjects', function (Blueprint $table) {
-                $table->uuid('Id')->index()->unique();
-                $table->primary('Id');
                 $table->uuid('BlockId')->nullable();
-                $table->foreign('BlockId')->references('Id')->on('Blocks')->onDelete('cascade');
                 $table->uuid('ProjectId')->nullable();
+                $table->foreign('BlockId')->references('Id')->on('Blocks')->onDelete('cascade');
                 $table->foreign('ProjectId')->references('Id')->on('distribution.ClassProjects')->onDelete('cascade');
-                $table->timestamp('CreationTime', 0)->nullable();
-                $table->timestamp('LastModificationTime', 0)->nullable();
-                $table->softDeletes('DeletionTime', 0);
             });
         }else {
             echo 'Table already exists';

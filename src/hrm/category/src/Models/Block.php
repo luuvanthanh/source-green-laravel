@@ -4,9 +4,12 @@ namespace GGPHP\Category\Models;
 
 use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Block extends UuidModel
 {
+    use SoftDeletes;
+    use SoftDeletes;
     public $incrementing = false;
 
     /**
@@ -33,5 +36,15 @@ class Block extends UuidModel
     public function grade()
     {
         return $this->belongsTo(Grade::class, 'GradeId');
+    }
+
+    public function classProject()
+    {
+        return $this->belongsToMany(ClassProject::class, 'BlockClassProjects', 'BlockId', 'ProjectId');
+    }
+
+    public function blockDetail()
+    {
+        return $this->hasMany(BlockDetail::class, 'BlockId');
     }
 }

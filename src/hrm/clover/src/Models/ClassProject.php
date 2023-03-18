@@ -2,9 +2,9 @@
 
 namespace GGPHP\Clover\Models;
 
-use GGPHP\Core\Models\UuidModel;
+use GGPHP\Core\Models\UuidModelNotSoftDelete;
 
-class ClassProject extends UuidModel
+class ClassProject extends UuidModelNotSoftDelete
 {
     public $incrementing = false;
 

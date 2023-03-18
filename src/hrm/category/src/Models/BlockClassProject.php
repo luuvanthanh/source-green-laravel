@@ -3,9 +3,12 @@
 namespace GGPHP\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlockClassProject extends UuidModel
 {
+    use SoftDeletes;
+    use SoftDeletes;
     public $incrementing = false;
 
     /**
