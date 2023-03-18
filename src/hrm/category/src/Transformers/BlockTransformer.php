@@ -12,7 +12,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class BlockTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['grade'];
+    protected $availableIncludes = ['grade', 'blockDetail'];
 
     public function includeGrade(Block $block)
     {
@@ -21,5 +21,14 @@ class BlockTransformer extends BaseTransformer
         }
 
         return $this->item($block->grade, new GradeTransformer, 'Grade');
+    }
+
+    public function includeBlockDetail(Block $block)
+    {
+        if (is_null($block->blockDetail)) {
+            return null;
+        }
+
+        return $this->collection($block->blockDetail, new BlockDetailTransformer, 'BlockDetail');
     }
 }

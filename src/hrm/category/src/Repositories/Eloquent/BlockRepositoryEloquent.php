@@ -3,13 +3,12 @@
 namespace GGPHP\Category\Repositories\Eloquent;
 
 use GGPHP\Category\Models\Block;
-use GGPHP\Category\Models\BlockClassProject;
 use GGPHP\Category\Models\BlockDetail;
 use GGPHP\Category\Presenters\BlockPresenter;
 use GGPHP\Category\Repositories\Contracts\BlockRepository;
-use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class BlockRepositoryEloquent.
@@ -65,7 +64,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         } else {
             $degree = $this->get();
         }
-
+        
         return $degree;
     }
 
@@ -81,7 +80,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         } catch (\Exception $e) {
             \DB::rollback();
 
-            throw new HttpException(500, $th->getMessage());
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($block->Id);
@@ -110,7 +109,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         } catch (\Exception $e) {
             \DB::rollback();
 
-            throw new HttpException(500, $th->getMessage());
+            throw new HttpException(500, $e->getMessage());
         }
         return parent::parserResult($block);
     }
