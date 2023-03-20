@@ -22,8 +22,22 @@ class Index extends PureComponent {
   };
 
   componentDidMount() {
+    const {
+      dispatch,
+    } = this.props;
     if (this.props.location.pathname.includes('bao-cao-erp') && !isEmpty(this.props.dataReport)) {
       this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
+    }
+    if (this.props.location.pathname.includes('bao-cao-erp') && isEmpty(this.props.dataReport)) {
+      dispatch({
+        type: 'menu/GET_MENU_REPORT',
+        payload: { type: 'METABASE' },
+        callback: (response) => {
+          if (response) {
+            this.props.history.push(`/bao-cao-erp/${head(head(response)?.children)?.id}`);
+          }
+        },
+      });
     }
   }
 
@@ -52,6 +66,8 @@ Index.propTypes = {
   dataReport: PropTypes.array,
   location: PropTypes.any,
   history: PropTypes.any,
+  dispatch: PropTypes.objectOf(PropTypes.any),
+
 };
 
 Index.defaultProps = {
@@ -60,6 +76,8 @@ Index.defaultProps = {
   dataReport: [],
   location: {},
   history: {},
+  dispatch: {},
+
 };
 
 export default Index;
