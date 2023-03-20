@@ -60,7 +60,23 @@ export default {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
     SET_MENU_REPORT: (state, { payload }) => ({
       ...state,
-      dataReport: payload,
+      dataReport: payload?.map((item) => ({
+        title: item.name,
+        key: `report-${item.id}`,
+        url: [],
+        id: item.id,
+        permission: [],
+        children: item?.children?.map((i) => ({
+          title: i.name,
+          id: i.id,
+          key: `report-${i.id}`,
+          url: [`/bao-cao-erp/${i.id}`],
+          permission: [],
+          scriptCode: i?.scriptCode,
+          pro: true,
+        })),
+        pro: true,
+      })),
     }),
   },
   effects: {
