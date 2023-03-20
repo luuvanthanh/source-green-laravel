@@ -17,6 +17,7 @@ const { SubMenu, Divider } = Menu;
 
 const mapStateToProps = ({ menu, settings, user, englishStudyPlan }) => ({
   menuData: menu.menuLeftSchedules,
+  dataReport: menu.dataReport,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
@@ -94,12 +95,12 @@ class MenuLeft extends React.Component {
               key: `report-${item.id}`,
               url: [],
               permission: [],
-              children: item?.children?.map(i=> ({
+              children: item?.children?.map((i) => ({
                 title: i.name,
                 key: `report-${i.id}`,
                 url: [`/bao-cao-erp/${i.id}`],
                 permission: [],
-              pro: true,
+                pro: true,
               })),
               pro: true,
             }));
@@ -118,10 +119,14 @@ class MenuLeft extends React.Component {
 
   // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
+    const { dataReport } = this.props;
     if (newProps.isMenuCollapsed && !newProps.isMobileView) {
       this.setState({
         openedKeys: [],
       });
+    }
+    if (this.props.location.pathname === '/bao-cao-erp') {
+      this.onSetMenu(dataReport);
     }
     this.setSelectedKeys(newProps);
   }
@@ -507,6 +512,7 @@ MenuLeft.propTypes = {
   permissions: PropTypes.any,
   isMenuCollapsed: PropTypes.bool,
   menuData: PropTypes.arrayOf(PropTypes.any),
+  dataReport: PropTypes.arrayOf(PropTypes.any),
   badges: PropTypes.arrayOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
@@ -521,6 +527,7 @@ MenuLeft.defaultProps = {
   isMobileView: false,
   isMenuCollapsed: false,
   menuData: [],
+  dataReport: [],
   badges: [],
   dispatch: {},
   user: {},
