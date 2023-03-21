@@ -18,7 +18,7 @@ import stylesModule from '../styles.module.scss';
 const General = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [{ menuLeftCriteria }, effects] = useSelector(({ menu, loading: { effects } }) => [menu, effects]);
+  const [{ menuLeftPhysicalItem }, effects] = useSelector(({ menu, loading: { effects } }) => [menu, effects]);
   const mounted = useRef(false);
   const loadingSubmit = effects['sampleCommentAdd/ADD'] || effects['sampleCommentAdd/UPDATE'];
 
@@ -65,7 +65,7 @@ const General = memo(() => {
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.push(`/chuong-trinh-hoc/the-chat/nhan-xet-mau`);
+            history.push(`/the-chat/nhan-xet-mau`);
           }
         }
         if (error) {
@@ -86,7 +86,7 @@ const General = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
@@ -193,6 +193,7 @@ const General = memo(() => {
                       htmlType="submit"
                       size="large"
                       loading={loadingSubmit}
+                      permission={params?.id ? "WEB_THECHAT_QUANLYNHANXET_EDIT" : "WEB_THECHAT_QUANLYNHANXET_CREATE"}
                     >
                       Lưu
                     </Button>

@@ -29,14 +29,14 @@ const Index = memo(() => {
     loading: { effects },
     dataDetails,
     dataTemplates,
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     dataEvaluetionCriteria,
     user,
   } = useSelector(({ EnglishMonthlyReport, menu, loading, physicalPeriodicMeasurementAdd, user }) => ({
     dataDetails: physicalPeriodicMeasurementAdd.dataDetails,
     dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     dataType: EnglishMonthlyReport.dataType,
     dataTemplates: physicalPeriodicMeasurementAdd.dataTemplates,
     dataEvaluetionCriteria: physicalPeriodicMeasurementAdd.dataEvaluetionCriteria,
@@ -139,7 +139,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
-      <Breadcrumbs last={dataDetails?.information?.student?.fullName} menu={menuLeftCriteria} />
+      <Breadcrumbs last={dataDetails?.information?.student?.fullName} menu={menuLeftPhysicalItem} />
       <Helmet title=" Đo lường định kỳ" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
@@ -219,7 +219,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
-                // permission="WEB_TIENGANH_DANHGIATHANG_CHUADANHGIA_CREATE"
+                  permission="WEB_THECHAT_DOLUONGDINHKY_CHUADOLUONG_CREATE"
                 >
                   Lưu
                 </Button>

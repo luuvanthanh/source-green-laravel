@@ -31,14 +31,14 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const {
     dataType,
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     years,
     loading: { effects },
     user,
     defaultBranch
   } = useSelector(({ menu, loading, configurationReviewsAdd, user }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     dataType: configurationReviewsAdd.dataType,
     years: configurationReviewsAdd.years,
     error: configurationReviewsAdd.error,
@@ -102,7 +102,7 @@ const Index = memo(() => {
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.push(`/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia`);
+            history.push(`/the-chat/cau-hinh-danh-gia`);
           }
         }
         if (error) {
@@ -494,7 +494,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Chỉnh sửa' : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa' : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Cấu hình đánh giá" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
@@ -644,6 +644,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={effects['configurationReviewsAdd/ADD'] || effects['configurationReviewsAdd/UPDATE']}
+                  permission={params?.id ? "WEB_THECHAT_CAUHINHDANHGIA_EDIT" : "WEB_THECHAT_CAUHINHDANHGIA_CREATE"}
                 >
                   Lưu
                 </Button>

@@ -24,10 +24,10 @@ const Index = memo(() => {
   const [type, setType] = useState('CRITERIA');
   const {
     loading: { effects },
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
   } = useSelector(({ menu, loading, subjectCommentAdd }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     details: subjectCommentAdd.details,
     error: subjectCommentAdd.error,
   }));
@@ -48,7 +48,7 @@ const Index = memo(() => {
       callback: (response, error) => {
         if (response) {
           if (response) {
-            history.push(`/chuong-trinh-hoc/the-chat/mon-danh-gia`);
+            history.push(`/the-chat/mon-danh-gia`);
           }
         }
         if (error) {
@@ -94,7 +94,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Môn đánh giá" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
@@ -210,7 +210,7 @@ const Index = memo(() => {
                   className="btn-delete"
                   role="presentation"
 
-                  onClick={() => history.push('/chuong-trinh-hoc/the-chat/mon-danh-gia')}
+                  onClick={() => history.push('/the-chat/mon-danh-gia')}
                 >
                   Hủy
                 </p>
@@ -220,6 +220,7 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
+                  permission={params?.id ? "WEB_THECHAT_QUANLYMONDANHGIA_EDIT" : "WEB_THECHAT_QUANLYMONDANHGIA_CREATE"}
                 >
                   Lưu
                 </Button>

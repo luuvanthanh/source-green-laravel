@@ -31,10 +31,11 @@ const dataType = [
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ configurationReviews, loading }) => ({
+const mapStateToProps = ({ configurationReviews, loading, user }) => ({
   data: configurationReviews.data,
   error: configurationReviews.error,
   pagination: configurationReviews.pagination,
+  user: user.user,
   loading,
 });
 @connect(mapStateToProps)
@@ -242,9 +243,15 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_THECHAT_CAUHINHDANHGIA_EDIT"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }}
+              permission="WEB_THECHAT_CAUHINHDANHGIA_DELETE"
+            />
           </div>
         ),
       },
@@ -278,6 +285,7 @@ class Index extends PureComponent {
     const {
       error,
       data,
+      user,
       match: { params },
       pagination,
       loading: { effects },
@@ -292,7 +300,12 @@ class Index extends PureComponent {
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Cấu hình đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/add`)}
+              permission="WEB_THECHAT_CAUHINHDANHGIA_CREATE"
+            >
               Tạo mới
             </Button>
           </div>
@@ -331,7 +344,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_THECHAT_CAUHINHDANHGIA_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -352,6 +367,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -363,6 +379,7 @@ Index.defaultProps = {
   location: {},
   error: {},
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;
