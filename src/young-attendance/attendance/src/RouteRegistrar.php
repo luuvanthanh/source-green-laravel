@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forAi();
     }
 
     /**
@@ -37,6 +38,13 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('attendances-cron-tab', 'AttendanceController@attendanceCrontab');
             \Route::get('export-excel-attendance', 'AttendanceController@exportExcelAttendance');
+        });
+    }
+
+    public function forAi()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::get('report-attendance-to-ai', 'AttendanceController@reportAttendanceToAi');
         });
     }
 }
