@@ -218,10 +218,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              permission="WEB_TIENGANH_QUANLYBAIGIANG_EDIT"
+              permission="WEB_THECHAT_QUANLYMONDANHGIA_EDIT"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
             />
-            <Button permission="WEB_TIENGANH_QUANLYBAIGIANG_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button permission="WEB_THECHAT_QUANLYMONDANHGIA_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
           </div>
         ),
       },
@@ -261,7 +261,7 @@ class Index extends PureComponent {
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Môn đánh giá</Text>
-            <Button permission="WEB_TIENGANH_QUANLYBAIGIANG_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
+            <Button permission="WEB_THECHAT_QUANLYMONDANHGIA_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
               Tạo mới
             </Button>
           </div>
@@ -299,7 +299,7 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYBAIGIANG_DETAIL")) {
+                  if (user?.permissions?.find(i => i === "WEB_THECHAT_QUANLYMONDANHGIA_DETAIL")) {
                     history.push(`${pathname}/${record.id}/detail`);
                   }
                 },

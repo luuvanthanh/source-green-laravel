@@ -231,10 +231,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              permission="WEB_TTHECHAT_QUANLYBAIHOC_EDIT"
+              permission="WEB_THECHAT_QUANLYBAIHOC_EDIT"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
             />
-            <Button permission="WEB_TTHECHAT_QUANLYBAIHOC_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button permission="WEB_THECHAT_QUANLYBAIHOC_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
           </div>
         ),
       },
@@ -313,7 +313,7 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  if (user?.permissions?.find(i => i === "WEB_TTHECHAT_QUANLYBAIHOC_DETAIL")) {
+                  if (user?.permissions?.find(i => i === "WEB_THECHAT_QUANLYBAIHOC_DETAIL")) {
                     history.push(`${pathname}/${record.id}/detail`);
                   }
                 },
