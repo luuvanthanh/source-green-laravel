@@ -237,7 +237,8 @@ return [
         GGPHP\StudyProgram\ScriptReview\Providers\ScriptReviewServiceProvider::class,
         GGPHP\StudyProgram\QuarterReport\Providers\QuarterReportServiceProvider::class,
         GGPHP\StudyProgram\MonthlyComment\Providers\MonthlyCommentServiceProvider::class,
-        GGPHP\StudyProgram\AttendancePhysical\Providers\AttendancePhysicalServiceProvider::class
+        GGPHP\StudyProgram\AttendancePhysical\Providers\AttendancePhysicalServiceProvider::class,
+        GGPHP\Recruitment\Providers\RecruitmentServiceProvider::class
     ],
 
     /*

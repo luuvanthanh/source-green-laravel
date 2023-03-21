@@ -13,6 +13,8 @@ use GGPHP\Fee\Observers\ClassTypeObserver;
 use GGPHP\Fee\Observers\FeeObserver;
 use GGPHP\Fee\Observers\FeePolicieObserver;
 use GGPHP\Fee\Observers\PaymentFormObserver;
+use GGPHP\Recruitment\Observers\RecruitmentCongigurationObserver;
+use GGPHP\Recruitment\Models\RecruitmentConfiguration;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         PaymentForm::observe(PaymentFormObserver::class);
         FeePolicie::observe(FeePolicieObserver::class);
         ChargeOldStudent::observe(ChargeOldStudentObserver::class);
+        RecruitmentConfiguration::observe(RecruitmentCongigurationObserver::class);
 
         /**
          * Paginate a standard Laravel Collection.
