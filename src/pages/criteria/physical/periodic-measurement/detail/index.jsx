@@ -202,19 +202,16 @@ const Index = memo(() => {
                 >
                   Đóng
                 </p>
-                {
-                  query?.type === 'not-send' && (
-                    <Button
-                      className="ml10 px25"
-                      color="success"
-                      onClick={() => addSend()}
-                      size="large"
-                      loading={effects['physicalPeriodicMeasurementAdd/SEND']}
-                      permission="WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_APPROVE"
-                    >
-                      Gửi
-                    </Button>)
-                }
+                <Button
+                  className="ml10 px25"
+                  color="success"
+                  onClick={() => addSend()}
+                  size="large"
+                  loading={effects['physicalPeriodicMeasurementAdd/SEND']}
+                  permission="WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND"
+                >
+                  Gửi
+                </Button>
               </Pane>
             </Loading>
           </Form>

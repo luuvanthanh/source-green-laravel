@@ -3694,10 +3694,17 @@ export default [
       //PHYSICAL
       {
         path: '/the-chat',
+        component: './menu/layout',
         routes: [
           {
             path: '/the-chat',
-            redirect: '/the-chat/nhan-xet-tiet-hoc',
+            redirect: '/the-chat/home',
+          },
+          {
+            path: '/the-chat/home',
+            component: './criteria/physical/home',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.WEB_THECHAT_VIEW],
           },
           {
             path: '/the-chat/bai-hoc',
