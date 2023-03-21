@@ -28,12 +28,12 @@ const Index = memo(() => {
   const { query } = useLocation();
 
   const {
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     loading: { effects },
     user
   } = useSelector(({ menu, loading, PhysicalLessonCommentsAdd, user }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     years: PhysicalLessonCommentsAdd.years,
     error: PhysicalLessonCommentsAdd.error,
     user
@@ -271,7 +271,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? `Nhận xét ${isNotFeedback ? dataStudent?.student?.fullName : details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? `Nhận xét ${isNotFeedback ? dataStudent?.student?.fullName : details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Nhận xét tiết học" />
       <Loading
         loading={effects['PhysicalLessonCommentsAdd/GET_TEMPLATE_FOR_CREATING'] || effects['PhysicalLessonCommentsAdd/GET_DATA']}
