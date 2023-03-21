@@ -29,12 +29,12 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const {
     dataType,
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     years,
     loading: { effects },
   } = useSelector(({ menu, loading, configurationReviewsAdd }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     dataType: configurationReviewsAdd.dataType,
     years: configurationReviewsAdd.years,
     error: configurationReviewsAdd.error,
@@ -191,7 +191,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? 'Chi tiết' : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? 'Chi tiết' : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Cấu hình đánh giá" />
       <Pane className="pl20 pr20 pb20">
         <Pane >
@@ -303,8 +303,9 @@ const Index = memo(() => {
                   className="ml-auto px25"
                   color="success"
                   size="large"
+                  permission="WEB_THECHAT_CAUHINHDANHGIA_EDIT"
                   onClick={() => {
-                    history.push(`/chuong-trinh-hoc/the-chat/cau-hinh-danh-gia/${params?.id}/edit`);
+                    history.push(`/the-chat/cau-hinh-danh-gia/${params?.id}/edit`);
                   }}
                 >
                   Sửa

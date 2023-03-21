@@ -187,10 +187,9 @@ export const feature = {
     {
       title: 'Thể chất',
       src: '/images/home/iconPhysical.svg',
-      animation: animationImage.physical,
-      url: `${PHYSICAL}`,
-      target: true,
-      permission: [],
+      animation: animationImage.physicalItem,
+      url: '/the-chat',
+      permission: [permissions.WEB_THECHAT_VIEW],
     },
   ],
 };

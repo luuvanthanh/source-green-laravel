@@ -26,11 +26,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ subjectComment, loading }) => ({
+const mapStateToProps = ({ subjectComment, loading, user }) => ({
   data: subjectComment.data,
   error: subjectComment.error,
   pagination: subjectComment.pagination,
   loading,
+  user: user.user
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -217,9 +218,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_TIENGANH_QUANLYBAIGIANG_EDIT"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button permission="WEB_TIENGANH_QUANLYBAIGIANG_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
           </div>
         ),
       },
@@ -245,6 +247,7 @@ class Index extends PureComponent {
     const {
       error,
       data,
+      user,
       match: { params },
       pagination,
       loading: { effects },
@@ -258,7 +261,7 @@ class Index extends PureComponent {
         <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Môn đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
+            <Button permission="WEB_TIENGANH_QUANLYBAIGIANG_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/add`)}>
               Tạo mới
             </Button>
           </div>
@@ -296,7 +299,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_TIENGANH_QUANLYBAIGIANG_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -316,6 +321,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -326,6 +332,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  user: {},
 };
 
 export default Index;

@@ -137,6 +137,11 @@ const OBJECTS = {
     title: 'Báo cáo ERP',
     menu: 'menuLeftReport',
   },
+  PHYSICALITEM: {
+    icon: '/images/home/iconPhysical.svg',
+    title: 'Thể chất',
+    menu: 'menuLeftPhysicalItem',
+  },
 };
 
 @withRouter
@@ -212,6 +217,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/bao-cao-erp(?=\/|$)/i.test(pathname)) {
       key = 'REPORTERP';
+    }
+    if (/^\/the-chat(?=\/|$)/i.test(pathname)) {
+      key = 'PHYSICALITEM';
     }
     return key;
   };

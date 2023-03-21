@@ -17,10 +17,10 @@ import stylesModule from '../styles.module.scss';
 const General = memo(() => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const { menuLeftCriteria, loading: { effects } } = useSelector(({ menu, loading }) =>
+  const { menuLeftPhysicalItem, loading: { effects } } = useSelector(({ menu, loading }) =>
   ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
   }));
   const mounted = useRef(false);
 
@@ -76,7 +76,7 @@ const General = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last={details?.code} menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.code} menu={menuLeftPhysicalItem} />
       <Helmet title="Sample comments" />
       <Pane className="p20">
         <Form
@@ -148,8 +148,9 @@ const General = memo(() => {
                       className="ml-auto px25"
                       color="success"
                       size="large"
+                      permission="WEB_THECHAT_QUANLYNHANXET_EDIT"
                       onClick={() => {
-                        history.push(`/chuong-trinh-hoc/the-chat/nhan-xet-mau/${details?.id}/edit`);
+                        history.push(`/the-chat/nhan-xet-mau/${details?.id}/edit`);
                       }}
                     >
                       Sửa
