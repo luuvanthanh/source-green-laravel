@@ -255,5 +255,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\StudyProgram\AttendancePhysical\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\Recruitment\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

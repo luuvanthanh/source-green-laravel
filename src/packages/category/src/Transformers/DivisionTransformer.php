@@ -4,6 +4,7 @@ namespace GGPHP\Category\Transformers;
 
 use GGPHP\Category\Models\Division;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Recruitment\Transformers\RecruitmentConfigurationTransformer;
 
 /**
  * Class DivisionTransformer.
@@ -18,7 +19,7 @@ class DivisionTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['positions'];
+    protected $availableIncludes = ['positions', 'recruitmentConfiguration'];
 
     /**
      * Include department
@@ -27,5 +28,10 @@ class DivisionTransformer extends BaseTransformer
     public function includePositions(Division $division)
     {
         return $this->collection($division->positions, new PositionTransformer, 'Position');
+    }
+
+    public function includeRecruitmentConfiguration(Division $division)
+    {
+        return $this->collection($division->recruitmentConfiguration, new RecruitmentConfigurationTransformer, 'recruitmentConfiguration');
     }
 }
