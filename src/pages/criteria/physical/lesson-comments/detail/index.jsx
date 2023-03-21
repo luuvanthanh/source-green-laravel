@@ -24,11 +24,11 @@ const Index = memo(() => {
   const type = new URLSearchParams(window.location.search)?.get('type');
 
   const {
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     loading: { effects },
   } = useSelector(({ menu, loading, PhysicalLessonCommentsAdd }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     years: PhysicalLessonCommentsAdd.years,
     error: PhysicalLessonCommentsAdd.error,
   }));
@@ -61,7 +61,7 @@ const Index = memo(() => {
   };
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? `Nhận xét ${details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? `Nhận xét ${details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Nhận xét tiết học" />
       <Loading
         loading={effects['PhysicalLessonCommentsAdd/GET_DATA']}

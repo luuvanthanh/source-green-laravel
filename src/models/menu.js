@@ -23,6 +23,7 @@ import {
   getLeftMenuChildDevelop,
   getLeftMenuCurrency,
   getLeftMenuEnglish,
+  getLeftMenuPhysicalItem,
 } from '@/services/menu';
 import * as services from '@/services/categories';
 
@@ -105,6 +106,7 @@ export default {
       const menuLeftChildDevelop = yield call(getLeftMenuChildDevelop);
       const menuLeftCurrency = yield call(getLeftMenuCurrency);
       const menuLeftEnglish = yield call(getLeftMenuEnglish);
+      const menuLeftPhysicalItem = yield call(getLeftMenuPhysicalItem);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -132,6 +134,7 @@ export default {
           menuLeftChildDevelop,
           menuLeftCurrency,
           menuLeftEnglish,
+          menuLeftPhysicalItem,
         },
       });
     },

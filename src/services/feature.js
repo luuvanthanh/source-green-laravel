@@ -184,6 +184,13 @@ export const feature = {
       url: '/bao-cao-erp',
       permission: [permissions.WEB_BAO_CAO_ERP_VIEW],
     },
+    {
+      title: 'Thể chất',
+      src: '/images/home/iconPhysical.svg',
+      animation: animationImage.physicalItem,
+      url: '/the-chat',
+      permission: [permissions.WEB_THECHAT_VIEW],
+    },
   ],
 };
 

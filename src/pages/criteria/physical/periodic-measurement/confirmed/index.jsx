@@ -297,6 +297,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['physicalPeriodicMeasurementConfirmed/DELETE']}
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT"
                   >
                     Từ chối
                   </Button>
@@ -306,6 +307,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT"
                   >
                     Lưu
                   </Button>
@@ -314,6 +316,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addApprove()}
                     size="large"
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE"
                     loading={effects['physicalPeriodicMeasurementConfirmed/UPDATE_CONFIRMATION']}
                   >
                     Duyệt
