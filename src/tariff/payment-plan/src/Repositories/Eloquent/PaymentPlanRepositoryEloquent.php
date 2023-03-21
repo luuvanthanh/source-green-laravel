@@ -184,11 +184,22 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 30,
-                    'refId' => $paymentPlan->Id,
+                    'refId' => $paymentPlan->Id . '/' . $student->Id,
                 ];
 
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
+    }
+
+    public function findPaymentPlan($attributes, $id)
+    {
+        $paymentPlan = PaymentPlan::with(['paymentPlanDetail' => function ($query) use ($attributes) {
+            if (!empty($attributes['studentId'])) {
+                $query->where('StudentId', $attributes['studentId']);
+            }
+        }])->where('Id', $id)->first();
+
+        return parent::parserResult($paymentPlan);
     }
 }
