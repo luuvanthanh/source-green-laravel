@@ -22,10 +22,10 @@ const Index = memo(() => {
   const [details, setDetails] = useState(undefined);
   const {
     loading: { effects },
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
   } = useSelector(({ menu, loading }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem
   }));
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={details?.code} menu={menuLeftCriteria} />
+      <Breadcrumbs last={details?.code} menu={menuLeftPhysicalItem} />
       <Helmet title="Môn đánh giá" />
       <Pane className="pl20 pr20">
         <Pane className="col-lg-6 offset-lg-3">
@@ -143,8 +143,9 @@ const Index = memo(() => {
                   className="ml-auto px25"
                   color="success"
                   size="large"
+                  permission="WEB_THECHAT_QUANLYMONDANHGIA_EDIT"
                   onClick={() => {
-                    history.push(`/chuong-trinh-hoc/the-chat/mon-danh-gia/${details?.id}/edit`);
+                    history.push(`/the-chat/mon-danh-gia/${details?.id}/edit`);
                   }}
                 >
                   Sửa

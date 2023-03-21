@@ -379,7 +379,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  user: PropTypes.objectOf(PropTypes.any),
+  user: {},
   error: {},
 };
 

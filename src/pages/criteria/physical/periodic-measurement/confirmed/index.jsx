@@ -31,14 +31,14 @@ const Index = memo(() => {
     loading: { effects },
     dataDetailItem,
     dataTemplates,
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     dataEvaluetionCriteria,
     user,
   } = useSelector(({ EnglishMonthlyReport, menu, loading, physicalPeriodicMeasurementConfirmed, user }) => ({
     dataDetailItem: physicalPeriodicMeasurementConfirmed.dataDetailItem,
     dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     dataType: EnglishMonthlyReport.dataType,
     dataTemplates: physicalPeriodicMeasurementConfirmed.dataTemplates,
     dataEvaluetionCriteria: physicalPeriodicMeasurementConfirmed.dataEvaluetionCriteria,
@@ -211,7 +211,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
-      <Breadcrumbs last={dataDetailItem?.information?.student?.fullName} menu={menuLeftCriteria} />
+      <Breadcrumbs last={dataDetailItem?.information?.student?.fullName} menu={menuLeftPhysicalItem} />
       <Helmet title=" Đo lường định kỳ" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
@@ -297,6 +297,7 @@ const Index = memo(() => {
                     onClick={() => addDelete()}
                     size="large"
                     loading={effects['physicalPeriodicMeasurementConfirmed/DELETE']}
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT"
                   >
                     Từ chối
                   </Button>
@@ -306,6 +307,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT"
                   >
                     Lưu
                   </Button>
@@ -314,6 +316,7 @@ const Index = memo(() => {
                     color="primary"
                     onClick={() => addApprove()}
                     size="large"
+                    permission="WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE"
                     loading={effects['physicalPeriodicMeasurementConfirmed/UPDATE_CONFIRMATION']}
                   >
                     Duyệt

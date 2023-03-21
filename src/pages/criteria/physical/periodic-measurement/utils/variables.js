@@ -1,4 +1,4 @@
-// import ability from '@/utils/ability';
+import ability from '@/utils/ability';
 
 export const variables = {
   STATUS: {
@@ -10,36 +10,75 @@ export const variables = {
     SEND: 'SEND',
   },
   STATUS_TABS: [
-    {
-      id: 'NOT_MEASURED',
-      name: 'CHƯA ĐO LƯỜNG',
-      type: 'totalOfNoCriteria',
-    },
-    {
-      id: 'MEASURED',
-      name: 'ĐÃ ĐO LƯỜNG',
-      type: 'totalOfHasCriteria',
-    },
-    {
-      id: 'NOT_APPROVED',
-      name: 'CHƯA DUYỆT',
-      type: 'totalOfNoApprove',
-    },
-    {
-      id: 'APPROVED',
-      name: 'ĐÃ DUYỆT',
-      type: 'totalOfHasApprove',
-    },
-    {
-      id: 'NOT_SEND',
-      name: 'CHƯA GỬI',
-      type: 'totalOfNoSend',
-    },
-    {
-      id: 'SEND',
-      name: 'ĐÃ GỬI',
-      type: 'totalOfHasSend',
-    },
+    ...(ability.can(
+      'WEB_THECHAT_DOLUONGDINHKY_CHUADOLUONG_VIEW',
+      'WEB_THECHAT_DOLUONGDINHKY_CHUADOLUONG_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_MEASURED',
+            name: 'CHƯA ĐO LƯỜNG',
+            type: 'totalOfNoCriteria',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_THECHAT_DOLUONGDINHKY_DADOLUONG_VIEW',
+      'WEB_THECHAT_DOLUONGDINHKY_DADOLUONG_VIEW',
+    )
+      ? [
+          {
+            id: 'MEASURED',
+            name: 'ĐÃ ĐO LƯỜNG',
+            type: 'totalOfHasCriteria',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_VIEW',
+      'WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_APPROVED',
+            name: 'CHƯA DUYỆT',
+            type: 'totalOfNoApprove',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_THECHAT_DOLUONGDINHKY_DADUYET_VIEW',
+      'WEB_THECHAT_DOLUONGDINHKY_DADUYET_VIEW',
+    )
+      ? [
+          {
+            id: 'APPROVED',
+            name: 'ĐÃ DUYỆT',
+            type: 'totalOfHasApprove',
+          },
+        ]
+      : []),
+    ...(ability.can(
+      'WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_VIEW',
+      'WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_VIEW',
+    )
+      ? [
+          {
+            id: 'NOT_SEND',
+            name: 'CHƯA GỬI',
+            type: 'totalOfNoSend',
+          },
+        ]
+      : []),
+    ...(ability.can('WEB_THECHAT_DOLUONGDINHKY_DAGUI_VIEW', 'WEB_THECHAT_DOLUONGDINHKY_DAGUI_VIEW')
+      ? [
+          {
+            id: 'SEND',
+            name: 'ĐÃ GỬI',
+            type: 'totalOfHasSend',
+          },
+        ]
+      : []),
   ],
   STATUS_SEARCH: {
     MEASURED: 'DID_CRITERIA',

@@ -28,12 +28,12 @@ const Index = memo(() => {
   const { query } = useLocation();
 
   const {
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     loading: { effects },
     user
   } = useSelector(({ menu, loading, PhysicalLessonCommentsAdd, user }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     years: PhysicalLessonCommentsAdd.years,
     error: PhysicalLessonCommentsAdd.error,
     user
@@ -271,7 +271,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-quarterReport']}>
-      <Breadcrumbs last={params.id ? `Nhận xét ${isNotFeedback ? dataStudent?.student?.fullName : details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? `Nhận xét ${isNotFeedback ? dataStudent?.student?.fullName : details?.student?.fullName}` : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Nhận xét tiết học" />
       <Loading
         loading={effects['PhysicalLessonCommentsAdd/GET_TEMPLATE_FOR_CREATING'] || effects['PhysicalLessonCommentsAdd/GET_DATA']}
@@ -400,6 +400,7 @@ const Index = memo(() => {
                       className="ml10 px25"
                       color="danger"
                       loading={effects['PhysicalLessonCommentsAdd/REJECT_FEEDBACK']}
+                      permission="WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_EDIT"
                       onClick={() => onRejectFeedback(details.id)}
                     >
                       Từ chối
@@ -410,6 +411,7 @@ const Index = memo(() => {
                   className="ml10 px25"
                   color="success"
                   htmlType="submit"
+                  permission={query?.type === 'NOT_APPROVED_FEEDBACK' ? "WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_EDIT" : "WEB_THECHAT_NHANXETTIETHOC_CHUANHANXET_CREATE"}
                   loading={loadingSubmit}
                 >
                   Lưu
@@ -419,6 +421,7 @@ const Index = memo(() => {
                     <Button
                       className="ml10 px25"
                       color="primary"
+                      permission="WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_APPROVE"
                       loading={effects['PhysicalLessonCommentsAdd/APPROVE_FEEDBACK']}
                       onClick={() => onApproveFeedback()}
                     >

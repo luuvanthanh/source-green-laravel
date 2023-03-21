@@ -23,6 +23,7 @@ import {
   getLeftMenuChildDevelop,
   getLeftMenuCurrency,
   getLeftMenuEnglish,
+  getLeftMenuPhysicalItem,
 } from '@/services/menu';
 import * as services from '@/services/categories';
 
@@ -60,7 +61,23 @@ export default {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
     SET_MENU_REPORT: (state, { payload }) => ({
       ...state,
-      dataReport: payload,
+      dataReport: payload?.map((item) => ({
+        title: item.name,
+        key: `report-${item.id}`,
+        url: [],
+        id: item.id,
+        permission: [],
+        children: item?.children?.map((i) => ({
+          title: i.name,
+          id: i.id,
+          key: `report-${i.id}`,
+          url: [`/bao-cao-erp/${i.id}`],
+          permission: [],
+          scriptCode: i?.scriptCode,
+          pro: true,
+        })),
+        pro: true,
+      })),
     }),
   },
   effects: {
@@ -89,6 +106,7 @@ export default {
       const menuLeftChildDevelop = yield call(getLeftMenuChildDevelop);
       const menuLeftCurrency = yield call(getLeftMenuCurrency);
       const menuLeftEnglish = yield call(getLeftMenuEnglish);
+      const menuLeftPhysicalItem = yield call(getLeftMenuPhysicalItem);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -116,6 +134,7 @@ export default {
           menuLeftChildDevelop,
           menuLeftCurrency,
           menuLeftEnglish,
+          menuLeftPhysicalItem,
         },
       });
     },

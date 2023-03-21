@@ -21,12 +21,12 @@ const Index = memo(() => {
   const mounted = useRef(false);
 
   const {
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
     years,
     loading: { effects },
   } = useSelector(({ menu, loading, physicalLessonAdd }) => ({
     loading,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     years: physicalLessonAdd.years,
     error: physicalLessonAdd.error,
   }));
@@ -80,7 +80,7 @@ const Index = memo(() => {
   }, []);
   return (
     <div className={stylesModule['wraper-container']}>
-      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftCriteria} />
+      <Breadcrumbs last={params.id ? details?.code : 'Tạo mới'} menu={menuLeftPhysicalItem} />
       <Helmet title="Bài học" />
       <Loading
         loading={effects['physicalLessonAdd/GET_DATA']}
@@ -195,8 +195,9 @@ const Index = memo(() => {
               className="ml-auto px25"
               color="success"
               size="large"
+              permission="WEB_THECHAT_QUANLYBAIHOC_EDIT"
               onClick={() => {
-                history.push(`/chuong-trinh-hoc/the-chat/bai-hoc/${details?.id}/edit`);
+                history.push(`/the-chat/bai-hoc/${details?.id}/edit`);
               }}>
               Sửa
             </Button>

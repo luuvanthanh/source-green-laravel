@@ -10,6 +10,8 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import ability from '@/utils/ability';
+
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -338,7 +340,9 @@ const Index = () => {
 
 
   const onFormEdit = (record) => {
-    if (search?.status === variablesModules.STATUS.NOT_MEASURED) {
+    if (search?.status === variablesModules.STATUS.NOT_MEASURED
+      && ability.can('WEB_THECHAT_DOLUONGDINHKY_CHUADOLUONG_CREATE', 'WEB_THECHAT_DOLUONGDINHKY_CHUADOLUONG_CREATE')
+    ) {
       return (
         <Button
           icon="edit"
@@ -347,7 +351,9 @@ const Index = () => {
         />
       );
     }
-    if (search?.status === variablesModules.STATUS.NOT_APPROVED) {
+    if (search?.status === variablesModules.STATUS.NOT_APPROVED
+      && ability.can('WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT', 'WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_EDIT')
+    ) {
       return (
         <Button
           icon="edit"
@@ -356,7 +362,9 @@ const Index = () => {
         />
       );
     }
-    if (search?.status === variablesModules.STATUS.NOT_SEND) {
+    if (search?.status === variablesModules.STATUS.NOT_SEND
+      && ability.can('WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_DETAIL', 'WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_DETAIL')
+    ) {
       return (
         <Button
           icon="edit"
@@ -375,7 +383,7 @@ const Index = () => {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_APPROVED
-      //  && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE', 'WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE')
+      && ability.can('WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE', 'WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE')
     ) {
       return (
         <Button
@@ -387,7 +395,7 @@ const Index = () => {
     }
     if (
       search?.status === variablesModules.STATUS.NOT_SEND
-      // && ability.can('WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE', 'WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE')
+      && ability.can('WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND', 'WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND')
     ) {
       return (
         <Button
@@ -508,7 +516,7 @@ const Index = () => {
           className="ml-2"
           onClick={() => addItem('much')}
           loading={loading['physicalPeriodicMeasurement/CONFIRMED_ITEM'] || loading['physicalPeriodicMeasurement/ADD_SENT_ALL'] || loading['physicalPeriodicMeasurement/ADD_CONFIRM']}
-        // permission={"WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" || "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_APPROVED ? "WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE" : "WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_APPROVED ? "Duyệt đo lường đã chọn" : "Gửi đo lường đã chọn"}
         </Button>
@@ -519,7 +527,7 @@ const Index = () => {
           disabled={!data?.length > 0}
           loading={loading['physicalPeriodicMeasurement/ADD_CONFIRMED_ALL'] || loading['physicalPeriodicMeasurement/ADD_SENT_ALL'] || loading['EnglishMonthlyReport/ADD_CONFIRM']}
           onClick={() => addAll()}
-        // permission={"WEB_TIENGANH_DANHGIATHANG_CHUADUYET_APPROVE" || "WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"}
+          permission={search?.status === variablesModules.STATUS.NOT_APPROVED ? "WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_APPROVE" : "WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND"}
         >
           {search?.status === variablesModules.STATUS.NOT_SEND ? "Gửi tất cả" : "Duyệt tất cả"}
         </Button>
@@ -673,14 +681,20 @@ const Index = () => {
             }}
             onRow={(record) => ({
               onClick: () => {
-                if (search.status === variablesModules.STATUS.MEASURED) {
+                if (search.status === variablesModules.STATUS.MEASURED && user?.permissions?.find(i => i === "WEB_THECHAT_DOLUONGDINHKY_DADOLUONG_DETAIL")) {
                   history.push(`${pathname}/${record?.id}/detail?type=done-review`);
                 }
-                if (search.status === variablesModules.STATUS.APPROVED) {
+                if (search.status === variablesModules.STATUS.APPROVED && user?.permissions?.find(i => i === "WEB_THECHAT_DOLUONGDINHKY_DADUYET_DETAIL")) {
                   history.push(`${pathname}/${record?.id}/detail?type=done-confirmed`);
                 }
-                if (search.status === variablesModules.STATUS.SEND) {
+                if (search.status === variablesModules.STATUS.SEND && user?.permissions?.find(i => i === "WEB_THECHAT_DOLUONGDINHKY_DAGUI_DETAIL")) {
                   history.push(`${pathname}/${record?.id}/detail?type=done-send`);
+                }
+                if (search.status === variablesModules.STATUS.NOT_APPROVED && user?.permissions?.find(i => i === "WEB_THECHAT_DOLUONGDINHKY_CHUADUYET_DETAIL")) {
+                  history.push(`${pathname}/${record?.id}/detail?type=done`);
+                }
+                if (search.status === variablesModules.STATUS.NOT_SEND && user?.permissions?.find(i => i === "WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_DETAIL")) {
+                  history.push(`${pathname}/${record?.id}/detail?type=done`);
                 }
               },
             })}

@@ -439,6 +439,7 @@ class Index extends PureComponent {
           <Button
             icon="edit"
             className={stylesModule.edit}
+            permission={search?.status === variablesModules.STATUS.NOT_FEEDBACK ? "WEB_THECHAT_NHANXETTIETHOC_CHUANHANXET_CREATE" : "WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_EDIT"}
             onClick={(e) => {
               e.stopPropagation();
               if (search?.status === variablesModules.STATUS.NOT_FEEDBACK) {
@@ -456,6 +457,7 @@ class Index extends PureComponent {
           <Button
             icon="checkmark"
             className={stylesModule.edit}
+            permission="WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_APPROVE"
             onClick={(e) => { e.stopPropagation(); this.onApproveFeedback(record?.id); }}
           />
         )
@@ -463,6 +465,7 @@ class Index extends PureComponent {
       {
         search?.status === variablesModules.STATUS.APPROVED_FEEDBACK && (
           <Button
+            permission="WEB_THECHAT_DOLUONGDINHKY_DADUYET_IMPORT"
             icon="excel"
             className={stylesModule.edit}
             onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/detail?type=${search?.status}`); }}
@@ -624,6 +627,7 @@ class Index extends PureComponent {
                     color="primary"
                     icon="accept"
                     className="ml-2"
+                    permission="WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_APPROVE"
                     loading={effects['PhysicalLessonComments/APPROVE_FEEDBACK']}
                     onClick={() => this.onApproveFeedbacks()}>
                     Duyệt nhận xét đã chọn
@@ -634,6 +638,7 @@ class Index extends PureComponent {
                     className="ml-2"
                     loading={effects['PhysicalLessonComments/APPROVE_FEEDBACK']}
                     disabled={!size(data)}
+                    permission="WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_APPROVE"
                     onClick={() => this.onApproveFeedbacks(true)}
                   >
                     Duyệt tất cả
@@ -739,11 +744,14 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (search.status === variablesModules.STATUS.DID_FEEDBACK) {
+                  if (search.status === variablesModules.STATUS.DID_FEEDBACK && user?.permissions?.find(i => i === "WEB_THECHAT_NHANXETTIETHOC_DANHANXET_DETAIL")) {
                     history.push(`${pathname}/${record?.id}/detail?type=DID_FEEDBACK`);
                   }
-                  if (search.status === variablesModules.STATUS.APPROVED_FEEDBACK) {
+                  if (search.status === variablesModules.STATUS.APPROVED_FEEDBACK && user?.permissions?.find(i => i === "WEB_THECHAT_NHANXETTIETHOC_DADUYET_DETAIL")) {
                     history.push(`${pathname}/${record?.id}/detail?type=APPROVED_FEEDBACK`);
+                  }
+                  if (search.status === variablesModules.STATUS.NOT_APPROVED_FEEDBACK && user?.permissions?.find(i => i === "WEB_THECHAT_NHANXETTIETHOC_CHUADUYET_DETAIL")) {
+                    history.push(`${pathname}/${record?.id}/detail?type=NOT_APPROVED_FEEDBACK`);
                   }
                 },
               })}

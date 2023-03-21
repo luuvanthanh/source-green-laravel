@@ -26,11 +26,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ physicalLesson, loading }) => ({
+const mapStateToProps = ({ physicalLesson, loading, user }) => ({
   data: physicalLesson.data,
   error: physicalLesson.error,
   pagination: physicalLesson.pagination,
   loading,
+  user: user.user,
 });
 
 @connect(mapStateToProps)
@@ -230,9 +231,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_THECHAT_QUANLYBAIHOC_EDIT"
               onClick={(e) => { e.stopPropagation(); history.push(`${pathname}/${record.id}/edit`); }}
             />
-            <Button color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
+            <Button permission="WEB_THECHAT_QUANLYBAIHOC_DELETE" color="danger" icon="remove" onClick={(e) => { e.stopPropagation(); this.onRemove(record.id); }} />
           </div>
         ),
       },
@@ -258,6 +260,7 @@ class Index extends PureComponent {
     const {
       error,
       data,
+      user,
       match: { params },
       pagination,
       loading: { effects },
@@ -310,7 +313,9 @@ class Index extends PureComponent {
               rowKey={(record) => record.id}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`${pathname}/${record.id}/detail`);
+                  if (user?.permissions?.find(i => i === "WEB_THECHAT_QUANLYBAIHOC_DETAIL")) {
+                    history.push(`${pathname}/${record.id}/detail`);
+                  }
                 },
               })}
               scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
@@ -330,6 +335,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -340,6 +346,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  user: {},
 };
 
 export default Index;

@@ -27,12 +27,12 @@ const Index = memo(() => {
   const {
     loading: { effects },
     dataDetailItem,
-    menuLeftCriteria,
+    menuLeftPhysicalItem,
   } = useSelector(({ EnglishMonthlyReport, menu, loading, physicalPeriodicMeasurementAdd }) => ({
     dataAssess: EnglishMonthlyReport.dataAssess,
     loading,
     dataDetailItem: physicalPeriodicMeasurementAdd.dataDetailItem,
-    menuLeftCriteria: menu.menuLeftCriteria,
+    menuLeftPhysicalItem: menu.menuLeftPhysicalItem,
     dataType: EnglishMonthlyReport.dataType,
     error: physicalPeriodicMeasurementAdd.error,
   }));
@@ -103,7 +103,7 @@ const Index = memo(() => {
 
   return (
     <div className={stylesModule['wraper-container-monthlyComment']}>
-      <Breadcrumbs last={`Nhận xét ${dataDetailItem?.student?.fullName}`} menu={menuLeftCriteria} />
+      <Breadcrumbs last={`Nhận xét ${dataDetailItem?.student?.fullName}`} menu={menuLeftPhysicalItem} />
       <Helmet title="Đo lường định kỳ" />
       <Pane className="pl20 pr20 pb20">
         <Pane>
@@ -202,19 +202,16 @@ const Index = memo(() => {
                 >
                   Đóng
                 </p>
-                {
-                  query?.type === 'not-send' && (
-                    <Button
-                      className="ml10 px25"
-                      color="success"
-                      onClick={() => addSend()}
-                      size="large"
-                      loading={effects['physicalPeriodicMeasurementAdd/SEND']}
-                    // permission="WEB_TIENGANH_DANHGIATHANG_CHUAGUI_APPROVE"
-                    >
-                      Gửi
-                    </Button>)
-                }
+                <Button
+                  className="ml10 px25"
+                  color="success"
+                  onClick={() => addSend()}
+                  size="large"
+                  loading={effects['physicalPeriodicMeasurementAdd/SEND']}
+                  permission="WEB_THECHAT_DOLUONGDINHKY_CHUAGUI_SEND"
+                >
+                  Gửi
+                </Button>
               </Pane>
             </Loading>
           </Form>
