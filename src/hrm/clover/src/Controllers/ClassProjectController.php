@@ -29,7 +29,7 @@ class ClassProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $modules = $this->classProjectRepository->getModule($request->all());
+        $modules = $this->classProjectRepository->getProject($request->all());
 
         return $this->success($modules, trans('lang::messages.common.getListSuccess'));
     }

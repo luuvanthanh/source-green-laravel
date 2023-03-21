@@ -46,7 +46,7 @@ class BlockUpdateRequest extends FormRequest
                 },
             ],
             'note' => 'nullable|max:255',
-            'projects' => 'array|nullable',
+            'projectId' => 'array|nullable',
             'classes' => 'array|nullable',
         ];
     }

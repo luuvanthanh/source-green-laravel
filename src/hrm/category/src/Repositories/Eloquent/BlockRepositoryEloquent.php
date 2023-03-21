@@ -64,7 +64,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         } else {
             $degree = $this->get();
         }
-        
+            
         return $degree;
     }
 
@@ -88,7 +88,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
 
     public function created($data, $block)
     {
-        $block->classProject()->attach($data['projects']);
+        $block->classProject()->attach($data['projectId']);
         foreach ($data['classes'] as $key => $value) {
             $value['blockId'] = $block->Id;
             BlockDetail::create($value);
@@ -117,7 +117,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
     public function updated($data, $block)
     {
         $block->classProject()->detach();
-        $block->classProject()->attach($data['projects']);
+        $block->classProject()->attach($data['projectId']);
         $block->blockDetail()->delete();
         foreach ($data['classes'] as $key => $value) {
             $value['blockId'] = $block->Id;

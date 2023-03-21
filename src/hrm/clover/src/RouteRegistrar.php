@@ -37,7 +37,7 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             //module
-            \Route::get('modules', [
+            \Route::get('project-by-id-module', [
                 'uses' => 'ClassProjectController@index',
                 'as' => 'modules.index',
             ]);

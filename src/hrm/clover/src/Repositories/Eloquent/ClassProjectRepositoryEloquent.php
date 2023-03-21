@@ -52,20 +52,20 @@ class ClassProjectRepositoryEloquent extends CoreRepositoryEloquent implements C
         return ClassProjectPresenter::class;
     }
 
-    public function getModule(array $attributes)
+    public function getProject(array $attributes)
     {
-        if (!empty($attributes['key'])) {
+        if (!empty($attributes['parentId'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
-                $query->whereIn('Id', explode(',', $attributes['key']))->where('Type', 'MODULE');
+                $query->whereIn('ParentId', explode(',', $attributes['parentId']))->where('Type', 'PROJECT');
             });
         }
 
         if (!empty($attributes['limit'])) {
-            $modules = $this->paginate($attributes['limit']);
+            $projects = $this->paginate($attributes['limit']);
         } else {
-            $modules = $this->get();
+            $projects = $this->get();
         }
         
-        return $modules;
+        return $projects;
     }
 }

@@ -34,4 +34,13 @@ class ClassProject extends UuidModelNotSoftDelete
         'IsSchedule',
     ];
    
+    public function module()
+    {
+        return $this->belongsTo(ClassProject::class, 'ParentId');
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(ClassProject::class, 'ParentId');
+    }
 }

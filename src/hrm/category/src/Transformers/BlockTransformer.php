@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Transformers;
 
 use GGPHP\Category\Models\Block;
+use GGPHP\Clover\Transformers\ClassProjectTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
@@ -12,7 +13,7 @@ use GGPHP\Core\Transformers\BaseTransformer;
  */
 class BlockTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['grade', 'blockDetail'];
+    protected $availableIncludes = ['grade', 'blockDetail', 'classProject'];
 
     public function includeGrade(Block $block)
     {
@@ -30,5 +31,11 @@ class BlockTransformer extends BaseTransformer
         }
 
         return $this->collection($block->blockDetail, new BlockDetailTransformer, 'BlockDetail');
+    }
+
+    public function includeClassProject(Block $block)
+    {
+
+        return $this->collection($block->classProject, new ClassProjectTransformer, 'ClassProjects');
     }
 }

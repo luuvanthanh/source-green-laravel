@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Requests;
 
 use GGPHP\Category\Models\Block;
+use GGPHP\Clover\Models\ClassProject;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BlockCreateRequest extends FormRequest
@@ -46,8 +47,17 @@ class BlockCreateRequest extends FormRequest
                 },
             ],
             'note' => 'nullable|max:255',
-            'projects' => 'array|nullable',
-            'projects.*' => 'required|check_exists:distribution.ClassProjects,Id',
+            'projectId' => 'array|nullable',
+            'projectId.*' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $classProject = ClassProject::where('Id', $value)->where('Type', 'PROJECT')->first();
+
+                    if (is_null($classProject)) {
+                        return $fail('Giá trị đã chọn trong trường không hợp lệ.');
+                    }
+                },
+            ],
             'classes' => 'array|nullable',
             'classes.*.name' => 'required|string'
         ];

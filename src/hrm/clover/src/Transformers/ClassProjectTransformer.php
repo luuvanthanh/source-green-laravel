@@ -2,7 +2,6 @@
 
 namespace GGPHP\Clover\Transformers;
 
-use GGPHP\Clover\Models\Classes;
 use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Transformers\BaseTransformer;
 
@@ -31,7 +30,7 @@ class ClassProjectTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'project'
+        'module', 'program'
     ];
 
     /**
@@ -43,27 +42,24 @@ class ClassProjectTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {   
-        $projects = $this->getProject($model);
-
-        return [
-            "projects" => !is_null($projects) ? $projects : []
-        ];
+        return [];
     }
 
-    public function getProject($model)
+    public function includeModule(ClassProject $classProject)
     {
-        $projects = ClassProject::where('ItemId', $model->Id)->where('Type', 'PROJECT')->get();
+        if (empty($classProject->module)) {
+            return;
+        }
 
-        return $projects;
+        return $this->item($classProject->module, new ClassProjectTransformer, 'Module');
     }
 
-    // /**
-    //  * Include teacher
-    //  * @param Classes $classes
-    //  * @return \League\Fractal\Resource\Collection
-    //  */
-    // public function includeStudent(Classes $classes)
-    // {
-    //     return $this->collection($classes->student, new StudentTransformer, 'Student');
-    // }
+    public function includeProgram(ClassProject $classProject)
+    {
+        if (empty($classProject->program)) {
+            return;
+        }
+
+        return $this->item($classProject->program, new ClassProjectTransformer, 'Program');
+    }
 }
