@@ -1079,4 +1079,30 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         return !empty($schoolYear) ? $data['schoolYearId'] : null;
     }
+
+    public function reportAttendanceToAi($attributes)
+    {
+        $data = [];
+
+        $now = Carbon::now()->format('Y-m-d');
+        $fromDate = $now;
+        $toDate = $now;
+        if (!empty($attributes['fromDate']) && !empty($attributes['toDate'])) {
+            $fromDate = $attributes['fromDate'];
+            $toDate = $attributes['toDate'];
+        }
+
+        $attendances = Attendance::whereDate('Date', '>=', $fromDate)->where('Date', '<=', $toDate)->where('Status', Attendance::STATUS['HAVE_IN'])->get();
+
+        foreach ($attendances as $key => $value) {
+            $data[] = [
+                'name' => $value->student->FullName,
+                'user_id' => $value->StudentId,
+                'class_name' => $value->student->classStudent->classes->Name,
+                'branch_name' => $value->student->classStudent->classes->branch->Name,
+            ];
+        }
+
+        return $data;
+    }
 }
