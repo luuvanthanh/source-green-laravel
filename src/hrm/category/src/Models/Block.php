@@ -20,7 +20,7 @@ class Block extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Note', 'GradeId'
+        'Code', 'Name', 'Note', 'GradeId', 'Classes'
     ];
 
     /**
@@ -35,13 +35,8 @@ class Block extends UuidModel
         return $this->belongsTo(Grade::class, 'GradeId');
     }
 
-    public function classProject()
+    public function blockItem()
     {
-        return $this->belongsToMany(ClassProject::class, 'BlockClassProjects', 'BlockId', 'ProjectId');
-    }
-
-    public function blockDetail()
-    {
-        return $this->hasMany(BlockDetail::class, 'BlockId');
+        return $this->hasMany(BlockItem::class, 'BlockId');
     }
 }

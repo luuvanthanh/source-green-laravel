@@ -3,7 +3,7 @@
 namespace GGPHP\Category\Repositories\Eloquent;
 
 use GGPHP\Category\Models\Block;
-use GGPHP\Category\Models\BlockDetail;
+use GGPHP\Category\Models\BlockItem;
 use GGPHP\Category\Presenters\BlockPresenter;
 use GGPHP\Category\Repositories\Contracts\BlockRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
@@ -64,7 +64,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         } else {
             $degree = $this->get();
         }
-            
+
         return $degree;
     }
 
@@ -72,9 +72,11 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
     {
         \DB::beginTransaction();
         try {
+            $attributes = $this->creating($attributes);
+
             $block = Block::create($attributes);
 
-            $this->created($attributes, $block);
+            $this->createdOrUpdated($attributes, $block);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -86,24 +88,77 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         return parent::find($block->Id);
     }
 
-    public function created($data, $block)
+    public function creating(array $attributes)
     {
-        $block->classProject()->attach($data['projectId']);
-        foreach ($data['classes'] as $key => $value) {
-            $value['blockId'] = $block->Id;
-            BlockDetail::create($value);
+        if (!empty($attributes['classes'])) {
+            foreach ($attributes['classes'] as $key => $value) {
+                $attributes['classes'][$key]['orderIndex'] = $key;
+            }
+        }
+
+        $attributes['classes'] = json_encode($attributes['classes']);
+
+        return $attributes;
+    }
+
+    public function createdOrUpdated($attributes, $block, $isUpdate = false)
+    {
+        if ($isUpdate) {
+            
+            $block->blockItem()->delete();
+        }
+
+        $data = [];
+        if (!empty($attributes['programs'])) {
+            $data[] = [
+                'blockId' => $block->Id,
+                'itemId' => $attributes['programs']['id'],
+                'type' => 'PROGRAM',
+                'parentId' => null
+            ];
+
+            if (!empty($attributes['programs']['modules'])) {
+                foreach ($attributes['programs']['modules'] as $key => $module) {
+                    $data[] = [
+                        'blockId' => $block->Id,
+                        'itemId' => $module['id'],
+                        'type' => 'MODULE',
+                        'parentId' => $attributes['programs']['id']
+                    ];
+
+                    if (!empty($module['projects'])) {
+                        foreach ($module['projects'] as $key => $project) {
+                            $data[] = [
+                                'blockId' => $block->Id,
+                                'itemId' => $project,
+                                'type' => 'PROJECT',
+                                'parentId' => $module['id']
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                $value['orderIndex'] = $key;
+                BlockItem::create($value);
+            }
         }
     }
 
     public function update(array $attributes, $id)
     {
-        $block = Block::findOrFail($id);
-
         \DB::beginTransaction();
         try {
+            $block = Block::findOrFail($id);
+            $isUpdate = true;
+            $attributes = $this->updating($attributes);
+
             $block->update($attributes);
 
-            $this->updated($attributes, $block);
+            $this->createdOrUpdated($attributes, $block, $isUpdate);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -114,14 +169,16 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         return parent::parserResult($block);
     }
 
-    public function updated($data, $block)
+    public function updating($attributes)
     {
-        $block->classProject()->detach();
-        $block->classProject()->attach($data['projectId']);
-        $block->blockDetail()->delete();
-        foreach ($data['classes'] as $key => $value) {
-            $value['blockId'] = $block->Id;
-            BlockDetail::create($value);
+        if (!empty($attributes['classes'])) {
+            foreach ($attributes['classes'] as $key => $value) {
+                $attributes['classes'][$key]['orderIndex'] = $key;
+            }
         }
+
+        $attributes['classes'] = json_encode($attributes['classes']);
+
+        return $attributes;
     }
 }

@@ -15,6 +15,13 @@ class BlockTransformer extends BaseTransformer
 {
     protected $availableIncludes = ['grade', 'blockDetail', 'classProject'];
 
+    public function customAttributes($model): array
+    {
+        return [
+            'Classes' => json_decode($model->Classes)
+        ];
+    }
+    
     public function includeGrade(Block $block)
     {
         if (is_null($block->grade)) {
@@ -24,18 +31,18 @@ class BlockTransformer extends BaseTransformer
         return $this->item($block->grade, new GradeTransformer, 'Grade');
     }
 
-    public function includeBlockDetail(Block $block)
-    {
-        if (is_null($block->blockDetail)) {
-            return null;
-        }
+    // public function includeBlockDetail(Block $block)
+    // {
+    //     if (is_null($block->blockDetail)) {
+    //         return null;
+    //     }
 
-        return $this->collection($block->blockDetail, new BlockDetailTransformer, 'BlockDetail');
-    }
+    //     return $this->collection($block->blockDetail, new BlockDetailTransformer, 'BlockDetail');
+    // }
 
-    public function includeClassProject(Block $block)
-    {
+    // public function includeClassProject(Block $block)
+    // {
 
-        return $this->collection($block->classProject, new ClassProjectTransformer, 'ClassProjects');
-    }
+    //     return $this->collection($block->classProject, new ClassProjectTransformer, 'ClassProjects');
+    // }
 }

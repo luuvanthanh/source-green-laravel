@@ -2,16 +2,15 @@
 
 namespace GGPHP\Category\Models;
 
-use GGPHP\Core\Models\UuidModel;
+use GGPHP\Core\Models\UuidModelNotSoftDelete;
 
-class BlockClassProject extends UuidModel
+class BlockItem extends UuidModelNotSoftDelete
 {
     public $incrementing = false;
-
     /**
      * Declare the table name
      */
-    protected $table = 'BlockClassProjects';
+    protected $table = 'BlockItems';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +19,10 @@ class BlockClassProject extends UuidModel
      */
     protected $fillable = [
         'BlockId',
-        'ProjectId',
+        'ItemId',
+        'Type',
+        'ParentId',
+        'OrderIndex'
     ];
 
     /**
