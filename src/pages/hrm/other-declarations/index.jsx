@@ -52,10 +52,10 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         startDate: query?.startDate
           ? moment(query?.startDate)
-          : moment().startOf('month').subtract(1, 'months').add(24, 'days'),
+          : moment().startOf('month').format('YYYY-MM-DD'),
         endDate: query?.endDate
           ? moment(query?.endDate)
-          : moment().startOf('month').add(1, 'days'),
+          : moment().startOf('month').format('YYYY-MM-DD'),
       },
     };
     setIsMounted(true);
@@ -162,7 +162,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.debouncedSearch(moment(e).startOf('month').format('YYYY-MM-DD'), type);
   };
 
   /**
@@ -347,7 +347,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.MONTH_YEAR_PICKER}
+                    type={variables.MONTH_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     allowClear={false}
                   />
@@ -356,7 +356,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.MONTH_YEAR_PICKER}
+                    type={variables.MONTH_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     allowClear={false}
                   />

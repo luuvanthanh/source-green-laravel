@@ -15,6 +15,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import variablesModules from './utils/variables';
+import HelperModules from './utils/Helper';
 import stylesModule from './style.module.scss';
 
 const { Item: FormItemAntd } = Form;
@@ -388,11 +389,7 @@ class Index extends PureComponent {
         width: 150,
         className: 'min-width-150',
         render: (record) =>
-          Helper.getStatusContracts(
-            moment(record?.contractFrom),
-            moment(record?.contractTo),
-            record,
-          ),
+          HelperModules.tagStatus(record?.status),
       },
       {
         title: 'Thao tác',

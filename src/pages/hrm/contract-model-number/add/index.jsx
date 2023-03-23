@@ -86,7 +86,11 @@ const General = memo(() => {
             error.data.errors.forEach((item) => {
               form.setFields([
                 {
-                  name: get(item, 'source.pointer'),
+                  name: get(item, 'source.pointer') === 'startDate' ? 'startDate' : get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+                {
+                  name: get(item, 'source.pointer') === 'startDate' && 'selectDate',
                   errors: [get(item, 'detail')],
                 },
               ]);
@@ -119,10 +123,10 @@ const General = memo(() => {
                       <FormItem label="Loại hợp đồng" name="type" data={variablesModules?.DATA_TYPE} type={variables.SELECT} rules={[variables.RULES.EMPTY_INPUT]} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Mẫu số hợp đồng" name="numberForm" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      <FormItem label="Mẫu số hợp đồng" name="numberForm" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_255]} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Số hiện tại" name="ordinalNumber" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT]} />
+                      <FormItem label="Số hiện tại" name="ordinalNumber" type={variables.INPUT} rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_255]} />
                     </Pane>
                     <Pane className="col-lg-6">
                       <div className={styles['form-item']}>

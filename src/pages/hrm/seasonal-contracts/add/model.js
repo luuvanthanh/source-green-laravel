@@ -59,7 +59,11 @@ export default {
     }),
     SET_STAFF: (state, { payload }) => ({
       ...state,
-      Staff:  payload?.filter(i => i?.positionLevelNow?.division?.code === 'CEO' || i?.positionLevelNow?.division?.code === 'HC'),
+      Staff: payload?.filter(
+        (i) =>
+          i?.positionLevelNow?.division?.code === 'CEO' ||
+          i?.positionLevelNow?.division?.code === 'HC',
+      ),
     }),
   },
   effects: {

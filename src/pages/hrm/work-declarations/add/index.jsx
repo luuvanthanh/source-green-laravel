@@ -206,7 +206,8 @@ class Index extends PureComponent {
                     <FormItem
                       label="Lý do"
                       name="reason"
-                      type={variables.INPUT}
+                      type={variables.TEXTAREA}
+                      rules={[variables.RULES.MAX_LENGTH_255]}
                     />
                   </div>
                 </div>

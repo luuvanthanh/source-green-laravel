@@ -58,9 +58,10 @@ export default {
         });
       }
     },
-    *UPDATE_CONFIG({ payload }, saga) {
+    *UPDATE_CONFIG({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.activeStatus, payload);
+        callback(response);
         if (response) {
           yield saga.put({
             type: 'UPDATE_DATA',

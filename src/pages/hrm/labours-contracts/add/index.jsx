@@ -593,8 +593,8 @@ class Index extends PureComponent {
                     <FormItem
                       label="Công việc cụ thể"
                       name="work"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
+                      type={variables.TEXTAREA}
+                      rules={[variables.RULES.MAX_LENGTH_255]}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -602,7 +602,7 @@ class Index extends PureComponent {
                       label="Thời gian làm việc"
                       name="workTime"
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_255]}
                     />
                   </div>
                   <div className="col-lg-6">

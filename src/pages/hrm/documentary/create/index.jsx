@@ -30,10 +30,12 @@ function Index() {
     { error, branches, divisions },
     loading,
     { menuLeftHRM },
-  ] = useSelector(({ loading: { effects }, HRMdocumentaryAdd, menu }) => [
+    user,
+  ] = useSelector(({ loading: { effects }, HRMdocumentaryAdd, menu, user }) => [
     HRMdocumentaryAdd,
     effects,
     menu,
+    user
   ]);
 
   const [content, setContent] = useState('');
@@ -88,6 +90,11 @@ function Index() {
       type: 'HRMdocumentaryAdd/GET_DIVISIONS',
       payload: {},
     });
+    if (!params?.id) {
+      formRef.setFieldsValue({
+        employeeId: user?.objectInfo?.id,
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -371,6 +378,8 @@ function Index() {
                           data={Helper.convertSelectUsers(sentEmployees)}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
+                          disabled={!isEmpty(user?.objectInfo?.id)}
+                          loading={loading['HRMdocumentaryAdd/GET_EMPLOYEE']}
                         />
                       </Pane>
                     </Pane>
@@ -381,7 +390,7 @@ function Index() {
                         <FormItem
                           label="Cơ sở"
                           name="branchId"
-                          data={branches}
+                          data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
                           type={variables.SELECT}
                           onChange={onChangeBranch}
                         />
@@ -390,7 +399,7 @@ function Index() {
                         <FormItem
                           label="Bộ phận"
                           name="receiveDivisionId"
-                          data={divisions}
+                          data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
                           type={variables.SELECT}
                           onChange={onChangeDivision}
                         />
@@ -428,7 +437,7 @@ function Index() {
                             rules={[variables.RULES.EMPTY]}
                             loading={searchEmployee.loading}
                             dataSource={employees}
-                            renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
+                            renderItem={({ id, fullName, positionLevelNow, fileImage, checked }) => (
                               <ListItem key={id} className={styles.listItem}>
                                 <Pane className="w-100 d-flex align-items-center">
                                   <Checkbox
@@ -443,7 +452,7 @@ function Index() {
                                         {fullName}
                                       </h3>
                                       <Text size="small" style={{ color: '#7a7e84' }}>
-                                        {head(positionLevel)?.position?.name}
+                                        {positionLevelNow?.position?.name}
                                       </Text>
                                     </Pane>
                                   </Pane>
@@ -487,7 +496,7 @@ function Index() {
                         <Button color="transparent" icon="upload1">
                           Tải lên
                         </Button>
-                        <i>Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb</i>
+                        <i>Chỉ hỗ trợ định dạng .pdf .docx .xlsx. Dung lượng không được quá 5mb</i>
                       </Upload>
                     </div>
                     {!isEmpty(fileImage) && (
