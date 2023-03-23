@@ -32,10 +32,6 @@ class BlockTransformer extends BaseTransformer
 
     public function includeBlockItem(Block $block)
     {
-        if (is_null($block->blockItem)) {
-            return null;
-        }
-
         return $this->collection($block->blockItem, new BlockItemTransformer, 'BlockItem');
     }
 }
