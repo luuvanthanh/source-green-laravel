@@ -204,6 +204,7 @@ class Index extends PureComponent {
                     name="employeeId"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
+                    loading={effects['resignationDecisionsAdd/GET_CATEGORIES']}
                   />
                 </div>
               </div>
@@ -241,8 +242,7 @@ class Index extends PureComponent {
                   <FormItem
                     label="Lý do"
                     name="reason"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    type={variables.TEXTAREA} rules={[variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>
@@ -264,7 +264,7 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <FormItem label="Ghi chú" name="note" type={variables.INPUT} rules={[]} />
+                  <FormItem label="Ghi chú" name="note" type={variables.TEXTAREA} rules={[variables.RULES.MAX_LENGTH_255]} />
                 </div>
               </div>
             </div>

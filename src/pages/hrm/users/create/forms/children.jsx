@@ -49,6 +49,17 @@ const Index = memo(() => {
 
   const handleOk = () => {
     mountedSet(setVisible, true);
+    formRefModal.current.setFieldsValue({
+      data: [{
+        fullName: undefined,
+        birthday: undefined,
+        gender: undefined,
+        relationship: undefined,
+        taxCode: undefined,
+        date: undefined,
+        isDependentPerson: undefined
+      }]
+    });
   };
 
   const cancelModal = () => {
@@ -132,7 +143,7 @@ const Index = memo(() => {
           },
         ],
       },
-      callback: () => {},
+      callback: () => { },
     });
   };
 
@@ -140,7 +151,7 @@ const Index = memo(() => {
    * Function remove items
    * @param {uid} id id of items
    */
-   const onRemove = (id) => {
+  const onRemove = (id) => {
     Helper.confirmAction({
       callback: () => {
         dispatch({

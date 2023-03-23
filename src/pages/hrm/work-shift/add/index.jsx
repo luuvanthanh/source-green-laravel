@@ -198,6 +198,7 @@ class Index extends PureComponent {
     } = this.props;
     const { shiftDetail } = this.state;
     const loadingSubmit = effects['workShiftsAdd/ADD'] || effects['workShiftsAdd/UPDATE'];
+    console.log("shifts", shifts.filter(i => i?.status === "ON"));
     const loading =
       effects['workShiftsAdd/GET_DETAILS'] ||
       effects['workShiftsAdd/GET_DIVISIONS'] ||
@@ -240,7 +241,7 @@ class Index extends PureComponent {
                         </div>
                         <div className="col-lg-6">
                           <FormItem
-                            data={shifts.map((item) => ({
+                            data={shifts.filter(i => i?.status === "ON").map((item) => ({
                               id: item.id,
                               name: item.name || item.shiftCode,
                             }))}

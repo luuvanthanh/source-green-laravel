@@ -366,10 +366,10 @@ const Index = () => {
       {
         title: 'Bộ phận',
         key: 'division',
-        width: 120,
+        width: 150,
         fixed: 'left',
         className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
-        render: (record) => record?.positionLevelNow?.branch?.name,
+        render: (record) => record?.positionLevelNow?.division?.name,
       },
     ];
 

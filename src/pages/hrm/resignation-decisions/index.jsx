@@ -149,6 +149,7 @@ class Index extends PureComponent {
    */
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    console.log("moment(e).format(variables.DATE_FORMAT.DATE_AFTER)", moment(e).format(variables.DATE_FORMAT.DATE_AFTER));
   };
 
   /**

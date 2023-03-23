@@ -229,6 +229,8 @@ const Index = memo(() => {
                 type={variables.DATE_PICKER}
                 disabledDate={(current) => Helper.disabledDateFrom(current, formRefModal)}
                 allowClear={false}
+                label="Thời gian bắt đầu"
+                rules={[variables.RULES.EMPTY]}
               />
             </div>
             <div className="col-lg-6">
@@ -237,6 +239,8 @@ const Index = memo(() => {
                 type={variables.DATE_PICKER}
                 disabledDate={(current) => Helper.disabledDateTo(current, formRefModal)}
                 allowClear={false}
+                label="Thời gian kết thúc"
+                rules={[variables.RULES.EMPTY]}
               />
             </div>
           </div>

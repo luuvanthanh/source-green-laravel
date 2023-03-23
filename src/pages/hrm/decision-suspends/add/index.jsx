@@ -171,6 +171,19 @@ class Index extends PureComponent {
     });
   };
 
+  onTime = (current, type) => {
+    if (type === 'from') {
+      const { to } = !isEmpty(this.formRef?.current) && this.formRef?.current?.getFieldsValue();
+      return current >= to;
+    }
+    if (type === 'to') {
+      const { from } = !isEmpty(this.formRef?.current) && this.formRef?.current?.getFieldsValue();
+      return current <= from;
+    }
+    return "";
+  };
+
+
   render() {
     const {
       categories,
@@ -243,8 +256,7 @@ class Index extends PureComponent {
                   <FormItem
                     label="Lý do"
                     name="reason"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    type={variables.TEXTAREA} rules={[variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>
@@ -255,6 +267,7 @@ class Index extends PureComponent {
                     name="from"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => this.onTime(current, 'from')}
                   />
                 </div>
                 <div className="col-lg-6">
@@ -263,10 +276,11 @@ class Index extends PureComponent {
                     name="to"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => this.onTime(current, 'to')}
                   />
                 </div>
                 <div className="col-lg-6">
-                  <FormItem label="Ghi chú" name="note" type={variables.INPUT} rules={[]} />
+                  <FormItem label="Ghi chú" name="note" type={variables.TEXTAREA} rules={[variables.RULES.MAX_LENGTH_255]} />
                 </div>
               </div>
             </div>
