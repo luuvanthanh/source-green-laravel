@@ -78,6 +78,12 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
             $this->model = $this->model->where('Status', $attributes['status']);
         }
 
+        $this->model = $this->model->with(['paymentPlanDetail' => function ($query) use ($attributes) {
+            if (!empty($attributes['studentId'])) {
+                $query->where('StudentId', $attributes['studentId']);
+            }
+        }]);
+
         if (!empty($attributes['limit'])) {
             $paymentPlan = $this->paginate($attributes['limit']);
         } else {
@@ -170,7 +176,7 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
             $paymentPlanDetail =  $paymentPlan->paymentPlanDetail()->where('StudentId', $student->Id)->first();
             $totalMoneyMonth = !is_null($paymentPlanDetail->TotalMoneyMonth) ? number_format($paymentPlanDetail->TotalMoneyMonth) : 0;
             $message = 'Biểu phí tháng ' . $month->format('m/Y') . ' của bé ' . $student->FullName . ' là ' . $totalMoneyMonth;
-            
+
             if (!empty($arrId)) {
                 $dataNotifiCation = [
                     'users' => $arrId,
@@ -178,11 +184,22 @@ class PaymentPlanRepositoryEloquent extends CoreRepositoryEloquent implements Pa
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 30,
-                    'refId' => $paymentPlan->Id,
+                    'refId' => $paymentPlan->Id . '/' . $student->Id,
                 ];
 
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
+    }
+
+    public function findPaymentPlan($attributes, $id)
+    {
+        $paymentPlan = PaymentPlan::with(['paymentPlanDetail' => function ($query) use ($attributes) {
+            if (!empty($attributes['studentId'])) {
+                $query->where('StudentId', $attributes['studentId']);
+            }
+        }])->where('Id', $id)->first();
+
+        return parent::parserResult($paymentPlan);
     }
 }

@@ -59,9 +59,9 @@ class PaymentPlanController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $paymentPlan = $this->paymentPlanRepository->find($id);
+        $paymentPlan = $this->paymentPlanRepository->findPaymentPlan($request->all(), $id);
 
         return $this->success($paymentPlan, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -91,7 +91,7 @@ class PaymentPlanController extends Controller
     public function sentPaymentPlan(SentPaymentPlanRequest $request)
     {
         $paymentPlan = $this->paymentPlanRepository->sentPaymentPlan($request->all());
-        
+
         return $this->success($paymentPlan, trans('lang::messages.common.modifySuccess'));
     }
 }

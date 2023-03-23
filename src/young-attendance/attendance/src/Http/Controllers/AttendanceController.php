@@ -157,4 +157,11 @@ class AttendanceController extends Controller
 
         return $attendance;
     }
+
+    public function reportAttendanceToAi(Request $request)
+    {
+        $reportAttendanceToAi = $this->attendanceRepository->reportAttendanceToAi($request->all());
+
+        return $this->success(['data' => $reportAttendanceToAi], trans('lang-program::messages.attendance.getListSuccess'));
+    }
 }
