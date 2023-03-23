@@ -236,7 +236,7 @@ class Index extends PureComponent {
     dispatch({
       type: 'holidays/ADD',
       payload,
-      callback: () => {},
+      callback: () => { },
     });
   };
 
@@ -295,6 +295,7 @@ class Index extends PureComponent {
   render() {
     const {
       loading: { effects },
+      pagination,
       location: { pathname },
     } = this.props;
     const { search, dataSource } = this.state;
@@ -326,10 +327,10 @@ class Index extends PureComponent {
           prefix: col.prefix,
           disabledDate: col?.disabledDate
             ? {
-                type: col?.key,
-                date: getDate(col?.key, record),
-                year: record?.startDate ? moment(record?.startDate) : '',
-              }
+              type: col?.key,
+              date: getDate(col?.key, record),
+              year: record?.startDate ? moment(record?.startDate) : '',
+            }
             : null,
           handleSave: this.handleSave,
         }),
@@ -378,7 +379,7 @@ class Index extends PureComponent {
               dataSource={dataSource}
               className="table-edit"
               loading={loading}
-              pagination={false}
+              pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
                 type: 'table',
@@ -397,12 +398,14 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  pagination: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  pagination: {},
 };
 
 export default Index;

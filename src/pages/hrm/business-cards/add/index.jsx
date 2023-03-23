@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, InputNumber, TimePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, last, head } from 'lodash';
+import { get, isEmpty, last, head, uniqBy } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -37,7 +37,6 @@ const mapStateToProps = ({ menu, businessCardsAdd, loading }) => ({
   error: businessCardsAdd.error,
   categories: businessCardsAdd.categories,
   shiftUsers: businessCardsAdd.shiftUsers,
-  absentTypes: businessCardsAdd.absentTypes,
   menuLeftSchedules: menu.menuLeftHRM,
 });
 
@@ -49,6 +48,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       detail: [],
+      absentTypes: [],
       type: '',
     };
     setIsMounted(true);
@@ -102,6 +102,17 @@ class Index extends PureComponent {
                 isFullDate: item.isFullDate ? 1 : 0.5,
               })),
             });
+            dispatch({
+              type: 'businessCardsAdd/GET_ABSENT_TYPES',
+              payload: { type: response?.absentType?.type },
+              callback: (response) => {
+                if (response) {
+                  this.setStateData({
+                    absentTypes: response.parsePayload,
+                  });
+                };
+              },
+            });
           }
         },
       });
@@ -114,18 +125,24 @@ class Index extends PureComponent {
       type: 'businessCardsAdd/GET_CATEGORIES',
       payload: {},
     });
-    dispatch({
-      type: 'businessCardsAdd/GET_ABSENT_TYPES',
-      payload: {},
-    });
   };
 
   onChangeType = (type) => {
     const { dispatch } = this.props;
+    this.formRef.current.setFieldsValue({
+      absentTypeId: undefined,
+    });
     dispatch({
       type: 'businessCardsAdd/GET_ABSENT_TYPES',
       payload: {
         type,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            absentTypes: response.parsePayload,
+          });
+        };
       },
     });
     this.setStateData({
@@ -325,6 +342,49 @@ class Index extends PureComponent {
     }
   };
 
+  disabledHours = (record, key) => {
+    const arrayHours = [];
+    const startTime = record?.startTime ? moment(record?.startTime, 'HH:mm:ss').hours() : null;
+    const endTime = record?.endTime ? moment(record?.endTime, 'HH:mm:ss').hours() : null;
+    if (key === 'out') {
+      for (let i = 0; i < startTime; i += 1) {
+        arrayHours.push(i);
+      }
+      return uniqBy(arrayHours);
+    }
+    if (key === 'in' && endTime) {
+      for (let i = endTime + 1; i <= 23; i += 1) {
+        arrayHours.push(i);
+      }
+      return uniqBy(arrayHours);
+    }
+    return uniqBy(arrayHours);
+  }
+
+  disabledMinutes = (record, type = 'in') => {
+    const startTime = record?.startTime ? moment(record?.startTime, 'HH:mm:ss').hours() : null;
+    const endTime = record?.endTime ? moment(record?.endTime, 'HH:mm:ss').hours() : null;
+    const arrayHours = [];
+    const startTimeMinutes = record?.startTime ? moment(record?.startTime, 'HH:mm:ss').minute() : null;
+    const endTimeMinutes = record?.endTime ? moment(record?.endTime, 'HH:mm:ss').minute() : null;
+
+    if (type === 'out') {
+      if (startTime === endTime) {
+        for (let i = 0; i <= startTimeMinutes; i += 1) {
+          arrayHours.push(i);
+        }
+      }
+    }
+    if (type === 'in') {
+      if (startTime === endTime) {
+        for (let i = endTimeMinutes; i < 59; i += 1) {
+          arrayHours.push(i);
+        }
+      }
+    }
+    return uniqBy(arrayHours);
+  };
+
   /**
    * Function header table
    */
@@ -349,6 +409,10 @@ class Index extends PureComponent {
               placeholder="Chọn"
               value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeStart(value, record, 'OUT')}
+              disabledHours={() => this.disabledHours(record, 'in')}
+              disabledMinutes={() =>
+                this.disabledMinutes(record, 'in')
+              }
             />
           ),
         },
@@ -362,6 +426,10 @@ class Index extends PureComponent {
               placeholder="Chọn"
               value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeEnd(value, record, 'OUT')}
+              disabledHours={() => this.disabledHours(record, 'out')}
+              disabledMinutes={() =>
+                this.disabledMinutes(record, 'out')
+              }
             />
           ),
         },
@@ -578,9 +646,8 @@ class Index extends PureComponent {
       categories,
       loading: { effects },
       match: { params },
-      absentTypes,
     } = this.props;
-    const { detail, type } = this.state;
+    const { detail, type, absentTypes } = this.state;
     const loading =
       effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['businessCardsAdd/ADD'] || effects['businessCardsAdd/UPDTE'];
@@ -731,7 +798,6 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  absentTypes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -742,7 +808,6 @@ Index.defaultProps = {
   error: {},
   menuLeftSchedules: [],
   loading: {},
-  absentTypes: [],
 };
 
 export default Index;

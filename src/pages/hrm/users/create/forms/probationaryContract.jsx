@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size, last, isEmpty, head } from 'lodash';
+import { find, size, last, isEmpty, head, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
 import csx from 'classnames';
@@ -350,8 +350,8 @@ const Index = memo(() => {
             data?.errors.forEach((item) => {
               formRefModal?.current?.setFields([
                 {
-                  name: item?.source?.pointer,
-                  errors: [item?.details],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
             });
@@ -479,7 +479,7 @@ const Index = memo(() => {
                 loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT'] ||
                 loading['HRMusersAdd/UPDATE_PROBATIONARY_CONTRACT']
               }
-              onClick={finishForm}
+              onClick={() => formRefModal.current.submit()}
             >
               Lưu
             </Button>
@@ -495,6 +495,7 @@ const Index = memo(() => {
             contractTo: details.contractTo && moment(details.contractTo),
             contractDate: details.contractDate && moment(details.contractDate),
           }}
+          onFinish={finishForm}
           onValuesChange={formUpdate}
         >
           <Pane className="row">

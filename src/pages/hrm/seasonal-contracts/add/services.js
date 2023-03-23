@@ -40,10 +40,12 @@ export function get(data = {}) {
   });
 }
 
-export function getUsers(data = {}) {
+export function getUsers() {
   return request('/v1/employees?getLimitUser=true', {
     method: 'GET',
-    data,
+    params: {
+      include: Helper.convertIncludes(['positionLevel,positionLevelNow']),
+    },
   });
 }
 
@@ -51,9 +53,7 @@ export function getStaff() {
   return request(`/v1/employees`, {
     method: 'GET',
     params: {
-      include: Helper.convertIncludes([
-        'positionLevel,positionLevelNow',
-      ]),
+      include: Helper.convertIncludes(['positionLevel,positionLevelNow']),
     },
   });
 }

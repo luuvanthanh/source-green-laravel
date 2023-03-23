@@ -383,7 +383,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách QĐ khen thưởng và kỷ luật</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo quyết định
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

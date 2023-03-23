@@ -52,9 +52,10 @@ export default {
     }),
   },
   effects: {
-    *GET_ABSENT_TYPES({ payload }, saga) {
+    *GET_ABSENT_TYPES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getAbsentTypes, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_ABSENT_TYPES',
           payload: response,
