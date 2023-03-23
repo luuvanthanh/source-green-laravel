@@ -72,7 +72,7 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
     {
         \DB::beginTransaction();
         try {
-            $attributes = $this->creating($attributes);
+            $attributes = $this->convertColumnClasses($attributes);
 
             $block = Block::create($attributes);
 
@@ -88,7 +88,28 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
         return parent::find($block->Id);
     }
 
-    public function creating(array $attributes)
+    public function update(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $block = Block::findOrFail($id);
+            
+            $attributes = $this->convertColumnClasses($attributes);
+
+            $block->update($attributes);
+
+            $this->createdOrUpdated($attributes, $block, $isUpdate = true);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            throw new HttpException(500, $e->getMessage());
+        }
+        return parent::parserResult($block);
+    }
+
+    public function convertColumnClasses($attributes)
     {
         if (!empty($attributes['classes'])) {
             foreach ($attributes['classes'] as $key => $value) {
@@ -146,39 +167,5 @@ class BlockRepositoryEloquent extends CoreRepositoryEloquent implements BlockRep
                 BlockItem::create($value);
             }
         }
-    }
-
-    public function update(array $attributes, $id)
-    {
-        \DB::beginTransaction();
-        try {
-            $block = Block::findOrFail($id);
-            $isUpdate = true;
-            $attributes = $this->updating($attributes);
-
-            $block->update($attributes);
-
-            $this->createdOrUpdated($attributes, $block, $isUpdate);
-
-            \DB::commit();
-        } catch (\Exception $e) {
-            \DB::rollback();
-
-            throw new HttpException(500, $e->getMessage());
-        }
-        return parent::parserResult($block);
-    }
-
-    public function updating($attributes)
-    {
-        if (!empty($attributes['classes'])) {
-            foreach ($attributes['classes'] as $key => $value) {
-                $attributes['classes'][$key]['orderIndex'] = $key;
-            }
-        }
-
-        $attributes['classes'] = json_encode($attributes['classes']);
-
-        return $attributes;
     }
 }
