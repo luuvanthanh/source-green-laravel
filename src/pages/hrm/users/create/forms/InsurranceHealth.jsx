@@ -90,13 +90,19 @@ const Index = memo(() => {
           >
             <Pane className="row">
               <Pane className="col-lg-6">
-                <FormItem name="insuranceNumber" label="Số thẻ BHYT" type={variables.INPUT} />
+                <FormItem
+                  name="insuranceNumber"
+                  label="Số thẻ BHYT"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
               </Pane>
               <Pane className="col-lg-6">
                 <FormItem
                   name="medicalTreatmentPlace"
                   label="Nơi khám chữa bệnh"
                   type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
               <Pane className="col-lg-6">

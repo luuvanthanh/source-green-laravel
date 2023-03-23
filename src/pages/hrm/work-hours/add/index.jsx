@@ -271,13 +271,22 @@ class Index extends PureComponent {
       categories,
       absentTypes,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loading = effects['workHoursAdd/GET_DETAILS'];
     const loadingSubmit = effects['workHoursAdd/ADD'] || effects['workHoursAdd/UPDATE'];
     return (
       <>
-        <Helmet title="Tạo mới phiếu ĐK giờ làm thêm" />
-        <Breadcrumbs last="Tạo mới phiếu ĐK giờ làm thêm" menu={menuData} />
+        <Helmet title={
+          params.id
+            ? 'Chỉnh phiếu ĐK giờ làm thêm'
+            : 'Tạo mới phiếu ĐK giờ làm thêm'
+        } />
+        <Breadcrumbs last={
+          params.id
+            ? 'Chỉnh phiếu ĐK giờ làm thêm'
+            : 'Tạo mới phiếu ĐK giờ làm thêm'
+        } menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"

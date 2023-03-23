@@ -1,5 +1,5 @@
 import request from '@/utils/requestLavarel';
-import { Helper} from '@/utils';
+import { Helper } from '@/utils';
 
 export function getUsers(params = {}) {
   return request('/v1/employees', {
@@ -7,7 +7,7 @@ export function getUsers(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['positionLevel']),
-      status: 'STORE'
+      // status: 'STORE'
     },
   });
 }

@@ -311,6 +311,9 @@ class Index extends PureComponent {
       variables.QUERY_STRING,
     )}`;
 
+  redirectHolidays = () =>
+    `/quan-ly-nhan-su/ngay-nghi-le`;
+
   renderworksOvertimehift = (
     record = [],
     dayOfWeek = Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
@@ -359,7 +362,7 @@ class Index extends PureComponent {
           color="#00B24D"
         >
           <Link
-            to={this.redirectHistory(dayOfWeek, record, user)}
+            to={this.redirectHolidays()}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-holidays`]]: !!holiday,
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
