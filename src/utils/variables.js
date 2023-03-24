@@ -380,6 +380,8 @@ export const variables = {
     DAY: 'day',
     SELECT: 'select',
     IMG: 'img',
+    NO_LABLE: 'noLable',
+    TEXTAREA: 'TextArea',
   },
 };
 
