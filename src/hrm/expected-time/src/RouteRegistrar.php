@@ -30,6 +30,10 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('expected-times', 'ExpectedTimeController');
+
+            // dowload template
+            \Route::get('template-excel-teacher-profile', 'ExpectedTimeController@templateExcelTeacherProfile');
+            \Route::post('import-excel-teacher-profile', 'ExpectedTimeController@importExcelTeacherProfile');
         });
     }
 }

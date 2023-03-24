@@ -23,10 +23,11 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
         "league/fractal": "^0.19.2",
-        "maatwebsite/excel": "3.1.26",
+        "maatwebsite/excel": "3.1",
         "orangehill/iseed": "^2.6",
         "php-http/curl-client": "^2.2",
         "php-parallel-lint/php-parallel-lint": "^1.3",
+        "phpoffice/phpspreadsheet": "1.18",
         "phpoffice/phpword": "^0.18.1",
         "pimax/fb-messenger-php": "^2.0",
         "predis/predis": "^1.1",
@@ -36,8 +37,7 @@
         "staudenmeir/eloquent-json-relations": "^1.1",
         "webpatser/laravel-uuid": "^4.0",
         "zaloplatform/zalo-php-sdk": "^2.0",
-        "zerodahero/laravel-workflow": "^3.1",
-        "phpoffice/phpspreadsheet": "1.18"
+        "zerodahero/laravel-workflow": "^3.1"
     },
     "require-dev": {
         "cloudcreativity/json-api-testing": "^2.1",

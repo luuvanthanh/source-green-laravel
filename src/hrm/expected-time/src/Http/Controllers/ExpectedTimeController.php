@@ -5,11 +5,13 @@ namespace GGPHP\ExpectedTime\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\ExpectedTime\Http\Requests\ExpectedTimeCreateRequest;
 use GGPHP\ExpectedTime\Http\Requests\ExpectedTimeUpdateRequest;
+use GGPHP\ExpectedTime\Imports\TeacherProfileImport;
 use GGPHP\ExpectedTime\Repositories\Contracts\ExpectedTimeRepository;
 use GGPHP\TeacherTimekeeping\Models\TeacherTimekeeping;
-use GGPHP\TeacherTimekeeping\Repositories\Contracts\TeacherTimekeepingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExpectedTimeController extends Controller
 {
@@ -111,5 +113,17 @@ class ExpectedTimeController extends Controller
         $this->expectedTimeRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function templateExcelTeacherProfile()
+    {
+        return Storage::disk('local')->download('excel-exporter/templates' . '/' . 'employee_list_template.xlsx');
+    }
+
+    public function importExcelTeacherProfile()
+    {
+        Excel::import(new TeacherProfileImport(), request()->file('file'));
+
+        return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
     }
 }
