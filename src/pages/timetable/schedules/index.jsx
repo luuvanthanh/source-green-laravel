@@ -559,6 +559,11 @@ class Index extends PureComponent {
               slotMinTime="04:00"
               slotMaxTime="20:00"
               editable
+              eventTimeFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                meridiem: false,
+              }}
               fixedWeekCount={false}
               showNonCurrentDates
               locales={allLocales}

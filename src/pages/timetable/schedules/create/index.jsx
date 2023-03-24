@@ -12,11 +12,14 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+import { Helmet } from 'react-helmet';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
+import FormDetail from '@/components/CommonComponent/FormDetail';
+
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/information.module.scss';
 import stylesForm from '@/assets/styles/Common/common.scss';
@@ -44,7 +47,8 @@ const Index = memo(
     const [content, setContent] = useState('');
     const [countCheck, setCountCheck] = useState(false);
     const [isReminded, setIsReminded] = useState(false);
-    const [isAllClass, setIsAllClass] = useState(false);
+    const [detail, setDetail] = useState({});
+
     const [isAllStudent, setIsAllStudent] = useState(false);
     const [searchStudents, setSearchStudents] = useState({
       page: variables.PAGINATION.PAGE,
@@ -59,9 +63,7 @@ const Index = memo(
     const [dataCheck, setDataCheck] = useState([]);
     const [type, setType] = useState('');
     const [errorStudent, setError] = useState(false);
-    const [selectClass, setSelectClass] = useState([]);
     const [fileImage, setFileImage] = useState([]);
-    const [isTime, setIsTime] = useState(false);
 
     const loadingSubmit = effects[`timeTablesScheduleAdd/ADD`] || effects['timeTablesScheduleAdd/UPDATE'];
     const formRef = useRef();
@@ -73,32 +75,19 @@ const Index = memo(
     };
 
     const onFinish = (values) => {
-      if (type === 'forPerson' && !isAllStudent && size(students.filter(item => item?.checked)) === 0) {
-        setError(true);
-        return;
-      }
-      let classTimetables = isAllClass ? classes?.map(item => ({ ClassId: item.id })) : values?.classes?.map(item => ({ ClassId: item }));
-      let parentTimetables = isAllStudent ? [] : students?.filter(item => item.checked)?.map(item => ({ studentId: item.id }));
-      if (values?.object === 'forPerson') {
-        classTimetables = [];
-      }
-      if (values?.object === 'forClass') {
-        parentTimetables = [];
-      }
+
+      const studentIds = isAllStudent ? [] : students?.filter(item => item.checked)?.map(item => item?.student?.id);
+
       const startTime = !isEmpty(values?.rangeTime) ? Helper.getDate(values.rangeTime[0], variables.DATE_FORMAT.TIME_FULL) : null;
       const endTime = !isEmpty(values?.rangeTime) ? Helper.getDate(values.rangeTime[1], variables.DATE_FORMAT.TIME_FULL) : null;
       const payload = {
         ...values,
         isReminded,
-        isAllClass,
         isAllStudent,
         content,
         fileAttach: !isEmpty(fileImage) ? JSON.stringify(fileImage) : undefined,
-        forClass: values?.object === 'forClass',
-        forPerson: values?.object === 'forPerson',
-        Class: values?.Class || null,
-        classTimetables,
-        parentTimetables,
+        studentIds,
+        excludedStudentIds: isAllStudent ? students?.filter(item => !item.checked)?.map(item => item?.student?.id) : [],
         scheduleSendingDate: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -190,7 +179,7 @@ const Index = memo(
       setCountCheck(true);
       mountedSet(
         setStudents,
-        students.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
+        students.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
       );
     };
 
@@ -295,17 +284,6 @@ const Index = memo(
       }
     };
 
-    const changeObject = (e) => {
-      const { value } = e.target;
-      setType(value);
-      if (value === 'forClass') {
-        setIsAllStudent(false);
-      } else {
-        setIsAllClass(false);
-        getStudents({ ...searchStudents });
-      }
-    };
-
     const onChangeClass = (value) => {
       getStudents({
         page: variables.PAGINATION.PAGE,
@@ -320,18 +298,8 @@ const Index = memo(
       setIsAllStudent(e.target.checked);
       mountedSet(
         setStudents,
-        students.map((item) => ({ ...item, checked: false })),
+        students.map((item) => ({ ...item, checked: true })),
       );
-    };
-
-    const onSelectClass = (value) => {
-      setSelectClass(value);
-    };
-
-    const onChangeAllClass = (e) => {
-      setIsAllClass(e.target.checked);
-      setSelectClass([]);
-      formRef?.current?.setFieldsValue({ classes: undefined });
     };
 
     const onSetFileImage = (fileImage) => {
@@ -364,13 +332,12 @@ const Index = memo(
                 classId: res?.class?.id || null,
                 classes,
               });
-              setIsTime(res?.isScheduled);
+              setDetail(res);
               onSetFileImage(res?.fileAttach);
               setContent(res?.content || '');
               setIsReminded(res?.isReminded || false);
               setType(res?.forClass ? 'forClass' : 'forPerson');
               setIsAllStudent(res?.isAllStudent);
-              setIsAllClass(res?.isAllClass);
               if (res?.branch?.id) {
                 getClasses(res?.branch?.id);
               }
@@ -427,6 +394,7 @@ const Index = memo(
 
     return (
       <>
+        <Helmet title="Thời khóa biểu làm việc / sự kiện" />
         <Breadcrumbs last={params?.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'} menu={menuLeft} />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
           <Loading loading={false} isError={error.isError} params={{ error }}>
@@ -441,160 +409,215 @@ const Index = memo(
             >
               <Pane className="row">
                 <Pane className="col-lg-6">
-                  <Pane className="card" style={{ padding: 20 }}>
-                    <Heading type="form-title" style={{ marginBottom: 20 }}>
-                      Thông tin chung
-                    </Heading>
-
-                    <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Loại lịch"
-                          name="eventType"
-                          rules={[variables.RULES.EMPTY]}
-                          type={variables.SELECT}
-                          data={variablesModules.TYPE_CALENDAR}
-                        />
-                      </Pane>
-                    </Pane>
-                    <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Thời gian diễn ra"
-                          name="applyDate"
-                          type={variables.DATE_PICKER}
-                          rules={[variables.RULES.EMPTY]}
-                          disabledDate={(current) => current < moment().add(-1, 'day')}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          className="no-label"
-                          name="rangeTime"
-                          type={variables.TIME_RANGE}
-                          rules={[variables.RULES.EMPTY]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          className="checkbox-row checkbox-small"
-                          label="Nhắc nhở"
-                          type={variables.CHECKBOX_SINGLE}
-                          checked={isReminded}
-                          onChange={(e) => setIsReminded(e.target.checked)}
-                        />
-                      </Pane>
-                      {
-                        isReminded && (
-                          <>
-                            <Pane className="col-lg-12">
-                              <FormItem
-                                label="Nhắc trước"
-                                name="remindBefore"
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.SELECT}
-                                data={convertDate()}
-                              />
-                            </Pane>
-                            <Pane className="col-lg-12">
-                              <FormItem
-                                label="Ghi chú nhắc nhở"
-                                name="note"
-                                rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_TEXTAREA]}
-                                type={variables.TEXTAREA}
-                              />
-                            </Pane>
-                          </>
-                        )
-                      }
-                    </Pane>
-                    <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          className="radio-group-row"
-                          label="Đối tượng"
-                          name="object"
-                          type={variables.RADIO}
-                          rules={[variables.RULES.EMPTY]}
-                          data={variablesModules.OBJECTS}
-                          onChange={changeObject}
-                        />
-                      </Pane>
-                    </Pane>
-                    <Pane className={csx('row', 'border-bottom')}>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Cơ sở"
-                          name="branchId"
-                          rules={[variables.RULES.EMPTY]}
-                          type={variables.SELECT}
-                          data={isEmpty(defaultBranch) ? branches : [defaultBranch]}
-                          onChange={onChangeBranch}
-                        />
-                      </Pane>
-                      {type && type === 'forPerson' && (
-                        <Pane className="col-lg-6">
-                          <FormItem
-                            label="Lớp"
-                            name="classId"
-                            type={variables.SELECT}
-                            data={classes}
-                            onChange={onChangeClass}
-                          />
+                  {
+                    params?.id ?
+                      <Pane className="card" style={{ padding: 20 }}>
+                        <Heading type="form-title" style={{ marginBottom: 20 }}>
+                          Thông tin chung
+                        </Heading>
+                        <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                          <Pane className="col-lg-6">
+                            <FormDetail name={detail?.eventType} label="Loại lịch" data={variablesModules.TYPE_CALENDAR} type={variables.TYPE.SELECT} />
+                          </Pane>
                         </Pane>
-                      )}
-                    </Pane>
-
-                    {type && type === 'forPerson' && (
-                      <>
-                        <Pane className="border-bottom py20">
-                          <p className="mb0">Gửi đến phụ huynh</p>
-                          {!isEmpty(students) && (
-                            <FormItem
-                              className="checkbox-row checkbox-small mb0 py20"
-                              label="Tất cả học sinh"
-                              type={variables.CHECKBOX_SINGLE}
-                              checked={isAllStudent}
-                              onChange={handleChooseAll}
-                            />
-                          )}
-                          {!isAllStudent && (
-                            <div className="border-top">
-                              <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
-                                <InfiniteScroll
-                                  hasMore={!searchStudents.loading && searchStudents.hasMore}
-                                  initialLoad={searchStudents.loading}
-                                  loadMore={handleInfiniteOnLoad}
-                                  pageStart={0}
-                                  useWindow={false}
+                        <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                          <Pane className="col-lg-6">
+                            <FormDetail name={`${Helper.getDate(detail?.applyDate, variables.DATE_FORMAT.DATE_AFTER)}, ${Helper.getDate(detail?.startTime, variables.DATE_FORMAT.HOUR)} - ${Helper.getDate(detail?.endTime, variables.DATE_FORMAT.HOUR)}`} label="Thời gian diễn ra" type={variables.TYPE.TEXT} />
+                          </Pane>
+                          {
+                            isReminded && (
+                              <>
+                                <Pane className="col-lg-6">
+                                  <FormDetail name={detail?.remindBefore} label="Nhắc trước" type={variables.TYPE.TEXT} />
+                                </Pane>
+                                <Pane className="col-lg-12">
+                                  <FormDetail name={detail?.note} label="Nội dung nhắc nhở" type={variables.TYPE.TEXTAREA} />
+                                </Pane>
+                              </>
+                            )
+                          }
+                        </Pane>
+                        <Pane className={csx('row', 'border-bottom')}>
+                          <Pane className="col-lg-6">
+                            <FormDetail name={detail?.branchId} label="Cơ sở" data={isEmpty(defaultBranch) ? branches : [defaultBranch]} type={variables.TYPE.SELECT} />
+                          </Pane>
+                          <Pane className="col-lg-6">
+                            <FormDetail name={isEmpty(detail?.classId) ? "Tất cả cơ sở" : detail?.classId} label="Lớp" data={classes} type={variables.TYPE.SELECT} />
+                          </Pane>
+                        </Pane>
+                        <Pane style={{ paddingTop: 20 }}>
+                          <label className={styles.infoLabel}>Người nhận thông báo</label>
+                          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                            {!isEmpty(detail?.parentTimetables) &&
+                              detail?.parentTimetables?.map((item, index) => (
+                                <Pane
+                                  key={index}
+                                  className={styles.userInformation}
+                                  style={{ paddingTop: 10, paddingBottom: 10 }}
                                 >
-                                  <List
+                                  <AvatarTable
+                                    fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                                  />
+                                  <Pane>
+                                    <h3>{item?.student?.fullName}</h3>
+                                    <p>{item?.student?.age} Tháng tuổi</p>
+                                  </Pane>
+                                </Pane>
+                              ))}
+                          </Scrollbars>
+                        </Pane>
+                      </Pane>
+                      :
+                      <Pane className="card" style={{ padding: 20 }}>
+                        <Heading type="form-title" style={{ marginBottom: 20 }}>
+                          Thông tin chung
+                        </Heading>
+
+                        <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                          <Pane className="col-lg-6">
+                            {
+                              params?.id ?
+                                <FormDetail name={detail?.eventType} label="Loại lịch" data={variablesModules.TYPE_CALENDAR} type={variables.TYPE.SELECT} />
+                                :
+                                <FormItem
+                                  label="Loại lịch"
+                                  name="eventType"
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.SELECT}
+                                  data={variablesModules.TYPE_CALENDAR}
+                                />
+                            }
+                          </Pane>
+                        </Pane>
+                        <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                          <Pane className="col-lg-6">
+                            {
+                              params?.id ?
+                                <FormDetail name={detail?.applyDate} label="Thời gian diễn ra" type={variables.TYPE.TEXT} />
+                                :
+                                <FormItem
+                                  label="Thời gian diễn ra"
+                                  name="applyDate"
+                                  type={variables.DATE_PICKER}
+                                  rules={[variables.RULES.EMPTY]}
+                                  disabledDate={(current) => current < moment().add(-1, 'day')}
+                                />
+                            }
+                          </Pane>
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              className="no-label"
+                              name="rangeTime"
+                              type={variables.TIME_RANGE}
+                              rules={[variables.RULES.EMPTY]}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-12">
+                            <FormItem
+                              className="checkbox-row checkbox-small"
+                              label="Nhắc nhở"
+                              type={variables.CHECKBOX_SINGLE}
+                              checked={isReminded}
+                              onChange={(e) => setIsReminded(e.target.checked)}
+                            />
+                          </Pane>
+                          {
+                            isReminded && (
+                              <>
+                                <Pane className="col-lg-12">
+                                  <FormItem
+                                    label="Nhắc trước"
+                                    name="remindBefore"
                                     rules={[variables.RULES.EMPTY]}
-                                    loading={searchStudents.loading}
-                                    dataSource={students}
-                                    renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
-                                      <ListItem key={id} className={styles.listItem}>
-                                        <Pane className="w-100 d-flex align-items-center">
-                                          <Checkbox
-                                            checked={!!checked}
-                                            className="mr15"
-                                            onChange={() => changeCheckboxStudents(id)}
-                                          />
-                                          <Pane className={styles.userInformation}>
-                                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                            <Pane>
-                                              <h3>{fullName}</h3>
-                                              <p>{head(positionLevel)?.position?.name}</p>
-                                            </Pane>
+                                    type={variables.SELECT}
+                                    data={convertDate()}
+                                  />
+                                </Pane>
+                                <Pane className="col-lg-12">
+                                  <FormItem
+                                    label="Ghi chú nhắc nhở"
+                                    name="note"
+                                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_TEXTAREA]}
+                                    type={variables.TEXTAREA}
+                                  />
+                                </Pane>
+                              </>
+                            )
+                          }
+                        </Pane>
+                        <Pane className={csx('row', 'border-bottom')}>
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              label="Cơ sở"
+                              name="branchId"
+                              rules={[variables.RULES.EMPTY]}
+                              type={variables.SELECT}
+                              data={isEmpty(defaultBranch) ? branches : [defaultBranch]}
+                              onChange={onChangeBranch}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              label="Lớp"
+                              name="classId"
+                              type={variables.SELECT}
+                              data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                              onChange={onChangeClass}
+                            />
+                          </Pane>
+                        </Pane>
+
+                        <Pane className="py20">
+                          {!isEmpty(students) && (
+                            <>
+                              <p className="mb0">Người nhận thông báo</p>
+                              <FormItem
+                                className="checkbox-row checkbox-small mb0 py20"
+                                label="Tất cả học sinh"
+                                type={variables.CHECKBOX_SINGLE}
+                                checked={isAllStudent}
+                                onChange={handleChooseAll}
+                              />
+                            </>
+                          )}
+                          <div >
+                            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                              <InfiniteScroll
+                                hasMore={!searchStudents.loading && searchStudents.hasMore}
+                                initialLoad={searchStudents.loading}
+                                loadMore={handleInfiniteOnLoad}
+                                pageStart={0}
+                                useWindow={false}
+                              >
+                                <List
+                                  rules={[variables.RULES.EMPTY]}
+                                  loading={searchStudents.loading}
+                                  dataSource={students}
+                                  renderItem={({ student, hasParentAccount, checked }) => (
+                                    <ListItem key={student?.id} className={styles.listItem}>
+                                      <Pane className="w-100 d-flex align-items-center">
+                                        <Checkbox
+                                          checked={!!checked}
+                                          className="mr15"
+                                          onChange={() => changeCheckboxStudents(student?.id)}
+                                        />
+                                        <Pane className={styles.userInformation}>
+                                          <AvatarTable fileImage={Helper.getPathAvatarJson(student?.fileImage)} />
+                                          <Pane>
+                                            <div className='d-flex'>
+                                              <h3>{student?.fullName}</h3>
+                                              {!hasParentAccount && (<p className='text-danger ml5'>(Chưa có tài khoản)</p>)}
+                                            </div>
+                                            <p>{student?.age} Tháng tuổi</p>
                                           </Pane>
                                         </Pane>
-                                      </ListItem>
-                                    )}
-                                  />
-                                </InfiniteScroll>
-                              </Scrollbars>
-                            </div>
-                          )}
+                                      </Pane>
+                                    </ListItem>
+                                  )}
+                                />
+                              </InfiniteScroll>
+                            </Scrollbars>
+                          </div>
                         </Pane>
                         {!isAllStudent && countCheck ? (
                           <div className="pt15">
@@ -610,51 +633,8 @@ const Index = memo(
                         {!isAllStudent && errorStudent && size(students.filter(item => item?.checked)) === 0 && (
                           <span className="text-danger mt5">{variables.RULES.EMPTY_INPUT.message}</span>
                         )}
-                      </>
-                    )}
-
-                    {type && type === 'forClass' && !isEmpty(classes) && (
-                      <Pane className="row pt20">
-                        <Pane className="col-lg-12">
-                          <p>Gửi đến phụ huynh</p>
-                          {!isEmpty(classes) && (
-                            <FormItem
-                              className="checkbox-row checkbox-small"
-                              label="Tất cả lớp"
-                              type={variables.CHECKBOX_SINGLE}
-                              checked={isAllClass}
-                              onChange={onChangeAllClass}
-                            />
-                          )}
-                          {!isAllClass && (
-                            <FormItem
-                              name="classes"
-                              type={variables.CHECKBOX}
-                              rules={[
-                                {
-                                  ...variables.RULES.EMPTY,
-                                  required: !isAllClass
-                                }
-                              ]}
-                              onChange={onSelectClass}
-                              className="checkbox-group group-column"
-                              data={classes.map((item) => ({
-                                value: item.id,
-                                label: item.name,
-                              }))}
-                            />
-                          )}
-                        </Pane>
-                        {!isAllClass && (
-                          <div className="border-top px15 pt15 col-12">
-                            <Text color="dark" size="normal">
-                              Đã chọn {size(selectClass)}
-                            </Text>
-                          </div>
-                        )}
                       </Pane>
-                    )}
-                  </Pane>
+                  }
                 </Pane>
 
                 <Pane className="col-lg-6">
@@ -701,7 +681,7 @@ const Index = memo(
                               <span>Tài liệu đính kèm</span>
                             </label>
                             <Upload {...props} className={stylesForm['upload-file']}>
-                              <Button color="transparent" icon="upload1">
+                              <Button loading={effects[`upload/UPLOAD`]} color="transparent" icon="upload1">
                                 Tải lên
                               </Button>
                               <i>Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb</i>
@@ -729,52 +709,28 @@ const Index = memo(
                             </div>
                           )}
                         </Pane>
-                        <Pane className="col-lg-12 mt20 d-flex p0">
-                          <Pane className="ml15">
-                            <FormItem
-                              className="checkbox-row checkbox-small p0"
-                              label="Đặt hẹn giờ gửi"
-                              name="isScheduled"
-                              type={variables.CHECKBOX_FORM}
-                              valuePropName="checked"
-                              onChange={(e) => setIsTime(e.target.checked)}
-                            />
-                          </Pane>
-                          {
-                            isTime && (
-                              <>
-                                <Pane className='mr15 ml15'>
-                                  <FormItem
-                                    name="scheduleSendingDate"
-                                    type={variables.DATE_PICKER}
-                                    rules={[variables.RULES.EMPTY]}
-                                  />
-                                </Pane>
-                                <Pane >
-                                  <FormItem
-                                    name="time"
-                                    type={variables.TIME_PICKER}
-                                    rules={[variables.RULES.EMPTY]}
-                                  />
-                                </Pane>
-                              </>
-                            )
-                          }
-                        </Pane>
                       </Pane>
                     </Pane>
 
-                    <Pane className="px20 pb20">
-                      <Button
-                        size="large"
-                        color="success"
-                        htmlType="submit"
-                        style={{ marginLeft: 'auto' }}
-                        loading={loadingSubmit}
-                      >
-                        Gửi
-                      </Button>
-                    </Pane>
+                  </Pane>
+                  <Pane className="d-flex justify-content-between align-items-center mb20">
+                    <p
+                      className="btn-delete"
+                      role="presentation"
+
+                      onClick={() => history.goBack()}
+                    >
+                      Hủy
+                    </p>
+                    <Button
+                      size="large"
+                      color="success"
+                      htmlType="submit"
+                      style={{ marginLeft: 'auto' }}
+                      loading={loadingSubmit}
+                    >
+                      Gửi
+                    </Button>
                   </Pane>
                 </Pane>
               </Pane>
