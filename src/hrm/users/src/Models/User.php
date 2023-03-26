@@ -56,6 +56,11 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'TEACHER' => 2
     ];
 
+    const SEX = [
+        'MALE' => 'MALE',
+        'FEMALE' => 'FEMALE'
+    ];
+
     /**
      * Declare the table name
      */

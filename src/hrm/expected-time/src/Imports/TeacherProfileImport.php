@@ -3,6 +3,7 @@
 namespace GGPHP\ExpectedTime\Imports;
 
 use Carbon\Carbon;
+use GGPHP\EvaluateTeacher\Category\Models\TypeTeacher;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
@@ -10,11 +11,13 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use GGPHP\Users\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TeacherProfileImport implements ToModel, WithValidation, WithStartRow
 {
+    static $temporary = '';
     /**
      * @param array $row
      *
@@ -22,46 +25,49 @@ class TeacherProfileImport implements ToModel, WithValidation, WithStartRow
      */
     public function model(array $row)
     {
-        // dd($row);
-        // $sex = null;
-        // $birthDate = null;
+        $sex = null;
+        $birthDate = null;
+        $dateOfIssueIdCard = null;
+        $typeTeacher = null;
 
-        // if ($row[2] == 'Nam' || $row[2] == 'nam') {
-        //     $sex = DataMarketing::SEX['MALE'];
-        // } elseif ($row[2] == 'Nữ' || $row[2] == 'nữ') {
-        //     $sex = DataMarketing::SEX['FEMALE'];
-        // }
+        if ($row[4] == 'Nam' || $row[4] == 'nam') {
+            $sex = User::SEX['MALE'];
+        } elseif ($row[4] == 'Nữ' || $row[4] == 'nữ') {
+            $sex = User::SEX['FEMALE'];
+        }
 
-        // if (!is_null($row[1])) {
-        //     $birthDate = Carbon::parse($row[1])->format('Y-m-d');
-        // }
-        // $searchSource = SearchSource::where('type', $row[6])->first();
-        // $data = [
-        //     'full_name' => $row[0],
-        //     'birth_date' => $birthDate,
-        //     'sex' => $sex,
-        //     'phone' => $row[3],
-        //     'email' => $row[4],
-        //     'facebook' => $row[5],
-        //     'note' => $row[7],
-        //     'search_source_id' => is_null($searchSource) ? null : $searchSource->id,
-        // ];
-        // $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
-        // $data_marketing_code = DataMarketing::max('code');
+        if (!is_null($row[3])) {
+            $date = $date = Carbon::createFromFormat('d/m/Y', $row[3]);
+            $birthDate = $date->format('Y-m-d');
+        }
 
-        // if (is_null($data_marketing_code)) {
-        //     $data['code'] = DataMarketing::CODE . $now . '01';
-        // } else {
-        //     if (substr($data_marketing_code, 2, 8)  != $now) {
-        //         $data['code'] = DataMarketing::CODE . $now . '01';
-        //     } else {
-        //         $stt = substr($data_marketing_code, 2) + 1;
-        //         $data['code'] = DataMarketing::CODE . $stt;
-        //     }
-        // }
-        // $data['status'] = DataMarketing::STATUS['NOT_MOVE'];
+        if (!is_null($row[8])) {
+            $date = $date = Carbon::createFromFormat('d/m/Y', $row[8]);
+            $dateOfIssueIdCard = $date->format('Y-m-d');
+        }
 
-        // DataMarketing::create($data);
+        if ($row[10] == 'TEACHER') {
+            $typeTeacher = TypeTeacher::where('Name', $row[11])->first();
+        }
+
+        $data = [
+            'code' => $row[1],
+            'fullName' => $row[2],
+            'dateOfBirth' => $birthDate,
+            'gender' => $sex,
+            'category' => User::CATEGORY[$row[10]],
+            'status' => User::STATUS['WORKING'],
+            'dateOfIssueIdCard' => $dateOfIssueIdCard,
+            'phoneNumber' => $row[5] ? $row[5] : null,
+            'email' => $row[6] ? $row[6] : null,
+            'idCard' => $row[7] ? $row[7] : null,
+            'placeOfIssueIdCard' => $row[9] ? $row[9] : null,
+        ];
+        $user = User::create($data);
+
+        if ($user && $typeTeacher) {
+            $user->typeTeacher()->attach($typeTeacher->Id);
+        }
 
         return null;
     }
@@ -78,7 +84,7 @@ class TeacherProfileImport implements ToModel, WithValidation, WithStartRow
                 'required', 'string'
             ],
             '*.3' => [
-                'nullable','date_format:d/m/Y',
+                'nullable', 'date_format:d/m/Y'
             ],
             '*.4' => [
                 'required', 'in:nam,nữ,Nam,Nữ'
@@ -93,13 +99,30 @@ class TeacherProfileImport implements ToModel, WithValidation, WithStartRow
                 'nullable'
             ],
             '*.8' => [
-                'nullable'
+                'nullable', 'date_format:d/m/Y'
             ],
             '*.9' => [
                 'nullable'
             ],
             '*.10' => [
                 'required', 'in:' . $type,
+                function ($attribute, $value, $onFailure) {
+                    static::$temporary = $value;
+                }
+            ],
+            '*.11' => [
+                '',
+                function ($attribute, $value, $onFailure) {
+                    if (static::$temporary == 'TEACHER' && $value == null) {
+                        $onFailure('Trường không được bỏ trống');
+                    } elseif (static::$temporary == 'TEACHER' && $value != null) {
+                        $typeTeacher = TypeTeacher::where('Name', $value)->first();
+
+                        if (is_null($typeTeacher)) {
+                            $onFailure('Trường không hợp lệ');
+                        }
+                    }
+                },
             ]
         ];
     }
@@ -116,7 +139,11 @@ class TeacherProfileImport implements ToModel, WithValidation, WithStartRow
      * @return mixed
      */
     public function prepareForValidation($data, $index)
-    {  
+    {
+        // if (!is_null($data[3])) {
+        //     $date = Carbon::createFromFormat('d/m/Y', $data[3]);
+        //     $data[3] = $date->format('Y-m-d');
+        // }
         return $data;
     }
 }
