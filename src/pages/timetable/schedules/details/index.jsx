@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect } from 'react';
 import csx from 'classnames';
-import { connect, withRouter } from 'umi';
+import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
 import { isEmpty } from 'lodash';
@@ -56,7 +56,7 @@ const Index = memo(
                     Thông tin chung
                   </Heading>
 
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
@@ -66,7 +66,7 @@ const Index = memo(
                       <p className="font-weight-bold">{details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}</p>
                     </Pane>
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
@@ -77,30 +77,30 @@ const Index = memo(
                         {`${Helper.getDate(details.startTime, variables.DATE_FORMAT.DATE_TIME)} - ${Helper.getDate(details.endTime, variables.DATE_FORMAT.HOUR)}`}
                       </p>
                     </Pane>
-                    <Pane className="col-lg-6">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nhắc trước</span>
-                        </label>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.remindBefore || 0} giờ</p>
-                    </Pane>
-                    <Pane className="col-lg-12">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nội dung nhắc nhở</span>
-                        </label>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.note || ''}</p>
-                    </Pane>
+                    {
+                      details?.isReminded && (
+                        <>
+                          <Pane className="col-lg-6">
+                            <Pane className="ant-col ant-form-item-label">
+                              <label>
+                                <span>Nhắc trước</span>
+                              </label>
+                            </Pane>
+                            <p className="font-weight-bold">{details?.remindBefore || 0} giờ</p>
+                          </Pane>
+                          <Pane className="col-lg-12">
+                            <Pane className="ant-col ant-form-item-label">
+                              <label>
+                                <span>Nội dung nhắc nhở</span>
+                              </label>
+                            </Pane>
+                            <p className="font-weight-bold">{details?.note || ''}</p>
+                          </Pane>
+                        </>
+                      )
+                    }
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                    <Pane className="col-lg-12">
-                      <Pane className="ant-col ant-form-item-label">
-                        <span>Đối tượng</span>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.forClass ? 'Lớp' : 'Cá nhân'}</p>
-                    </Pane>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <span>Cơ sở</span>
@@ -116,33 +116,28 @@ const Index = memo(
                       </Pane>
                     )}
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
-                          <span className="mb0">Gửi đến phụ huynh</span>
+                          <span className="mb0">Người nhận thông báo</span>
                         </label>
                       </Pane>
-                      {details?.forClass && !isEmpty(details?.classTimetables) && details?.classTimetables?.map((item, index) => (
-                        <div className="mb20" key={index}>
-                          <div className="d-flex align-items-center mt15">
-                            <span className={styles.circleIcon}>
-                              <span className="icon-open-book" />
-                            </span>
-                            <div className="ml10">
-                              <p className="font-weight-bold font-size-14 mb0">{item?.class?.name || ''}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {details?.forPerson && !isEmpty(details?.parentTimetables) && details?.parentTimetables?.map((item, index) => (
-                        <div className="mb20" key={index}>
-                          <AvatarTable
-                            className="mt10"
-                            fullName={`${item?.student?.fullName} (${item?.student?.age} Tháng tuổi)` || ''}
-                            fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
-                            size={40}
-                          />
+                      {!isEmpty(details?.parentTimetables) && details?.parentTimetables?.map((item, index) => (
+                        <div key={index}>
+                          <Pane
+                            key={index}
+                            className={styles.userInformation}
+                            style={{ paddingTop: 10, paddingBottom: 10 }}
+                          >
+                            <AvatarTable
+                              fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                            />
+                            <Pane>
+                              <h3>{item?.student?.fullName}</h3>
+                              <p>{item?.student?.age} Tháng tuổi</p>
+                            </Pane>
+                          </Pane>
                         </div>
                       ))}
                     </Pane>
@@ -224,6 +219,16 @@ const Index = memo(
                       )
                     }
                   </Pane>
+                </Pane>
+                <Pane className="d-flex justify-content-end align-items-center mb20">
+                  <p
+                    className="btn-delete"
+                    role="presentation"
+
+                    onClick={() => history.goBack()}
+                  >
+                    Đóng
+                  </p>
                 </Pane>
               </Pane>
             </Pane>
