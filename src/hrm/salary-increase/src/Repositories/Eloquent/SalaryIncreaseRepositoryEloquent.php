@@ -13,6 +13,7 @@ use GGPHP\SalaryIncrease\Repositories\Contracts\SalaryIncreaseRepository;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class SalaryIncreaseRepositoryEloquent.
@@ -86,7 +87,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             $basicSalary = 0;
             foreach ($attributes['detail'] as $value) {
                 $parameterValue = ParamaterValue::find($value['parameterValueId']);
-
+                
                 if ($parameterValue->Code != 'LUONG_CB') {
                     $totalAllowance += $value['value'];
                 } else {
@@ -109,8 +110,8 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($salaryIncrease->Id);
@@ -160,6 +161,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($salaryIncrease->Id);

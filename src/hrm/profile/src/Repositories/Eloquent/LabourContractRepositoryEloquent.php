@@ -179,7 +179,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         try {
             $labourContract = LabourContract::create($attributes);
 
-            // $this->created($labourContract, $attributes);
+            $this->created($labourContract, $attributes);
 
             $totalAllowance = 0;
             $basicSalary = 0;
@@ -244,12 +244,12 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     public function update(array $attributes, $id)
     {
         $labourContract = LabourContract::findOrFail($id);
-
+        
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
-
-            $this->updated($labourContract->refresh(), $attributes);
+            
+            // $this->updated($labourContract->refresh(), $attributes);
 
             $labourContract->parameterValues()->detach();
             $totalAllowance = 0;

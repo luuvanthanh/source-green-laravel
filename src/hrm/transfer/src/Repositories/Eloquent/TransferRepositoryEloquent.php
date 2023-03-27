@@ -13,6 +13,7 @@ use GGPHP\Transfer\Services\TransferDetailServices;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class TransferRepositoryEloquent.
@@ -83,6 +84,8 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
+            dd($e);
+            throw new HttpException(500, $e->getMessage());
         }
 
         return parent::find($tranfer->Id);

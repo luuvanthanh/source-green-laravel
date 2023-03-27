@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Models;
 
+use GGPHP\Clover\Models\ClassProject;
 use GGPHP\Core\Models\UuidModel;
 
 class Block extends UuidModel
@@ -19,7 +20,7 @@ class Block extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Note', 'GradeId'
+        'Code', 'Name', 'Note', 'GradeId', 'Classes'
     ];
 
     /**
@@ -32,5 +33,10 @@ class Block extends UuidModel
     public function grade()
     {
         return $this->belongsTo(Grade::class, 'GradeId');
+    }
+
+    public function blockItem()
+    {
+        return $this->hasMany(BlockItem::class, 'BlockId');
     }
 }

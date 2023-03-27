@@ -8,6 +8,7 @@ use GGPHP\EvaluateTeacher\EvaluateTeacher\Repositories\Contracts\EvaluateTeacher
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\EvaluateTeacher\EvaluateTeacher\Models\EvaluateTeacherDetail;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class EvaluateTeacherRepositoryEloquent.
