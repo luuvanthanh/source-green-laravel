@@ -49,6 +49,9 @@ class ExcelExporterServices
         'salary_template_go_to_bank_foreigner' => [
             'template' => 'salary_template_go_to_bank_foreigner.xlsx',
         ],
+        'teacher_profile' => [
+            'template' => 'export_teacher_profile.xlsx',
+        ]
     ];
 
     protected $disk;

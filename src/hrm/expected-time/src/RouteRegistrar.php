@@ -34,6 +34,7 @@ class RouteRegistrar extends CoreRegistrar
             // dowload template
             \Route::get('template-excel-teacher-profile', 'ExpectedTimeController@templateExcelTeacherProfile');
             \Route::post('import-excel-teacher-profile', 'ExpectedTimeController@importExcelTeacherProfile');
+            \Route::get('get-export-excel-teacher-profile', 'ExpectedTimeController@exportExcelTeacherProfile');
         });
     }
 }
