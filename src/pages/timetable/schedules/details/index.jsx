@@ -6,6 +6,7 @@ import { useDispatch } from 'dva';
 import { isEmpty, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
+import { Helmet } from 'react-helmet';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -47,6 +48,7 @@ const Index = memo(
 
     return (
       <>
+        <Helmet title="Thời khóa biểu làm việc / sự kiện" />
         <Breadcrumbs last="Chi tiết" menu={menuLeft} />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
           <Loading loading={loading} isError={error.isError} params={{ error }}>
