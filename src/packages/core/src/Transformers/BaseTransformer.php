@@ -4,6 +4,7 @@ namespace GGPHP\Core\Transformers;
 
 use Illuminate\Support\Arr;
 use League\Fractal\TransformerAbstract;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Class BaseTransformer.
@@ -26,6 +27,9 @@ class BaseTransformer extends TransformerAbstract
      */
     public function fromFillable($model)
     {
+        // gán timezone khi lấy ra trong file config.app.
+        Config::set('app.timezone', 'Asia/Ho_Chi_Minh');
+
         $hiddens = array_merge($model->getHidden(), $this->ignoreAttributes);
 
         $fillables = $model->getFillable();
