@@ -3,7 +3,7 @@ import csx from 'classnames';
 import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
-import { isEmpty } from 'lodash';
+import { isEmpty, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -26,6 +26,7 @@ const Index = memo(
   ({ loading: { effects }, match: { params }, error, menuLeft, details }) => {
     const mounted = useRef(false);
     const dispatch = useDispatch();
+    const file = details?.fileAttach ? JSON.parse(details?.fileAttach) : [];
 
     const loading = effects[`timeTablesScheduleDetails/GET_DETAILS`];
 
@@ -107,14 +108,12 @@ const Index = memo(
                       </Pane>
                       <p className="font-weight-bold">{details?.branch?.name || ''}</p>
                     </Pane>
-                    {details?.forPerson && (
-                      <Pane className="col-lg-6">
-                        <Pane className="ant-col ant-form-item-label">
-                          <span>Lớp</span>
-                        </Pane>
-                        <p className="font-weight-bold">{details?.class?.name || ''}</p>
+                    <Pane className="col-lg-6">
+                      <Pane className="ant-col ant-form-item-label">
+                        <span>Lớp</span>
                       </Pane>
-                    )}
+                      <p className="font-weight-bold">{details?.class?.name || 'Tất cả các lớp'}</p>
+                    </Pane>
                   </Pane>
                   <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-12">
@@ -191,7 +190,7 @@ const Index = memo(
                         <p className="mb0">{details?.location || ''}</p>
                       </Pane>
                     </Pane>
-                    <Pane className={csx('row', 'py15')}>
+                    <Pane className={csx('row', 'border-bottom', 'py15')}>
                       <Pane className="col-lg-12">
                         <Pane className="ant-col ant-form-item-label">
                           <label>
@@ -201,23 +200,20 @@ const Index = memo(
                         <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                       </Pane>
                     </Pane>
-                    {
-                      details?.isScheduled && (
-                        <Pane className={csx('row', 'border-bottom', 'py15')}>
-                          <Pane className="col-lg-12">
-                            <Pane className="ant-col ant-form-item-label">
-                              <label>
-                                <span className="font-weight-bold">Hẹn giờ gửi</span>
-                              </label>
-                            </Pane>
-                            <div className='d-flex'>
-                              <p className="mb0">  {Helper.getDate(details.scheduleSendingDate, variables.DATE_FORMAT.DATE)},</p>
-                              <p className="mb0 ml5">{details.scheduleSendingTime}</p>
-                            </div>
-                          </Pane>
+                    <Pane className={csx('row', 'py15')}>
+                      <Pane className="col-lg-12">
+                        <Pane className="ant-col ant-form-item-label">
+                          <label>
+                            <span className="font-weight-bold">Tài liệu đính kèm</span>
+                          </label>
                         </Pane>
-                      )
-                    }
+                        <p className="mb0">
+                          <a href={`${API_UPLOAD}${head(file)?.url}`} target="_blank" rel="noreferrer">
+                            {head(file)?.name}
+                          </a>
+                        </p>
+                      </Pane>
+                    </Pane>
                   </Pane>
                 </Pane>
                 <Pane className="d-flex justify-content-end align-items-center mb20">

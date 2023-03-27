@@ -442,7 +442,7 @@ const Index = memo(
                             <FormDetail name={detail?.branchId} label="Cơ sở" data={isEmpty(defaultBranch) ? branches : [defaultBranch]} type={variables.TYPE.SELECT} />
                           </Pane>
                           <Pane className="col-lg-6">
-                            <FormDetail name={isEmpty(detail?.classId) ? "Tất cả cơ sở" : detail?.classId} label="Lớp" data={classes} type={variables.TYPE.SELECT} />
+                            <FormDetail name={!detail?.classId ? "Tất cả các lớp" : detail?.classId} label="Lớp" data={classes} type={!detail?.classId ? variables.TYPE.TEXT : variables.TYPE.SELECT} />
                           </Pane>
                         </Pane>
                         <Pane style={{ paddingTop: 20 }}>
