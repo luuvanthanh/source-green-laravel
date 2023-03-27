@@ -475,6 +475,18 @@ class Index extends PureComponent {
                     }
                   },
                 },
+                today: {
+                  text: 'Hôm nay',
+                  click: () => {
+                    if (this.calendarComponentRef.current) {
+                      const fromDate = moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER);
+                      const toDate = moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER);
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.today();
+                      this.debouncedSearchDate(fromDate, toDate, search.type);
+                    }
+                  },
+                },
                 dayGridMonth: {
                   text: 'Tháng',
                   click: () => {
