@@ -45,7 +45,6 @@ const Index = memo(
     const mountedSet = (action, value) => mounted?.current && action(value);
     const dispatch = useDispatch();
     const [content, setContent] = useState('');
-    const [countCheck, setCountCheck] = useState(false);
     const [isReminded, setIsReminded] = useState(false);
     const [detail, setDetail] = useState({});
 
@@ -176,7 +175,6 @@ const Index = memo(
     };
 
     const changeCheckboxStudents = (id) => {
-      setCountCheck(true);
       mountedSet(
         setStudents,
         students.map((item) => (item?.student?.id === id ? { ...item, checked: !item.checked } : item)),
@@ -298,7 +296,7 @@ const Index = memo(
       setIsAllStudent(e.target.checked);
       mountedSet(
         setStudents,
-        students.map((item) => ({ ...item, checked: true })),
+        students.map((item) => ({ ...item, checked: e.target.checked })),
       );
     };
 
@@ -619,17 +617,11 @@ const Index = memo(
                             </Scrollbars>
                           </div>
                         </Pane>
-                        {!isAllStudent && countCheck ? (
-                          <div className="pt15">
-                            <Text color="dark" size="normal">
-                              Đã chọn {size(students.filter(item => item?.checked))}
-                            </Text>
-                          </div>) : <div className="pt15">
+                        <div className="pt15">
                           <Text color="dark" size="normal">
-                            Đã chọn {dataCheck?.length}
+                            Đã chọn {size(students.filter(item => item?.checked))}
                           </Text>
                         </div>
-                        }
                         {!isAllStudent && errorStudent && size(students.filter(item => item?.checked)) === 0 && (
                           <span className="text-danger mt5">{variables.RULES.EMPTY_INPUT.message}</span>
                         )}
