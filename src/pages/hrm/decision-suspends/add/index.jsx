@@ -120,12 +120,33 @@ class Index extends PureComponent {
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
         type: variablesModules?.STATUS_TYPE_DECISION?.SUSPEND,
-        decisionDate: values.decisionDate,
         reason: values.reason,
         employeeId: values.employeeId,
-        from: values.from,
-        to: values.to,
         note: values.note,
+        decisionDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.decisionDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        from: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.from,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        to: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.to,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
       },
       callback: (response, error) => {
         if (response) {

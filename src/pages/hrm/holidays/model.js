@@ -29,6 +29,10 @@ export default {
       try {
         const response = yield saga.call(services.get, payload);
         callback(head(response?.parsePayload)?.holidayDetails || []);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
       } catch (error) {
         callback(null, error);
         yield saga.put({

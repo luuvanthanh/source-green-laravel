@@ -323,8 +323,22 @@ const Index = memo(() => {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
-      contractTo: formValues.contractTo && moment(formValues.contractTo),
+      contractFrom: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: formValues.contractFrom,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      contractTo: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: formValues.contractTo,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
         value: valueDefault,

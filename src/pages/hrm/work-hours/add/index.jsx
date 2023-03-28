@@ -279,12 +279,12 @@ class Index extends PureComponent {
       <>
         <Helmet title={
           params.id
-            ? 'Chỉnh phiếu ĐK giờ làm thêm'
+            ? 'Chỉnh sửa phiếu ĐK giờ làm thêm'
             : 'Tạo mới phiếu ĐK giờ làm thêm'
         } />
         <Breadcrumbs last={
           params.id
-            ? 'Chỉnh phiếu ĐK giờ làm thêm'
+            ? 'Chỉnh sửa phiếu ĐK giờ làm thêm'
             : 'Tạo mới phiếu ĐK giờ làm thêm'
         } menu={menuData} />
         <Form
