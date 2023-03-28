@@ -29,6 +29,7 @@ class GetBmiChildrenRequest extends FormRequest
             'height' => 'required|numeric',
             'weight' => 'required|numeric',
             'number_of_month' => 'required|integer',
+            'gender' => 'required|in:MALE,FEMALE'
         ];
     }
 }

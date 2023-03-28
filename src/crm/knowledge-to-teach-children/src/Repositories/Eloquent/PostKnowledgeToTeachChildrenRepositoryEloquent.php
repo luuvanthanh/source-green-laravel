@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Eloquent;
 
+use GGPHP\Crm\Clover\Models\CriteriaStandardCriteria;
 use GGPHP\Crm\KnowledgeToTeachChildren\Models\PostKnowledgeToTeachChildren;
 use GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Contracts\PostKnowledgeToTeachChildrenRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -90,9 +91,42 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
 
     public function getBmiChildren(array $attributes)
     {
+        $message = '';
+        $type = null;
         $admissionRegister = [];
+
+        if ($attributes['gender'] == 'MALE') {
+            $type = 1;
+        }
+
+        if ($attributes['gender'] == 'FEMALE') {
+            $type = 0;
+        }
+        // get model bmi 
+        $criteriaStandardsBmi = CriteriaStandardCriteria::where('MonthNumber', $attributes['number_of_month'])->where('Type', $type)->first();
+        // get array bmi tieu chuan
+        $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
+
         $result = number_format(($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100));
+
+        if ($result >= $criteriaStandard['MedianSmallerFirstSD'] && $result <= $criteriaStandard['MedianSmallerFirstSD']) {
+            $message = 'Sức khỏe dinh dưỡng tốt';
+        }
+
+        if ($result >= $criteriaStandard['MedianSmallerThirdSD'] && $result <= $criteriaStandard['MedianSmallerFirstSD']) {
+            $message = 'Thiếu cân';
+        }
+
+        if ($result >= $criteriaStandard['MedianLargerFirstSD'] && $result <= $criteriaStandard['MedianLargerSecondSD']) {
+            $message = 'Nguy cơ béo phì';
+        }
+
+        if ($result >= $criteriaStandard['MedianLargerSecondSD']) {
+            $message = 'Béo phì';
+        }
+
         $admissionRegister['result_bmi'] = $result;
+        $admissionRegister['message'] = $message;
 
         return $admissionRegister;
     }
