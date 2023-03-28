@@ -1729,3 +1729,31 @@
     width: 268px;
   }
 }
+
+.wraper-container-home {
+  width: 100%;
+  height: calc(100vh - 60px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .wraper-text {
+    color: #36383a;
+    font-size: 22px;
+    font-family: $bold__font-family;
+    font-style: normal;
+    line-height: 30px;
+    font-weight: 400;
+    animation: wraper-text 3s ease infinite;
+  }
+  @keyframes wraper-text {
+    0% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.2, 1.2);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
+}

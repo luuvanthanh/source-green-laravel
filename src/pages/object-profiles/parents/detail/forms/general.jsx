@@ -186,15 +186,22 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 className="mr-3"
                 onClick={updateStatus}
                 loading={loadingUpdateStatus}
+                permission={details?.status === variablesModules.STATUS.STORE ? "WEB_HSDT_HOSODALUUTRU_PHUHUYNH_EDIT" : "WEB_HSDT_PHUHUYNH_EDIT"}
               >
                 {details?.status === variablesModules.STATUS.STORE ? 'Khôi phục' : 'Lưu trữ hồ sơ'}
               </Button>
             )}
-            <Button color="success" size="large" onClick={() => {
-              history.push(`/ho-so-doi-tuong/phu-huynh/${details?.id}/chinh-sua`);
-            }}>
-              Chỉnh sửa
-            </Button>
+            {
+              details?.status !== variablesModules.STATUS.STORE && (
+                <Button color="success" size="large" onClick={() => {
+                  history.push(`/ho-so-doi-tuong/phu-huynh/${details?.id}/chinh-sua`);
+                }}
+                  permission="WEB_HSDT_PHUHUYNH_EDIT"
+                >
+                  Chỉnh sửa
+                </Button>
+              )
+            }
           </Pane>
         </Pane>
       </Loading>

@@ -36,6 +36,7 @@ const mapStateToProps = ({ allocationTeacherTransfers, loading, user }) => ({
   data: allocationTeacherTransfers.data,
   pagination: allocationTeacherTransfers.pagination,
   defaultBranch: user.defaultBranch,
+  user: user.user
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -204,6 +205,7 @@ class Index extends PureComponent {
   render() {
     const {
       defaultBranch,
+      user
     } = this.props;
     const {
       classes,
@@ -232,27 +234,39 @@ class Index extends PureComponent {
           {/* TABS LINK */}
           <div className="d-flex align-items-center mt-3 mb-3">
             <div className={stylesAllocation['tabs-link']}>
-              <NavLink
-                to="/phan-bo/giao-vien/chua-xep-lop"
-                activeClassName={stylesAllocation.active}
-                className={stylesAllocation.link}
-              >
-                Giáo viên chưa xếp lớp
-              </NavLink>
-              <NavLink
-                to="/phan-bo/giao-vien/danh-sach"
-                activeClassName={stylesAllocation.active}
-                className={stylesAllocation.link}
-              >
-                Danh sách giáo viên và trẻ
-              </NavLink>
-              <NavLink
-                to="/phan-bo/giao-vien/dieu-chuyen"
-                activeClassName={stylesAllocation.active}
-                className={stylesAllocation.link}
-              >
-                Điều chuyển giáo viên
-              </NavLink>
+              {user?.permissionGrants?.find(i => i === "WEB_PHANLOP_GIAOVIEN_XEPLOP_VIEW")
+                && (
+                  <NavLink
+                    to="/phan-bo/giao-vien/chua-xep-lop"
+                    activeClassName={stylesAllocation.active}
+                    className={stylesAllocation.link}
+                  >
+                    Giáo viên chưa xếp lớp
+                  </NavLink>
+                )
+              }
+              {user?.permissionGrants?.find(i => i === "WEB_PHANLOP_GIAOVIEN_DSGIAOVIENVATRE_VIEW")
+                && (
+                  <NavLink
+                    to="/phan-bo/giao-vien/danh-sach"
+                    activeClassName={stylesAllocation.active}
+                    className={stylesAllocation.link}
+                  >
+                    Danh sách giáo viên và trẻ
+                  </NavLink>
+                )
+              }
+              {user?.permissionGrants?.find(i => i === "WEB_PHANLOP_GIAOVIEN_DIEUCHUYEN_VIEW")
+                && (
+                  <NavLink
+                    to="/phan-bo/giao-vien/dieu-chuyen"
+                    activeClassName={stylesAllocation.active}
+                    className={stylesAllocation.link}
+                  >
+                    Điều chuyển giáo viên
+                  </NavLink>
+                )
+              }
             </div>
           </div>
           {/* TABS LINK */}
@@ -403,6 +417,7 @@ class Index extends PureComponent {
                     size="large"
                     className="ml-auto"
                     htmlType="submit"
+                    permission="WEB_PHANLOP_GIAOVIEN_DIEUCHUYEN_CREATE"
                   >
                     Điểu chuyển
                   </Button>
@@ -419,12 +434,14 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
-  defaultBranch: PropTypes.objectOf(PropTypes.any)
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any)
 };
 
 Index.defaultProps = {
   dispatch: {},
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

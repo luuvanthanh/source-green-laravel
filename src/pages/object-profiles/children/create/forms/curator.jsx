@@ -117,6 +117,7 @@ const Curator = memo(
                 htmlType="submit"
                 style={{ marginLeft: 'auto' }}
                 loading={loadingSubmit}
+                permission="WEB_HSDT_HOCSINH_EDIT"
               >
                 Lưu
               </Button>

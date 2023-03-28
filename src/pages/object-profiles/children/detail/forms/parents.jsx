@@ -170,6 +170,7 @@ const Parents = memo(
                   history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua?type=parents`);
                 }}
                 htmlType="submit"
+                permission="WEB_HSDT_HOCSINH_EDIT"
               >
                 Chỉnh sửa
               </Button>

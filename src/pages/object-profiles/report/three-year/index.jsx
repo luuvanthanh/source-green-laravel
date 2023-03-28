@@ -291,7 +291,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-                {record?.total?.length === 0 ? 0 : record?.total } học sinh
+                {record?.total?.length === 0 ? 0 : record?.total} học sinh
               </Text>
             );
           }
@@ -320,10 +320,10 @@ class Index extends PureComponent {
     Helper.exportExcelClover(
       `/students/export-to-excel/group-by-branch`,
       {
-        StudiedMonths : 36,
+        StudiedMonths: 36,
         LimitStudiedMonths: 48,
         KeyWord: query?.KeyWord,
-        IsMore : true,
+        IsMore: true,
         Class: query?.Class,
         branchId: query?.branchId || defaultBranch?.id,
         SearchDate: dataIDSearch
@@ -354,7 +354,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách học sinh học trên 3 năm tính đến thời điểm</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>

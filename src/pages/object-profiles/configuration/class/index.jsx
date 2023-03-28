@@ -221,6 +221,7 @@ class Index extends PureComponent {
               color="primary"
               icon="list"
               onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+              permission="WEB_HSDT_CAUHINH_LOPHOC_DETAIL"
             />
           </Tooltip>
           <Tooltip placement="top" title="Chi tiết">
@@ -228,6 +229,7 @@ class Index extends PureComponent {
               className={styles.item}
               color="primary"
               icon="edit"
+              permission="WEB_HSDT_CAUHINH_LOPHOC_EDIT"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
           </Tooltip>
@@ -236,6 +238,7 @@ class Index extends PureComponent {
               className={styles.item}
               color="danger"
               icon="remove"
+              permission="WEB_HSDT_CAUHINH_LOPHOC_DELETE"
               onClick={() => this.onRemove(record.id)}
             />
           </Tooltip>
@@ -301,6 +304,7 @@ class Index extends PureComponent {
           color="success"
           icon="plus"
           onClick={() => history.push(`${pathname}/tao-moi`)}
+          permission="WEB_HSDT_CAUHINH_LOPHOC_CREATE"
         >
           Thêm mới
         </Button>
