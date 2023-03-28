@@ -163,6 +163,22 @@ class Index extends PureComponent {
       ...omit(values, 'timeIn0', 'timeIn1', 'timeLate0', 'timeLate1'),
       employeeCreateId: user?.objectInfo?.id,
       id: params.id,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.startDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.endDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     };
     dispatch({
       type: params.id ? 'workShiftsAdd/UPDATE' : 'workShiftsAdd/ADD',

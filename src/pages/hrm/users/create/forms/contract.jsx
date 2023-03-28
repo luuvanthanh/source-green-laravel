@@ -574,6 +574,7 @@ const Index = memo(() => {
                 label="Loại hợp đồng"
                 name="typeOfContractId"
                 type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
                 onChange={changeContract}
               />
             </Pane>

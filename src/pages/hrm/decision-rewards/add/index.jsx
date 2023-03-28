@@ -125,9 +125,24 @@ class Index extends PureComponent {
         ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
-        decisionDate: values.decisionDate,
         type: values.type,
         reason: values.reason,
+        decisionDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.decisionDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        timeApply: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.timeApply,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
         data: [
           {
             employeeId: values.employeeId,
