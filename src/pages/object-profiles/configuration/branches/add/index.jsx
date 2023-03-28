@@ -198,6 +198,7 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
+                  permission={params?.id ? "WEB_HSDT_CAUHINH_COSO_EDIT" : "WEB_HSDT_CAUHINH_COSO_CREATE"}
                 >
                   LƯU
                 </Button>

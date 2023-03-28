@@ -64,6 +64,7 @@ const Other = memo(({ dispatch, match: { params }, details }) => {
             onClick={() => {
               history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua?type=other`);
             }}
+            permission="WEB_HSDT_HOCSINH_EDIT"
           >
             Chỉnh sửa
           </Button>

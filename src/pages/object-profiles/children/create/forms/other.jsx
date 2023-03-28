@@ -122,6 +122,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
             size="large"
             loading={loadingSubmit}
             htmlType="submit"
+            permission="WEB_HSDT_HOCSINH_EDIT"
           >
             Lưu
           </Button>

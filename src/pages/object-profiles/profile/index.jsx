@@ -609,6 +609,7 @@ const General = memo(() => {
                   <Button
                     className={styles.btn}
                     onClick={onchangechilDevelop}
+                    permission="WEB_HSDT_PROFILEHOCSINH_DETAIL"
                   >
                     Chi tiết
                   </Button>
@@ -622,7 +623,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Khai báo y tế</p>
                   </div>
-                  <Button className={styles.btn} onClick={onchangeMedical}>Chi tiết</Button>
+                  <Button permission="WEB_HSDT_PROFILEHOCSINH_DETAIL" className={styles.btn} onClick={onchangeMedical}>Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -633,7 +634,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Đánh giá của phụ huynh</p>
                   </div>
-                  <Button className={styles.btn} onClick={onchangeEvaluate}>Chi tiết</Button>
+                  <Button permission="WEB_HSDT_PROFILEHOCSINH_DETAIL" className={styles.btn} onClick={onchangeEvaluate}>Chi tiết</Button>
                 </div>
               </div>
 
@@ -649,6 +650,7 @@ const General = memo(() => {
                   </div>
                   <Button className={styles.btn}
                     onClick={onchangeCurriculum}
+                    permission="WEB_HSDT_PROFILEHOCSINH_DETAIL"
                   >Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
@@ -660,7 +662,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập thể chất</p>
                   </div>
-                  <Button className={styles.btn} onClick={onchangePhysical}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangePhysical} permission="WEB_HSDT_PROFILEHOCSINH_DETAIL">Chi tiết</Button>
                 </div>
                 <div className={classnames(styles['wraper-row'])}>
                   <div className="d-flex w-100 align-items-center">
@@ -671,7 +673,7 @@ const General = memo(() => {
                     />
                     <p className={styles.title}>Học tập tiếng Anh</p>
                   </div>
-                  <Button className={styles.btn} onClick={onchangeEnglish}>Chi tiết</Button>
+                  <Button className={styles.btn} onClick={onchangeEnglish} permission="WEB_HSDT_PROFILEHOCSINH_DETAIL">Chi tiết</Button>
                 </div>
               </div>
             </div>

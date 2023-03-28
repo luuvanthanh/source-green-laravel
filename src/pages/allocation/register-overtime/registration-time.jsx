@@ -35,7 +35,7 @@ const Index = memo(() => {
     const yearsConvert = year.map((item) => ({
         id: item?.id,
         name: `${item?.fromYear} - ${item?.toYear}`,
-      }));
+    }));
 
     useEffect(() => {
         dispatch({
@@ -222,6 +222,7 @@ const Index = memo(() => {
                                                     color="success"
                                                     htmlType="submit"
                                                     size="large"
+                                                    permission="WEB_PHANLOP_CAUHINHDANGKYNGOAIGIO_CREATE"
                                                     loading={
                                                         loading['registerOvertimeAdd/ADD_LIMIT'] ||
                                                         loading['registerOvertimeAdd/UPDATE'] ||

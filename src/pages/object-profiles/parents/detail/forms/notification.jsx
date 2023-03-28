@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { connect, withRouter } from 'umi';
+import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -178,11 +178,14 @@ const Curator = memo(
                   <Button
                     color="success"
                     size="large"
-                    htmlType="submit"
                     style={{ marginLeft: 'auto' }}
                     loading={loadingSubmit}
+                    permission="WEB_HSDT_PHUHUYNH_EDIT"
+                    onClick={() => {
+                      history.push(`/ho-so-doi-tuong/phu-huynh/${details?.id}/chinh-sua?type=notification`);
+                    }}
                   >
-                    Lưu
+                    Chỉnh sửa
                   </Button>
                 </Pane>
               </>
@@ -206,7 +209,7 @@ Curator.propTypes = {
 Curator.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   detailsAccount: {},

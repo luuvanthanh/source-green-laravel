@@ -217,6 +217,7 @@ const Index = memo(
                     className="mr-3"
                     loading={loadingSubmit}
                     onClick={showModal}
+                    permission="WEB_HSDT_PHUHUYNH_EDIT"
                   >
                     Đổi mật khẩu
                   </Button>
@@ -227,6 +228,7 @@ const Index = memo(
                   htmlType="submit"
                   style={{ marginLeft: 'auto' }}
                   loading={loadingSubmit}
+                  permission="WEB_HSDT_PHUHUYNH_EDIT"
                 >
                   Lưu
                 </Button>

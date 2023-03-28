@@ -291,7 +291,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-               {record?.total?.length === 0 ? 0 : record?.total } học sinh
+                {record?.total?.length === 0 ? 0 : record?.total} học sinh
               </Text>
             );
           }
@@ -327,7 +327,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         SearchDate: dataIDSearch
           ? Helper.getDate(dataIDSearch, variables.DATE_FORMAT.DATE)
-          :  moment().format('YYYY-MM-DD'),
+          : moment().format('YYYY-MM-DD'),
       },
       `Danhsachhocsinhhocdu6thang.xlsx`,
     );
@@ -353,7 +353,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách học sinh dưới 6 tháng đến thời điểm</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} permission="WEB_HSDT_BAOCAO_EXPORT">
               Xuất Excel
             </Button>
           </div>
