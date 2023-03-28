@@ -64,6 +64,7 @@ const Curator = memo(
                   history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua?type=curator`);
                 }}
                 style={{ marginLeft: 'auto' }}
+                permission="WEB_HSDT_HOCSINH_EDIT"
               >
                 Chỉnh sửa
               </Button>

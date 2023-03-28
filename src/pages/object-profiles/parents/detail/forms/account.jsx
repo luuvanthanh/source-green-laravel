@@ -152,6 +152,7 @@ const Index = memo(
                     onClick={() => {
                       history.push(`/ho-so-doi-tuong/phu-huynh/${params?.id}/chinh-sua?type=account`);
                     }}
+                    permission="WEB_HSDT_PHUHUYNH_EDIT"
                   >
                     Chỉnh sửa
                   </Button>

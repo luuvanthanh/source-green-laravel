@@ -65,6 +65,7 @@ const Curator = memo(
                 onClick={() => {
                   history.push(`/ho-so-doi-tuong/phu-huynh/${details?.id}/chinh-sua?type=curator`);
                 }}
+                permission="WEB_HSDT_PHUHUYNH_EDIT"
               >
                 Chỉnh sửa
               </Button>

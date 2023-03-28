@@ -361,6 +361,7 @@ const Parents = memo(
                 size="large"
                 loading={loadingSubmit}
                 htmlType="submit"
+                permission="WEB_HSDT_HOCSINH_EDIT"
               >
                 Lưu
               </Button>

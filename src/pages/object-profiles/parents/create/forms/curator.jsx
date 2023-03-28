@@ -105,6 +105,7 @@ const Curator = memo(
                 htmlType="submit"
                 style={{ marginLeft: 'auto' }}
                 loading={loadingSubmit}
+                permission="WEB_HSDT_PHUHUYNH_EDIT"
               >
                 Lưu
               </Button>
@@ -128,7 +129,7 @@ Curator.propTypes = {
 Curator.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   employees: [],

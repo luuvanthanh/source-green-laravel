@@ -18,14 +18,14 @@ export const feature = {
       src: '/images/home/contact.svg',
       animation: animationImage.profile,
       url: '/ho-so-doi-tuong',
-      permission: [permissions.HSDT],
+      permission: [permissions.WEB_HSDT_VIEW],
     },
     {
       title: 'Phân lớp',
       src: '/images/home/pin.svg',
       animation: animationImage.allotment,
       url: '/phan-bo',
-      permission: [permissions.PB],
+      permission: [permissions.WEB_PHANLOP_VIEW],
     },
     // {
     //   title: 'Trao đổi',

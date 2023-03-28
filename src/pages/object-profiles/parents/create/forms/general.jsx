@@ -279,11 +279,12 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 className="mr-3"
                 onClick={updateStatus}
                 loading={loadingUpdateStatus}
+                permission="WEB_HSDT_PHUHUYNH_EDIT"
               >
                 {details?.status === variablesModules.STATUS.STORE ? 'Khôi phục' : 'Lưu trữ hồ sơ'}
               </Button>
             )}
-            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit} permission={isEmpty(params?.id) ? "WEB_HSDT_PHUHUYNH_CREATE" : "WEB_HSDT_PHUHUYNH_EDIT"}>
               Lưu
             </Button>
           </Pane>

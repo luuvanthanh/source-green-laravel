@@ -52,7 +52,7 @@ const Index = memo(() => {
     const yearsConvert = year.map((item) => ({
         id: item?.id,
         name: `${item?.fromYear} - ${item?.toYear}`,
-      }));
+    }));
 
     useEffect(() => {
         dispatch({
@@ -91,9 +91,9 @@ const Index = memo(() => {
         const newDetails = {
             ...details,
             RegisterBeforeDays: student[0] ? student[0]?.registerBeforeDays - 1 : '',
-            RegisterBeforeHours: student[0] ? student[0]?.registerBeforeHours  - 1 : '',
-            CancelBeforeDays: student[0] ? student[0]?.cancelBeforeDays - 1  : '',
-            CancelBeforeHours: student[0] ? student[0]?.cancelBeforeHours  - 1 : '',
+            RegisterBeforeHours: student[0] ? student[0]?.registerBeforeHours - 1 : '',
+            CancelBeforeDays: student[0] ? student[0]?.cancelBeforeDays - 1 : '',
+            CancelBeforeHours: student[0] ? student[0]?.cancelBeforeHours - 1 : '',
             id: student[0]?.id || '',
         };
         setDetails(newDetails);
@@ -238,6 +238,7 @@ const Index = memo(() => {
                                                     color="success"
                                                     htmlType="submit"
                                                     size="large"
+                                                    permission="WEB_PHANLOP_CAUHINHDANGKYNGOAIGIO_CREATE"
                                                     loading={
                                                         loading['registerOvertimeAdd/ADD_LIMIT'] ||
                                                         loading['registerOvertimeAdd/UPDATE'] ||

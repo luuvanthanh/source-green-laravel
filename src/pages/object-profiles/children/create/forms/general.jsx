@@ -508,6 +508,7 @@ const General = memo(
                     className="mr-3"
                     onClick={updateStatusRestore}
                     loading={effects[`OPchildrenAdd/UPDATE_STATUS_RESTORE`]}
+                    permission="WEB_HSDT_HOCSINH_EDIT"
                   >
                     Khôi phục
                   </Button>
@@ -521,6 +522,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.WITHDRAW_APPLICATION)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Rút hồ sơ
                         </Button>
@@ -530,6 +532,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.STOP_STUDYING)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Bảo lưu
                         </Button>
@@ -543,6 +546,7 @@ const General = memo(
                         className="mr-3"
                         onClick={updateStatus}
                         loading={effects[`OPchildrenAdd/UPDATE_STATUS`]}
+                        permission="WEB_HSDT_HOCSINH_EDIT"
                       >
                         Lưu trữ hồ sơ
                       </Button>
@@ -551,7 +555,7 @@ const General = memo(
                 }
                 {
                   user?.roleCode === "admin" && !params?.id ? " " :
-                    <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                    <Button permission={isEmpty(params?.id) ? "WEB_HSDT_HOCSINH_CREATE" : "WEB_HSDT_HOCSINH_EDIT"} color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                       Lưu
                     </Button>
                 }

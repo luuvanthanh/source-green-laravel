@@ -117,6 +117,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
               onClick={() => {
                 history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua?type=shuttlers`);
               }}
+              permission="WEB_HSDT_HOCSINH_EDIT"
             >
               Chỉnh sửa
             </Button>

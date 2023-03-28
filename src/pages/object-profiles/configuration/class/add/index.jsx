@@ -144,6 +144,7 @@ class Index extends PureComponent {
       branches,
       menuData,
       loading: { effects },
+      match: { params },
       classTypes,
       defaultBranch
     } = this.props;
@@ -238,6 +239,7 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
+                  permission={params?.id ? "WEB_HSDT_CAUHINH_LOPHOC_EDIT" : "WEB_HSDT_CAUHINH_LOPHOC_CREATE"}
                 >
                   LƯU
                 </Button>
