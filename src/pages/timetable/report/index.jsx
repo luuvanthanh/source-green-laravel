@@ -389,11 +389,11 @@ class Index extends PureComponent {
 
               {
                 dataIDSearch.length > 0 ?
-                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
+                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
                     Tải dữ liệu
                   </Button>
                   :
-                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
+                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
                     Tải dữ liệu
                   </Button>
               }

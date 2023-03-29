@@ -143,7 +143,7 @@ export async function getLeftMenuProfile() {
         '/ho-so-doi-tuong/hoc-sinh/:id/chinh-sua',
       ],
       icon: 'icon icon-baby',
-      permission: [permissions.WEB_HSDT_HOCSINH_VIEW],
+      permission: [permissions.WEB_HSDT_HOCSINH_VIEW, permissions.WEB_HSDT_HOCSINH_DETAIL],
       pro: true,
     },
     {
@@ -1016,7 +1016,7 @@ export async function getLeftMenuTimeTable() {
       key: 'timetableAuto',
       url: ['/thoi-khoa-bieu/tu-dong'],
       icon: 'icon icon-calendar1',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_TKBTUDONG_VIEW],
       pro: true,
     },
     {
@@ -1028,7 +1028,7 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/thoi-khoa-bieu-tre/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_TKBCUATRE_VIEW],
       pro: true,
     },
     {
@@ -1036,7 +1036,7 @@ export async function getLeftMenuTimeTable() {
       key: 'asymptotic',
       url: ['/thoi-khoa-bieu/thong-ke-tiem-can'],
       icon: 'icon icon-clock',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_THONGKETIEMCAN_VIEW],
       pro: true,
     },
     {
@@ -1049,7 +1049,7 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_LICHLAMVIECSUKIEN_VIEW],
       pro: true,
     },
     {
@@ -1061,14 +1061,14 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/cau-hinh-thoi-gian/:id/chi-tiet',
       ],
       icon: 'icon icon-setting',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_CAUHINHTHOIGIAN_VIEW],
       pro: true,
     },
     {
       title: 'Danh mục',
       key: 'timetableList',
       icon: 'icon icon-list',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_DANHMUC_NHOMHOATDONG_VIEW],
       pro: true,
       children: [
         {
@@ -1079,7 +1079,7 @@ export async function getLeftMenuTimeTable() {
             '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/tao-moi',
             '/thoi-khoa-bieu/danh-muc/nhom-hoat-dong/:id/chi-tiet',
           ],
-          permission: [permissions.HRM],
+          permission: [permissions.WEB_TKB_DANHMUC_NHOMHOATDONG_VIEW],
           pro: true,
         },
       ],
@@ -1089,7 +1089,7 @@ export async function getLeftMenuTimeTable() {
       key: 'timetableHistory',
       url: ['/thoi-khoa-bieu/lich-su'],
       icon: 'icon icon-clock',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_LICHSU_VIEW],
       pro: true,
     },
     {
@@ -1097,7 +1097,7 @@ export async function getLeftMenuTimeTable() {
       key: 'timetableReport',
       url: ['/thoi-khoa-bieu/thong-ke-bao-cao-phu-huynh-tham-gia-su-kien'],
       icon: 'icon icon-report',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_THONGKEBAOCAO_VIEW],
       pro: true,
     },
   ];
@@ -2468,7 +2468,7 @@ export async function getLeftMenuCRM() {
       title: 'Kiến thức nuôi dạy trẻ',
       key: 'child rearing',
       icon: 'icon icon-list',
-      permission: [permissions.CRM],
+      permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_VIEW],
       children: [
         {
           title: 'Danh sách bài viết',
@@ -2479,7 +2479,7 @@ export async function getLeftMenuCRM() {
             '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
             '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
           ],
-          permission: [permissions.CRM],
+          permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_VIEW],
           pro: true,
         },
         {
@@ -2491,7 +2491,7 @@ export async function getLeftMenuCRM() {
             '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
             '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
           ],
-          permission: [permissions.CRM],
+          permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHMUC_VIEW],
           pro: true,
         },
       ],

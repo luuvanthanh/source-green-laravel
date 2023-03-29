@@ -277,7 +277,7 @@ class Index extends PureComponent {
           onCancel={this.cancelModal}
           footer={[
             <div className="d-flex justify-content-between" key="action">
-              <Button key="remove" color="danger" icon="remove" ghost onClick={this.remove}>
+              <Button key="remove" color="danger" icon="remove" ghost onClick={this.remove} permission="WEB_TKB_LICHLAMVIECSUKIEN_DELETE">
                 Xóa
               </Button>
               <Button
@@ -285,6 +285,7 @@ class Index extends PureComponent {
                 color="success"
                 ghost
                 onClick={() => this.redirectDetails(pathname, 'chi-tiet')}
+                permission="WEB_TKB_LICHLAMVIECSUKIEN_DETAIL"
               >
                 Chi tiết
               </Button>
@@ -294,6 +295,7 @@ class Index extends PureComponent {
                 icon="edit"
                 ghost
                 onClick={() => this.redirectDetails(pathname, 'chinh-sua')}
+                permission="WEB_TKB_LICHLAMVIECSUKIEN_EDIT"
               >
                 Chỉnh sửa
               </Button>
@@ -333,7 +335,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="TKB"
+              permission="WEB_TKB_LICHLAMVIECSUKIEN_CREATE"
             >
               Thêm mới
             </Button>

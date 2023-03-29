@@ -151,9 +151,10 @@ const Index = () => {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_TKB_DANHMUC_NHOMHOATDONG_EDIT"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+            <Button permission="WEB_TKB_DANHMUC_NHOMHOATDONG_DELETE" color="danger" icon="remove" onClick={() => onRemove(record.id)} />
           </div>
         ),
       },
@@ -174,7 +175,7 @@ const Index = () => {
         {/* FORM SEARCH */}
         <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
           <Text color="dark">Nhóm hoạt động</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button permission="WEB_TKB_DANHMUC_NHOMHOATDONG_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
             Tạo mới
           </Button>
         </div>

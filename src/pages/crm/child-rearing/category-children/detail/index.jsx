@@ -99,6 +99,7 @@ const Index = memo(() => {
                       color="success"
                       size="large"
                       style={{ marginLeft: 'auto' }}
+                      permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_EDIT"
                       onClick={() => history.push(`/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/${params.id}/chinh-sua`)}
                     >
                       Sửa
