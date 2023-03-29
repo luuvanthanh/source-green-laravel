@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Eloquent;
 
 use GGPHP\Crm\KnowledgeToTeachChildren\Models\CategoryKnowledgeToTeachChildren;
+use GGPHP\Crm\KnowledgeToTeachChildren\Models\PostKnowledgeToTeachChildren;
 use GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Contracts\CategoryKnowledgeToTeachChildrenRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -53,6 +54,12 @@ class CategoryKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository 
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->with(['postKnowledgeToTeachChildren' => function($query) use ($attributes){
+                $query->where('status', $attributes['status']);
+            }]);
+        }
+
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('name', $attributes['key'])->orWhereLike('code', $attributes['key'])->orWhereLike('description', $attributes['key']);
         }

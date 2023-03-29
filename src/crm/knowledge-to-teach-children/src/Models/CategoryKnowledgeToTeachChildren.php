@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CategoryKnowledgeToTeachChildren extends UuidModel
 {
-    use SoftDeletes;
-
     const CODE = 'DMTV';
 
     protected $table = 'category_knowledge_to_teach_childrens';

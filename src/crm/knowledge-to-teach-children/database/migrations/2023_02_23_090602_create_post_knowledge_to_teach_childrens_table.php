@@ -24,7 +24,6 @@ class CreatePostKnowledgeToTeachChildrensTable extends Migration
             $table->uuid('employee_id');
             $table->string('status');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

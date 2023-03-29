@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostKnowledgeToTeachChildren extends UuidModel
 {
-    use SoftDeletes;
-
     const STATUS = [
         'POSTED' => 1,
         'DRAFT' => 2
