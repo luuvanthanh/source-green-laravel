@@ -109,24 +109,32 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         // get model bmi 
         $criteriaStandardsBmi = CriteriaStandardCriteria::where('MonthNumber', $attributes['number_of_month'])->where('Type', $type)->first();
         // get array bmi tieu chuan
-        $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
+        $result = ($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100);
 
-        $result = number_format(($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100));
+        if (!empty($criteriaStandardsBmi)) {
+            $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
 
-        if ($result >= $criteriaStandard['MedianSmallerFirstSD'] && $result <= $criteriaStandard['MedianSmallerFirstSD']) {
-            $message = 'Sức khỏe dinh dưỡng tốt';
-        }
+            if ($result >= $criteriaStandard['MedianSmallerFirstSD'] && $result <= $criteriaStandard['MedianLargerFirstSD']) {
+                $message = 'Trạng thái sức khỏe tốt';
+            }
 
-        if ($result >= $criteriaStandard['MedianSmallerThirdSD'] && $result <= $criteriaStandard['MedianSmallerFirstSD']) {
-            $message = 'Thiếu cân';
-        }
+            if ($result >= $criteriaStandard['MedianSmallerThirdSD'] && $result < $criteriaStandard['MedianSmallerFirstSD']) {
+                $message = 'Thiếu cân';
+            }
 
-        if ($result >= $criteriaStandard['MedianLargerFirstSD'] && $result <= $criteriaStandard['MedianLargerSecondSD']) {
-            $message = 'Nguy cơ béo phì';
-        }
+            if ($result < $criteriaStandard['MedianSmallerThirdSD']) {
+                $message = 'Thiếu cân';
+            }
 
-        if ($result >= $criteriaStandard['MedianLargerSecondSD']) {
-            $message = 'Béo phì';
+            if ($result > $criteriaStandard['MedianLargerFirstSD'] && $result <= $criteriaStandard['MedianLargerSecondSD']) {
+                $message = 'Nguy cơ thừa cân';
+            }
+
+            if ($result > $criteriaStandard['MedianLargerSecondSD']) {
+                $message = 'Thừa cân';
+            }
+        }else {
+            $message = 'Giá trị Bmi không được tìm thấy';
         }
 
         $admissionRegister['result_bmi'] = $result;
@@ -137,10 +145,12 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
 
     public function sentNotification($model)
     {
+        $userId = env('ACCOUNT_GUEST_ID');
+        
         if (!empty($model)) {
             if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
                 $dataNotifiCation = [
-                    'users' => "3a0a3dcc-be5c-d18c-28ca-b9b6688fdd68",
+                    'users' => $userId,
                     'title' => $model->name,
                     'imageURL' => $model->image,
                     'message' => $model->content,

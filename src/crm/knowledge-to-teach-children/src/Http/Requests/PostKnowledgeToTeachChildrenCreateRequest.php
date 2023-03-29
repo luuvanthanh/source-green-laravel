@@ -29,7 +29,7 @@ class PostKnowledgeToTeachChildrenCreateRequest extends FormRequest
 
         return [
             'name' => 'required|string|unique:post_knowledge_to_teach_childrens,name',
-            'category_knowledge_to_teach_children_id' => 'required',
+            'category_knowledge_to_teach_children_id' => 'required|exists:category_knowledge_to_teach_childrens,id',
             'status' => 'required|in:' . $status,
             'employee_id' => 'required|check_exists:hrm.Employees,Id'
         ];
