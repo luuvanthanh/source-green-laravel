@@ -153,7 +153,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
                     'users' => $userId,
                     'title' => $model->name,
                     'imageURL' => $model->image,
-                    'message' => $model->content,
+                    'message' => substr(strip_tags($model->content),0, 250),
                     'moduleType' => 31,
                     'refId' => $model->id,
                 ];
