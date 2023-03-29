@@ -101,7 +101,7 @@ const Index = memo(
             originValue: values.time,
           }),
           format: variables.DATE_FORMAT.HOUR,
-          isUTC: false,
+          isUTC: true,
         }),
         applyDate: Helper.getDateTime({
           value: Helper.setDate({
@@ -109,8 +109,8 @@ const Index = memo(
             originValue: values.applyDate,
             targetValue: startTime,
           }),
-          format: variables.DATE_FORMAT.DATE_TIME_UTC,
-          isUTC: false,
+          format: variables.DATE_FORMAT.DATE_TIME_UTC_ONE,
+          isUTC: true,
         }),
         startTime: Helper.getDateTime({
           value: Helper.setDate({
@@ -118,8 +118,8 @@ const Index = memo(
             originValue: values.applyDate,
             targetValue: startTime,
           }),
-          format: variables.DATE_FORMAT.DATE_TIME_UTC,
-          isUTC: false,
+          format: variables.DATE_FORMAT.DATE_TIME_UTC_ONE,
+          isUTC: true,
         }),
         endTime: Helper.getDateTime({
           value: Helper.setDate({
@@ -127,8 +127,8 @@ const Index = memo(
             originValue: values.applyDate,
             targetValue: endTime,
           }),
-          format: variables.DATE_FORMAT.DATE_TIME_UTC,
-          isUTC: false,
+          format: variables.DATE_FORMAT.DATE_TIME_UTC_ONE,
+          isUTC: true,
         }),
         rangeTime: undefined,
         object: undefined,

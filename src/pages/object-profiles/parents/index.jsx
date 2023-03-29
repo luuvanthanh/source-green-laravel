@@ -246,7 +246,7 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return !ability.can('HSDT', 'HSDT')
+    return !ability.can('WEB_HSDT_PHUHUYNH_VIEW', 'WEB_HSDT_PHUHUYNH_VIEW')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };

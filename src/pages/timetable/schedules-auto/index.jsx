@@ -398,7 +398,9 @@ const Index = memo(() => {
         dayOfWeeks: item?.dayOfWeeks.filter(Boolean),
       })),
     });
-    setIsModalVisible(true);
+    if (user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_DETAIL')) {
+      setIsModalVisible(true);
+    }
   };
 
   const handleOk = () => {
@@ -529,6 +531,7 @@ const Index = memo(() => {
             color="success"
             type="primary"
             onClick={handleOk}
+            permission="WEB_TKB_TKBTUDONG_EDIT"
             loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
           >
             Lưu
