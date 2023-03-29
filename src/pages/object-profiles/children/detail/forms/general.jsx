@@ -376,13 +376,17 @@ const General = memo(
                     )}
                   </>
                 }
-                <Button
-                  permission="WEB_HSDT_HOCSINH_EDIT"
-                  color="success" size="large" loading={loadingSubmit} onClick={() => {
-                    history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua`);
-                  }}>
-                  Chỉnh sửa
-                </Button>
+                {
+                  details?.student?.status !== variablesModules.STATUS.STORE && (
+                    <Button
+                      permission="WEB_HSDT_HOCSINH_EDIT"
+                      color="success" size="large" loading={loadingSubmit} onClick={() => {
+                        history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua`);
+                      }}>
+                      Chỉnh sửa
+                    </Button>
+                  )
+                }
               </Pane>
             </Loading>
           </Pane>
