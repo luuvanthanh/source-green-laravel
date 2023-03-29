@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\KnowledgeToTeachChildren\Http\Requests\CategoryKnowledgeToTeachChildrenCreateRequest;
 use GGPHP\Crm\KnowledgeToTeachChildren\Http\Requests\CategoryKnowledgeToTeachChildrenDeleteRequest;
+use GGPHP\Crm\KnowledgeToTeachChildren\Http\Requests\CategoryKnowledgeToTeachChildrenGetRequest;
 use GGPHP\Crm\KnowledgeToTeachChildren\Http\Requests\CategoryKnowledgeToTeachChildrenUpdateRequest;
 use GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Contracts\CategoryKnowledgeToTeachChildrenRepository;
 
@@ -31,7 +32,7 @@ class CategoryKnowledgeToTeachChildrenController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(CategoryKnowledgeToTeachChildrenGetRequest $request)
     {
         $result = $this->categoryKnowledgeToTeachChildrenRepository->getAll($request->all());
 

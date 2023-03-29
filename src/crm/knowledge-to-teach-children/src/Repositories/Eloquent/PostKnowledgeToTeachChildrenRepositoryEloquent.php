@@ -78,13 +78,17 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     {
         $result = PostKnowledgeToTeachChildren::create($attributes);
 
+        $this->sentNotification($result);
+
         return parent::parserResult($result);
     }
 
     public function update(array $attributes, $id)
     {
         $admissionRegister = PostKnowledgeToTeachChildren::findOrfail($id);
-        $admissionRegister->update($attributes);
+        $result = $admissionRegister->update($attributes);
+
+        $this->sentNotification($result);
 
         return parent::find($id);
     }
@@ -137,5 +141,25 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         $admissionRegister['message'] = $message;
 
         return $admissionRegister;
+    }
+
+    public function sentNotification($model)
+    {
+        $userId = env('ACCOUNT_GUEST_ID');
+        
+        if (!empty($model)) {
+            if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
+                $dataNotifiCation = [
+                    'users' => $userId,
+                    'title' => $model->name,
+                    'imageURL' => $model->image,
+                    'message' => $model->content,
+                    'moduleType' => 31,
+                    'refId' => $model->id,
+                ];
+                
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+            }
+        }
     }
 }

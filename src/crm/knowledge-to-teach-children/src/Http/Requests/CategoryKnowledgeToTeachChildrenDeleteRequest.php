@@ -34,7 +34,7 @@ class CategoryKnowledgeToTeachChildrenDeleteRequest extends FormRequest
                         return true;
                     }
 
-                    return $fail('Dữ liệu đã có trong hệ thống');
+                    return $fail('Dữ liệu đang được sử dụng');
                 },
             ],
         ];
