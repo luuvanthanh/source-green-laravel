@@ -178,7 +178,7 @@ const Index = memo(() => {
       },
     ];
 
-    return !ability.can('TKB', 'TKB') ? columns.filter((item) => item.key !== 'actions') : columns;
+    return !ability.can('WEB_TKB_CAUHINHTHOIGIAN_VIEW', 'WEB_TKB_CAUHINHTHOIGIAN_VIEW') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   return (
