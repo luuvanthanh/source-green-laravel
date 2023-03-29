@@ -81,7 +81,7 @@ export const feature = {
       src: '/images/home/calendar.svg',
       animation: animationImage.calendar,
       url: '/thoi-khoa-bieu',
-      permission: [permissions.TKB],
+      permission: [permissions.WEB_TKB_VIEW],
     },
     {
       title: 'Bếp',

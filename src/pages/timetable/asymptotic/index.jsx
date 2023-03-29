@@ -28,6 +28,7 @@ const Index = memo(() => {
     { effects },
     {
       defaultBranch,
+      user
     }
   ] = useSelector(({ timetableAsymptotic, loading, user }) => [timetableAsymptotic, loading, user]);
   const dispatch = useDispatch();
@@ -372,161 +373,170 @@ const Index = memo(() => {
                 }
               }}
             >
-              <Tabs.TabPane tab="Dự kiến học tiệm cận" key="1">
-                <div className={classnames('pt20')}>
-                  <Form
-                    initialValues={{
-                      ...search,
-                    }}
-                    layout="vertical"
-                    form={formRef}
-                  >
-                    <div className="row">
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          name="keyWord"
-                          type={variables.INPUT_SEARCH}
-                          placeholder="Từ khóa tìm kiếm"
-                          onChange={(event) => onChangeExpected(event, 'keyWord')}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          name="timetableSettingId"
-                          data={[...yearsConvert]}
-                          onChange={(event) => onChangeExpected(event, 'timetableSettingId')}
-                          type={variables.SELECT}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          data={isEmpty(defaultBranch) ? [{ id: null, name: 'Chọn tất cả các cơ sở' }, ...branches] : [defaultBranch]}
-                          name="branchId"
-                          onChange={(event) => onChangeExpected(event, 'branchId')}
-                          type={variables.SELECT}
-                          allowClear={false}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
-                          name="classId"
-                          onChange={(event) => onChangeExpected(event, 'classId')}
-                          type={variables.SELECT}
-                          allowClear={false}
-                        />
-                      </div>
+              {user?.permissionGrants?.find(i => i === 'WEB_TKB_THONGKETIEMCAN_DUKIENHOCTIEMCAN_VIEW')
+                && (
+                  <Tabs.TabPane tab="Dự kiến học tiệm cận" key="1">
+                    <div className={classnames('pt20')}>
+                      <Form
+                        initialValues={{
+                          ...search,
+                        }}
+                        layout="vertical"
+                        form={formRef}
+                      >
+                        <div className="row">
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              name="keyWord"
+                              type={variables.INPUT_SEARCH}
+                              placeholder="Từ khóa tìm kiếm"
+                              onChange={(event) => onChangeExpected(event, 'keyWord')}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              name="timetableSettingId"
+                              data={[...yearsConvert]}
+                              onChange={(event) => onChangeExpected(event, 'timetableSettingId')}
+                              type={variables.SELECT}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              data={isEmpty(defaultBranch) ? [{ id: null, name: 'Chọn tất cả các cơ sở' }, ...branches] : [defaultBranch]}
+                              name="branchId"
+                              onChange={(event) => onChangeExpected(event, 'branchId')}
+                              type={variables.SELECT}
+                              allowClear={false}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
+                              name="classId"
+                              onChange={(event) => onChangeExpected(event, 'classId')}
+                              type={variables.SELECT}
+                              allowClear={false}
+                            />
+                          </div>
+                        </div>
+                      </Form>
                     </div>
-                  </Form>
-                </div>
-                <div>
-                  <Table
-                    bordered
-                    columns={header()}
-                    dataSource={dataExpected}
-                    loading={effects['timetableAsymptotic/GET_DATA']}
-                    pagination={changePaginationExpected(paginationExpected)}
-                    rowSelection={{
-                      onChange: (selectedRowKeys, _) => {
-                        setStudentId(selectedRowKeys);
-                      },
-                      getCheckboxProps: (record) => ({ name: record.name }),
-                    }}
-                    params={{
-                      header: header(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                  />
-                </div>
-              </Tabs.TabPane>
-              <Tabs.TabPane tab="Đang học tiệm cận" key="2">
-                <div className={classnames(styles.search, 'pt20')}>
-                  <Form
-                    initialValues={{
-                      ...search,
-                    }}
-                    layout="vertical"
-                    form={formRef}
-                  >
-                    <div className="row">
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          name="keyWord"
-                          type={variables.INPUT_SEARCH}
-                          onChange={(event) => onChangeStudying(event, 'keyWord')}
-                          placeholder="Từ khóa tìm kiếm"
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          name="timetableSettingId"
-                          data={[...yearsConvert]}
-                          onChange={(event) => onChangeStudying(event, 'timetableSettingId')}
-                          type={variables.SELECT}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                          name="branchId"
-                          onChange={(event) => onChangeStudying(event, 'branchId')}
-                          type={variables.SELECT}
-                          allowClear={false}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <FormItem
-                          className="ant-form-item-row"
-                          data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
-                          name="classId"
-                          onChange={(event) => onChangeStudying(event, 'classId')}
-                          type={variables.SELECT}
-                          allowClear={false}
-                        />
-                      </div>
+                    <div>
+                      <Table
+                        bordered
+                        columns={header()}
+                        dataSource={dataExpected}
+                        loading={effects['timetableAsymptotic/GET_DATA']}
+                        pagination={changePaginationExpected(paginationExpected)}
+                        rowSelection={{
+                          onChange: (selectedRowKeys, _) => {
+                            setStudentId(selectedRowKeys);
+                          },
+                          getCheckboxProps: (record) => ({ name: record.name }),
+                        }}
+                        params={{
+                          header: header(),
+                          type: 'table',
+                        }}
+                        rowKey={(record) => record.id}
+                        scroll={{ x: '100%' }}
+                      />
                     </div>
-                  </Form>
-                </div>
-                <div>
-                  <Table
-                    bordered
-                    columns={header()}
-                    dataSource={dataStudying}
-                    loading={effects['timetableAsymptotic/GET_DATA']}
-                    pagination={changePaginationStudying(paginationStudying)}
-                    rowSelection={{
-                      onChange: (selectedRowKeys, _) => {
-                        setStudentId(selectedRowKeys);
-                      },
-                      getCheckboxProps: (record) => ({ name: record.name }),
-                    }}
-                    params={{
-                      header: header(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                  />
-                </div>
-              </Tabs.TabPane>
+                  </Tabs.TabPane>
+                )
+              }
+              {
+                user?.permissionGrants?.find(i => i === 'WEB_TKB_THONGKETIEMCAN_DANGHOCTIEMCAN_VIEW')
+                && (
+                  <Tabs.TabPane tab="Đang học tiệm cận" key="2">
+                    <div className={classnames(styles.search, 'pt20')}>
+                      <Form
+                        initialValues={{
+                          ...search,
+                        }}
+                        layout="vertical"
+                        form={formRef}
+                      >
+                        <div className="row">
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              name="keyWord"
+                              type={variables.INPUT_SEARCH}
+                              onChange={(event) => onChangeStudying(event, 'keyWord')}
+                              placeholder="Từ khóa tìm kiếm"
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              name="timetableSettingId"
+                              data={[...yearsConvert]}
+                              onChange={(event) => onChangeStudying(event, 'timetableSettingId')}
+                              type={variables.SELECT}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                              name="branchId"
+                              onChange={(event) => onChangeStudying(event, 'branchId')}
+                              type={variables.SELECT}
+                              allowClear={false}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              className="ant-form-item-row"
+                              data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
+                              name="classId"
+                              onChange={(event) => onChangeStudying(event, 'classId')}
+                              type={variables.SELECT}
+                              allowClear={false}
+                            />
+                          </div>
+                        </div>
+                      </Form>
+                    </div>
+                    <div>
+                      <Table
+                        bordered
+                        columns={header()}
+                        dataSource={dataStudying}
+                        loading={effects['timetableAsymptotic/GET_DATA']}
+                        pagination={changePaginationStudying(paginationStudying)}
+                        rowSelection={{
+                          onChange: (selectedRowKeys, _) => {
+                            setStudentId(selectedRowKeys);
+                          },
+                          getCheckboxProps: (record) => ({ name: record.name }),
+                        }}
+                        params={{
+                          header: header(),
+                          type: 'table',
+                        }}
+                        rowKey={(record) => record.id}
+                        scroll={{ x: '100%' }}
+                      />
+                    </div>
+                  </Tabs.TabPane>
+                )
+              }
             </Tabs>
           </div>
           <div className="d-flex justify-content-end py-4">
             {search.status === 'EXPECTED' ? (
-              <Button color="success" onClick={create}>
+              <Button color="success" onClick={create} permission="WEB_TKB_THONGKETIEMCAN_DUKIENHOCTIEMCAN_CREATE">
                 Áp dụng cho học tiệm cận
               </Button>
             ) : (
-              <Button color="success" onClick={remove}>
+              <Button color="success" onClick={remove} permission="WEB_TKB_THONGKETIEMCAN_DANGHOCTIEMCAN_CREATE">
                 Chuyển về dự kiến
               </Button>
             )}

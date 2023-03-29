@@ -210,41 +210,37 @@ class Index extends PureComponent {
   onFormBtn = (record) => {
     const {
       location: { pathname },
-      user,
     } = this.props;
-    if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
-      return (
-        <div className={styles['list-buttons']}>
-          <Tooltip placement="top" title="Danh Sách lớp">
-            <Button
-              className={styles.item}
-              color="primary"
-              icon="list"
-              onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
-              permission="WEB_HSDT_CAUHINH_LOPHOC_DETAIL"
-            />
-          </Tooltip>
-          <Tooltip placement="top" title="Chi tiết">
-            <Button
-              className={styles.item}
-              color="primary"
-              icon="edit"
-              permission="WEB_HSDT_CAUHINH_LOPHOC_EDIT"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-          </Tooltip>
-          <Tooltip placement="top" title="Xoá">
-            <Button
-              className={styles.item}
-              color="danger"
-              icon="remove"
-              permission="WEB_HSDT_CAUHINH_LOPHOC_DELETE"
-              onClick={() => this.onRemove(record.id)}
-            />
-          </Tooltip>
-        </div>);
-    };
-    return "";
+    return (
+      <div className={styles['list-buttons']}>
+        <Tooltip placement="top" title="Danh Sách lớp">
+          <Button
+            className={styles.item}
+            color="primary"
+            icon="list"
+            onClick={() => history.push(`${pathname}/${record.id}/danh-sach`)}
+            permission="WEB_HSDT_CAUHINH_LOPHOC_DETAIL"
+          />
+        </Tooltip>
+        <Tooltip placement="top" title="Chi tiết">
+          <Button
+            className={styles.item}
+            color="primary"
+            icon="edit"
+            permission="WEB_HSDT_CAUHINH_LOPHOC_EDIT"
+            onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+          />
+        </Tooltip>
+        <Tooltip placement="top" title="Xoá">
+          <Button
+            className={styles.item}
+            color="danger"
+            icon="remove"
+            permission="WEB_HSDT_CAUHINH_LOPHOC_DELETE"
+            onClick={() => this.onRemove(record.id)}
+          />
+        </Tooltip>
+      </div>);
   };
 
   /**
@@ -296,21 +292,17 @@ class Index extends PureComponent {
   onFormAdd = () => {
     const {
       location: { pathname },
-      user,
     } = this.props;
-    if (user?.roleCode === variables.LIST_ROLE_CODE.PRINCIPAL || user?.roleCode === variables.LIST_ROLE_CODE.ADMIN) {
-      return (
-        <Button
-          color="success"
-          icon="plus"
-          onClick={() => history.push(`${pathname}/tao-moi`)}
-          permission="WEB_HSDT_CAUHINH_LOPHOC_CREATE"
-        >
-          Thêm mới
-        </Button>
-      );
-    };
-    return "";
+    return (
+      <Button
+        color="success"
+        icon="plus"
+        onClick={() => history.push(`${pathname}/tao-moi`)}
+        permission="WEB_HSDT_CAUHINH_LOPHOC_CREATE"
+      >
+        Thêm mới
+      </Button>
+    );
   };
 
   render() {
@@ -409,7 +401,6 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
-  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -422,7 +413,6 @@ Index.defaultProps = {
   error: {},
   defaultBranch: {},
   branches: [],
-  user: {},
 };
 
 export default Index;

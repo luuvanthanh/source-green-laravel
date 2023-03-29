@@ -18,7 +18,7 @@ export function getEvents() {
   return request(`/time-tables/events`, {
     method: 'GET',
     params: {
-      skipCount: 1,
+      skipCount: '0',
       maxResultCount: 1000,
     },
   });

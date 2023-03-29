@@ -30,7 +30,7 @@ const Index = memo(() => {
   const [
     loading,
     { classes, branches, years, activities },
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, timeTablesAuto, user }) => [
     effects,
     timeTablesAuto,
@@ -674,7 +674,7 @@ const Index = memo(() => {
                                   />
                                 </div>
                                 {formatTextSearch(tasks).map((task, index) => (
-                                  <Draggable key={task.id} draggableId={task.name} index={index}>
+                                  <Draggable key={task.id} draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE') ? task.name : ""} index={index}>
                                     {(provided) => (
                                       <div
                                         ref={provided.innerRef}
@@ -748,7 +748,7 @@ const Index = memo(() => {
                                       {tasks.map((task, index) => (
                                         <Draggable
                                           key={`${task.id}-${indexParent}-${index}`}
-                                          draggableId={task.dragId}
+                                          draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE') ? task.dragId : ""}
                                           index={index}
                                         >
                                           {(provided) => (

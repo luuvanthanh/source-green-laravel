@@ -107,8 +107,9 @@ const Index = memo(
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: values.applyDate,
-            targetValue: '00:00:00',
+            targetValue: startTime,
           }),
+          format: variables.DATE_FORMAT.DATE_TIME_UTC,
           isUTC: false,
         }),
         startTime: Helper.getDateTime({
@@ -117,6 +118,7 @@ const Index = memo(
             originValue: values.applyDate,
             targetValue: startTime,
           }),
+          format: variables.DATE_FORMAT.DATE_TIME_UTC,
           isUTC: false,
         }),
         endTime: Helper.getDateTime({
@@ -125,6 +127,7 @@ const Index = memo(
             originValue: values.applyDate,
             targetValue: endTime,
           }),
+          format: variables.DATE_FORMAT.DATE_TIME_UTC,
           isUTC: false,
         }),
         rangeTime: undefined,
@@ -420,7 +423,7 @@ const Index = memo(
                         </Pane>
                         <Pane className={csx('row', 'border-bottom', 'mb20')}>
                           <Pane className="col-lg-6">
-                            <FormDetail name={`${Helper.getDate(detail?.applyDate, variables.DATE_FORMAT.DATE_AFTER)}, ${Helper.getDate(detail?.startTime, variables.DATE_FORMAT.HOUR)} - ${Helper.getDate(detail?.endTime, variables.DATE_FORMAT.HOUR)}`} label="Thời gian diễn ra" type={variables.TYPE.TEXT} />
+                            <FormDetail name={`${Helper.getDate(detail?.applyDate, variables.DATE_FORMAT.DATE_AFTER)}, ${Helper.getDateSearch(detail?.startTime, variables.DATE_FORMAT.HOUR)} - ${Helper.getDateSearch(detail?.endTime, variables.DATE_FORMAT.HOUR)}`} label="Thời gian diễn ra" type={variables.TYPE.TEXT} />
                           </Pane>
                           {
                             isReminded && (
@@ -720,6 +723,7 @@ const Index = memo(
                       htmlType="submit"
                       style={{ marginLeft: 'auto' }}
                       loading={loadingSubmit}
+                      permission={isEmpty(params?.id) ? "WEB_TKB_LICHLAMVIECSUKIEN_CREATE" : "WEB_TKB_LICHLAMVIECSUKIEN_EDIT"}
                     >
                       Gửi
                     </Button>

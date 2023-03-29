@@ -6,6 +6,7 @@ import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
 import { debounce, isEmpty } from 'lodash';
+import ability from '@/utils/ability';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -171,12 +172,13 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
+            permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record.id}/chinh-sua`);
             }}
           />
-          <Button color="danger" icon="remove" onClick={(e) => {
+          <Button permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DELETE" color="danger" icon="remove" onClick={(e) => {
             e.stopPropagation();
             onRemove(record.id);
           }
@@ -192,7 +194,7 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Danh mục</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
             Thêm mới
           </Button>
         </div>
@@ -241,7 +243,9 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (ability.can('WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL', 'WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL')) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

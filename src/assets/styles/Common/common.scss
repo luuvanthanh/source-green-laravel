@@ -1743,17 +1743,17 @@
     font-style: normal;
     line-height: 30px;
     font-weight: 400;
-    animation: wraper-text 3s ease infinite;
+    // animation: wraper-text 3s ease infinite;
   }
-  @keyframes wraper-text {
-    0% {
-      transform: scale(1, 1);
-    }
-    50% {
-      transform: scale(1.2, 1.2);
-    }
-    100% {
-      transform: scale(1, 1);
-    }
-  }
+  // @keyframes wraper-text {
+  //   0% {
+  //     transform: scale(1, 1);
+  //   }
+  //   50% {
+  //     transform: scale(1.2, 1.2);
+  //   }
+  //   100% {
+  //     transform: scale(1, 1);
+  //   }
+  // }
 }

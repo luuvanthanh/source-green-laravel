@@ -158,6 +158,7 @@ const Index = memo(() => {
                 <Button
                   color="primary"
                   icon="edit"
+                  permission="WEB_TKB_CAUHINHTHOIGIAN_EDIT"
                   onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
                 />
               </li>
@@ -168,6 +169,7 @@ const Index = memo(() => {
                 color="danger"
                 icon="remove"
                 className="ml-2"
+                permission="WEB_TKB_CAUHINHTHOIGIAN_DELETE"
                 onClick={() => onRemove(record.id)}
               />
             </li>
@@ -189,7 +191,7 @@ const Index = memo(() => {
           <Button
             color="success"
             icon="plus"
-            permission="HSDT"
+            permission="WEB_TKB_CAUHINHTHOIGIAN_CREATE"
             onClick={() => history.push(`/thoi-khoa-bieu/cau-hinh-thoi-gian/tao-moi`)}
           >
             Tạo mới

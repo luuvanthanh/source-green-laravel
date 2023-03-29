@@ -553,12 +553,9 @@ const General = memo(
                     )}
                   </>
                 }
-                {
-                  user?.roleCode === "admin" && !params?.id ? " " :
-                    <Button permission={isEmpty(params?.id) ? "WEB_HSDT_HOCSINH_CREATE" : "WEB_HSDT_HOCSINH_EDIT"} color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                      Lưu
-                    </Button>
-                }
+                <Button permission={isEmpty(params?.id) ? "WEB_HSDT_HOCSINH_CREATE" : "WEB_HSDT_HOCSINH_EDIT"} color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                  Lưu
+                </Button>
               </Pane>
             </Loading>
           </Pane>
