@@ -30,7 +30,7 @@ class PostKnowledgeToTeachChildrenCreateRequest extends FormRequest
         return [
             'name' => 'required|string|unique:post_knowledge_to_teach_childrens,name',
             'category_knowledge_to_teach_children_id' => 'required|exists:category_knowledge_to_teach_childrens,id',
-            'status' => 'required|in:' . $status,
+            'status' => 'nullable|in:' . $status,
             'employee_id' => 'required|check_exists:hrm.Employees,Id'
         ];
     }
@@ -38,7 +38,10 @@ class PostKnowledgeToTeachChildrenCreateRequest extends FormRequest
     public function all($key = null)
     {
         $data = parent::all();
-        $data['status'] = array_key_exists($data['status'], PostKnowledgeToTeachChildren::STATUS) ? PostKnowledgeToTeachChildren::STATUS[$data['status']] : 0;
+
+        if (!empty($data['status'])) {
+            $data['status'] = array_key_exists($data['status'], PostKnowledgeToTeachChildren::STATUS) ? PostKnowledgeToTeachChildren::STATUS[$data['status']] : 0;
+        }
 
         return $data;
     }
