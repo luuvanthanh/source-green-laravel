@@ -74,7 +74,38 @@ class LabourContractTransformer extends BaseTransformer
             'parameterValues' => $parameterValues,
             'numberYearWork' => $numberYearWork,
             'numberMonthWork' => $numberMonthWork,
+            'status' => $this->getStatus($model)
         ];
+    }
+
+    public function getStatus($model)
+    {
+        $now =  Carbon::now();
+        $addMonth = Carbon::now()->addMonth();
+
+        if ($model->ContractFrom->format('Y-m-d') > $now->format('Y-m-d')) {
+            $status = 'CHUA_DEN_HAN';
+        }
+
+        if (!is_null($model->ContractTo)) {
+            if ($model->ContractFrom->format('Y-m-d') <= $now->format('Y-m-d') && $model->ContractTo->format('Y-m-d') > $addMonth->format('Y-m-d')) {
+                $status = 'DANG_HIEU_LUC';
+            }
+
+            if ($model->ContractTo->format('Y-m-d') < $now->format('Y-m-d')) {
+                $status = 'DA_HET_HAN';
+            }
+
+            if ($model->ContractTo->format('Y-m-d') >= $now->format('Y-m-d') && $model->ContractTo->format('Y-m-d') <= $addMonth->format('Y-m-d')) {
+                $status = 'GAN_HET_HAN';
+            }
+        } else {
+            if ($model->ContractFrom->format('Y-m-d') <= $now->format('Y-m-d') && $model->typeOfContract->IsUnlimited ==  true) {
+                $status = 'DANG_HIEU_LUC';
+            }
+        }
+
+        return $status;
     }
 
     /**

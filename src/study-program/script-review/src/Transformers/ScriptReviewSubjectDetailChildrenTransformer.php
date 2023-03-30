@@ -47,6 +47,10 @@ class ScriptReviewSubjectDetailChildrenTransformer extends BaseTransformer
 
     public function includeSubjectSectionDetail(ScriptReviewSubjectDetailChildren $scriptReviewSubjectDetailChildren)
     {
+        if (is_null($scriptReviewSubjectDetailChildren->subjectSectionDetail)) {
+            return null;
+        }
+
         return $this->item($scriptReviewSubjectDetailChildren->subjectSectionDetail, new SubjectSectionDetailTransformer, 'SubjectSectionDetail');
     }
 }

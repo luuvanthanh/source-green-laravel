@@ -31,7 +31,7 @@ class DecisionNumberSampleUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $id = $this->route('number_form_contract');
+        $id = $this->route('decision_number_sample');
         $types = implode(',', array_values(DecisionNumberSample::TYPE));
 
         return [

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Dismissed\Http\Requests;
 
+use GGPHP\DecisionNumberSample\Models\DecisionNumberSample;
 use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Models\DismissedDetail;
 use Illuminate\Foundation\Http\FormRequest;
@@ -37,7 +38,6 @@ class DismissedUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'numberForm' => 'nullable|exists:DecisionNumberSamples,NumberForm',
             'ordinalNumber' => [
                 'nullable',
                 'string',

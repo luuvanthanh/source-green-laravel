@@ -53,6 +53,10 @@ class ScriptReviewCommentTransformer extends BaseTransformer
 
     public function includeSampleComment(ScriptReviewComment $scriptReviewComment)
     {
+        if (is_null($scriptReviewComment->sampleComment)) {
+            return  null;
+        }
+
         return $this->item($scriptReviewComment->sampleComment, new SampleCommentTransformer, 'SampleComment');
     }
 }

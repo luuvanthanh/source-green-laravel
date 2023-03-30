@@ -53,6 +53,10 @@ class ScriptReviewSubjectTransformer extends BaseTransformer
 
     public function includeSubject(ScriptReviewSubject $scriptReviewSubject)
     {
+        if (is_null($scriptReviewSubject->subject)) {
+            return null;
+        }
+
         return $this->item($scriptReviewSubject->subject, new SubjectTransformer, 'Subject');
     }
 }

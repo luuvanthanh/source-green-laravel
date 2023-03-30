@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('payment-plans', 'PaymentPlanController');
+            \Route::post('sent-payment-plans', 'PaymentPlanController@sentPaymentPlan');
         });
     }
 }

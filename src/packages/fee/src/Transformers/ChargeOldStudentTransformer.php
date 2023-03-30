@@ -9,8 +9,6 @@ use GGPHP\Clover\Transformers\ClassesTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Models\ChargeOldStudent;
-use GGPHP\Fee\Models\ChargeStudent;
-use GGPHP\Fee\Models\Fee;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -29,6 +27,14 @@ class ChargeOldStudentTransformer extends BaseTransformer
         $attributes = [];
         $route = Route::currentRouteName();
 
+        if ((!empty(request()->is_payment_plan) && !empty(request()->month_payment_plan)) ||
+            ($route == 'payment-plans.index') && !empty(request()->month_payment_plan) ||
+            ($route == 'payment-plans.show') && !empty(request()->month_payment_plan)
+        ) {
+            $feeInfo = $this->feeInfo($model, request()->month_payment_plan);
+            $attributes['feeInfo'] =  $feeInfo;
+        }
+
         if ($route == 'accountant.charge-old-students') {
 
             if (!empty(request()->month)) {
@@ -39,6 +45,20 @@ class ChargeOldStudentTransformer extends BaseTransformer
         $attributes['PaymentStatus'] = array_search($model->PaymentStatus, $model::PAYMENT_STATUS);
 
         return $attributes;
+    }
+
+    public function feeInfo($model, $monthPaymentPlan)
+    {
+        $result = [];
+
+        foreach ($model->ExpectedToCollectMoney as $expectedToCollectMoney) {
+            if ($expectedToCollectMoney['month'] == $monthPaymentPlan) {
+                $result[] = $expectedToCollectMoney;
+                break;
+            }
+        }
+
+        return $result;
     }
 
     /**

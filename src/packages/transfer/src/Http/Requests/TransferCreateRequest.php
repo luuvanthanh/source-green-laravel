@@ -50,11 +50,19 @@ class TransferCreateRequest extends FormRequest
             'data.*.employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
+                    $labourContract = null;
                     $now = Carbon::now();
-                    $labourContract = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
+                    $labourContractUnlimited = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->whereHas('typeOfContract', function ($query) {
+                        $query->where('IsUnlimited', true);
+                    })->first();
+
+                    if (is_null($labourContractUnlimited)) {
+                        $labourContract = LabourContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
+                    }
+
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $value)->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $now->format('Y-m-d'))->first();
 
-                    if (is_null($labourContract)  && is_null($probationaryContract)) {
+                    if (is_null($labourContract)  && is_null($probationaryContract) && is_null($labourContractUnlimited)) {
                         return $fail('Chưa có hợp đồng không được tạo điều chuyển.');
                     }
                 },

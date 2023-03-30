@@ -68,7 +68,7 @@ class Student extends UuidModel
 
     public function classStudent()
     {
-        return $this->belongsTo(\GGPHP\Clover\Models\ClassStudent::class, 'Id', 'StudentId');
+        return $this->belongsTo(\GGPHP\Clover\Models\ClassStudent::class, 'Id', 'StudentId')->where('IsLastest', true);
     }
 
     /**

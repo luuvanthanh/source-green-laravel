@@ -23,7 +23,7 @@ class Classes extends UuidModel
      */
     protected $fillable = [
         'Code', 'Name', 'Year', 'BranchId', 'Description', 'ExtraProperties', 'ConcurrencyStamp',
-        'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime', 'ClassTypeId',
+        'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime', 'ClassTypeId'
     ];
 
     public function branch()

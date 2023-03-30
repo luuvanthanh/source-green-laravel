@@ -56,9 +56,9 @@ class FeeRepositoryEloquent extends CoreRepositoryEloquent implements FeeReposit
                 $query->orWhereLike('Code', $attributes['key']);
             });
         }
-
+        
         if (!empty($attributes['type'])) {
-            $this->model = $this->model->where('Type', $attributes['type']);
+            $this->model = $this->model->whereIn('Type', explode(',', $attributes['type']));
         }
 
         if (!empty($attributes['feeCrmId'])) {
