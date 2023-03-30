@@ -30,7 +30,7 @@ const Index = memo(() => {
   const [
     loading,
     { classes, branches, years, activities },
-    { defaultBranch },
+    { defaultBranch, user },
   ] = useSelector(({ loading: { effects }, timeTablesAuto, user }) => [
     effects,
     timeTablesAuto,
@@ -398,7 +398,9 @@ const Index = memo(() => {
         dayOfWeeks: item?.dayOfWeeks.filter(Boolean),
       })),
     });
-    setIsModalVisible(true);
+    if (user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_DETAIL')) {
+      setIsModalVisible(true);
+    }
   };
 
   const handleOk = () => {
@@ -524,15 +526,21 @@ const Index = memo(() => {
           <p key="back" role="presentation" onClick={handleCancel}>
             Hủy
           </p>,
-          <Button
-            key="submit"
-            color="success"
-            type="primary"
-            onClick={handleOk}
-            loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
-          >
-            Lưu
-          </Button>,
+          <>
+            {
+              user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') && (
+                <Button
+                  key="submit"
+                  color="success"
+                  type="primary"
+                  onClick={handleOk}
+                  loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
+                >
+                  Lưu
+                </Button>
+              )
+            }
+          </>
         ]}
       >
         <Form form={propertyForm}>
@@ -674,7 +682,7 @@ const Index = memo(() => {
                                   />
                                 </div>
                                 {formatTextSearch(tasks).map((task, index) => (
-                                  <Draggable key={task.id} draggableId={task.name} index={index}>
+                                  <Draggable key={task.id} draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') ? task.name : ""} index={index}>
                                     {(provided) => (
                                       <div
                                         ref={provided.innerRef}
@@ -748,7 +756,7 @@ const Index = memo(() => {
                                       {tasks.map((task, index) => (
                                         <Draggable
                                           key={`${task.id}-${indexParent}-${index}`}
-                                          draggableId={task.dragId}
+                                          draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') ? task.dragId : ""}
                                           index={index}
                                         >
                                           {(provided) => (

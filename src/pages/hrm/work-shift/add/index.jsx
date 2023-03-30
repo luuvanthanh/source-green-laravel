@@ -163,6 +163,22 @@ class Index extends PureComponent {
       ...omit(values, 'timeIn0', 'timeIn1', 'timeLate0', 'timeLate1'),
       employeeCreateId: user?.objectInfo?.id,
       id: params.id,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.startDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: values.endDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     };
     dispatch({
       type: params.id ? 'workShiftsAdd/UPDATE' : 'workShiftsAdd/ADD',
@@ -198,6 +214,7 @@ class Index extends PureComponent {
     } = this.props;
     const { shiftDetail } = this.state;
     const loadingSubmit = effects['workShiftsAdd/ADD'] || effects['workShiftsAdd/UPDATE'];
+    console.log("shifts", shifts.filter(i => i?.status === "ON"));
     const loading =
       effects['workShiftsAdd/GET_DETAILS'] ||
       effects['workShiftsAdd/GET_DIVISIONS'] ||
@@ -240,7 +257,7 @@ class Index extends PureComponent {
                         </div>
                         <div className="col-lg-6">
                           <FormItem
-                            data={shifts.map((item) => ({
+                            data={shifts.filter(i => i?.status === "ON").map((item) => ({
                               id: item.id,
                               name: item.name || item.shiftCode,
                             }))}

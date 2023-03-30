@@ -55,7 +55,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        SearchDate: query.SearchDate ? moment(query.SearchDate) :moment().format('YYYY-MM-DD'),
+        SearchDate: query.SearchDate ? moment(query.SearchDate) : moment().format('YYYY-MM-DD'),
       },
       dataIDSearch: [],
     };
@@ -291,7 +291,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-                {record?.total?.length === 0 ? 0 : record?.total } học sinh
+                {record?.total?.length === 0 ? 0 : record?.total} học sinh
               </Text>
             );
           }
@@ -320,7 +320,7 @@ class Index extends PureComponent {
     Helper.exportExcelClover(
       `/students/export-to-excel/group-by-branch`,
       {
-        LimitStudiedMonths : 6,
+        LimitStudiedMonths: 6,
         StudiedMonths: 12,
         IsMore: 'false',
         KeyWord: query?.KeyWord,
@@ -354,7 +354,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách học sinh dưới 12 tháng đến thời điểm</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>

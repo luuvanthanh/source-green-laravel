@@ -184,6 +184,7 @@ const Index = memo(() => {
                       icon="save"
                       htmlType="submit"
                       size="large"
+                      permission={isEmpty(params?.id) ? "WEB_TKB_CAUHINHTHOIGIAN_CREATE" : "WEB_TKB_CAUHINHTHOIGIAN_EDIT"}
                       loading={
                         loading['timeTablesConfigAdd/ADD'] ||
                         loading['timeTablesConfigAdd/UPDATE'] ||

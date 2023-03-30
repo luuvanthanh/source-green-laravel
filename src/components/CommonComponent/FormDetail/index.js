@@ -133,6 +133,16 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'noLable') {
+      return (
+        <div className="mb20">
+          <div style={{ height: 26 }} />
+          <div size="normal" className={styles['general-detail']}>
+            <p className={styles.text}>{name}</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mb20">
         <div className={styles['wrapper-title']}>

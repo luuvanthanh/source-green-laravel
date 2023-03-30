@@ -128,6 +128,22 @@ class Index extends PureComponent {
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
         type: variablesModules?.STATUS_TYPE_DECISION?.SALARY_INCREASES,
+        decisionDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.decisionDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        timeApply: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.timeApply,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
         detail: values.detail.map((item) => ({
           ...item,
           date: moment(item.date).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -269,8 +285,8 @@ class Index extends PureComponent {
                   <FormItem
                     label="Lý do"
                     name="reason"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    type={variables.TEXTAREA}
+                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>
@@ -287,8 +303,8 @@ class Index extends PureComponent {
                   <FormItem
                     label="Ghi chú"
                     name="note"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                    type={variables.TEXTAREA}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>

@@ -293,7 +293,7 @@ class Index extends PureComponent {
           if (record?.branch) {
             return (
               <Text size="normal" style={{ color: 'red' }}>
-                {record?.total?.length === 0 ? 0 : record?.total } học sinh
+                {record?.total?.length === 0 ? 0 : record?.total} học sinh
               </Text>
             );
           }
@@ -322,7 +322,7 @@ class Index extends PureComponent {
     Helper.exportExcelClover(
       `/students/export-to-excel/group-by-branch`,
       {
-        LimitStudiedMonths : 36,
+        LimitStudiedMonths: 36,
         StudiedMonths: 24,
         IsMore: true,
         KeyWord: query?.KeyWord,
@@ -356,7 +356,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách học sinh học đủ 24 tháng đến ngày đầu tháng</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>
@@ -413,11 +413,11 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                  name="SearchDate"
-                  onChange={(event) => this.onChangeDate(event, 'SearchDate')}
-                  type={variables.MONTH_PICKER}
-                  allowClear={false}
-                />
+                    name="SearchDate"
+                    onChange={(event) => this.onChangeDate(event, 'SearchDate')}
+                    type={variables.MONTH_PICKER}
+                    allowClear={false}
+                  />
                 </div>
               </div>
             </Form>

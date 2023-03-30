@@ -34,6 +34,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ loading, user }) => ({
   loading,
   defaultBranch: user.defaultBranch,
+  user: user.user
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -265,6 +266,7 @@ class Index extends PureComponent {
     const {
       loading: { effects },
       defaultBranch,
+      user,
     } = this.props;
     const submitLoading = effects['allocationChangeClass/UPDATE'];
     const loading = effects['allocationChangeClass/GET_STUDENTS'];
@@ -296,20 +298,26 @@ class Index extends PureComponent {
           {/* TABS LINK */}
           <div className="d-flex align-items-center mt-3 mb-3">
             <div className={stylesAllocation['tabs-link']}>
-              <NavLink
-                to="/phan-bo/hoc-sinh/tre-chua-xep-lop"
-                activeClassName={stylesAllocation.active}
-                className={stylesAllocation.link}
-              >
-                Trẻ chưa xếp lớp
-              </NavLink>
-              <NavLink
-                to="/phan-bo/hoc-sinh/chuyen-lop"
-                activeClassName={stylesAllocation.active}
-                className={stylesAllocation.link}
-              >
-                Chuyển lớp
-              </NavLink>
+              {user?.permissionGrants?.find(i => i === "WEB_PHANLOP_HOCSINH_XEPLOP_VIEW")
+                && (
+                  <NavLink
+                    to="/phan-bo/hoc-sinh/tre-chua-xep-lop"
+                    activeClassName={stylesAllocation.active}
+                    className={stylesAllocation.link}
+                  >
+                    Trẻ chưa xếp lớp
+                  </NavLink>)
+              }
+              {user?.permissionGrants?.find(i => i === "WEB_PHANLOP_HOCSINH_CHUYENLOP_VIEW")
+                && (
+                  <NavLink
+                    to="/phan-bo/hoc-sinh/chuyen-lop"
+                    activeClassName={stylesAllocation.active}
+                    className={stylesAllocation.link}
+                  >
+                    Chuyển lớp
+                  </NavLink>)
+              }
             </div>
           </div>
           {/* TABS LINK */}
@@ -488,6 +496,7 @@ class Index extends PureComponent {
                     htmlType="submit"
                     disabled={!selectedStudents.length}
                     loading={submitLoading}
+                    permission="WEB_PHANLOP_HOCSINH_CHUYENLOP_CREATE"
                   >
                     Chuyển lớp
                   </Button>
@@ -506,12 +515,14 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   defaultBranch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   loading: {},
   dispatch: {},
   defaultBranch: {},
+  user: {},
 };
 
 export default Index;

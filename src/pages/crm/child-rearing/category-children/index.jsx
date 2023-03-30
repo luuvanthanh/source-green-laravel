@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
+import ability from '@/utils/ability';
 import { Helper, variables } from '@/utils';
 import HelperModules from '../utils/Helper';
 import VariablesModules from '../utils/variables';
@@ -204,6 +205,7 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
+            permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_EDIT"
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record.id}/chinh-sua`);
@@ -211,11 +213,13 @@ const Index = memo(() => {
           />
           {
             record?.status === VariablesModules?.STATUS?.DRAFT &&
-            <Button className='ml10' color="danger" icon="remove" onClick={(e) => {
-              e.stopPropagation();
-              onRemove(record.id);
-            }
-            }
+            <Button
+              permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_DELETE"
+              className='ml10' color="danger" icon="remove" onClick={(e) => {
+                e.stopPropagation();
+                onRemove(record.id);
+              }
+              }
             />
           }
         </div>
@@ -229,7 +233,9 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Danh sách bài viết</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button
+            permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_CREATE"
+            color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
             Thêm mới
           </Button>
         </div>
@@ -278,7 +284,9 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (ability.can('WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_DETAIL', 'WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_DETAIL')) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

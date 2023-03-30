@@ -366,10 +366,10 @@ const Index = () => {
       {
         title: 'Bộ phận',
         key: 'division',
-        width: 120,
+        width: 150,
         fixed: 'left',
         className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
-        render: (record) => record?.positionLevelNow?.branch?.name,
+        render: (record) => record?.positionLevelNow?.division?.name,
       },
     ];
 
@@ -442,7 +442,7 @@ const Index = () => {
 
               <div className="col-lg-3">
                 <FormItem
-                  data={employees}
+                  data={Helper.convertSelectUsers(employees)}
                   name="employeeId"
                   placeholder="Chọn nhân viên"
                   onChange={(event) => onChangeSelectMultiple(event, 'employeeId')}

@@ -188,7 +188,7 @@ class Index extends PureComponent {
           },
         });
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -243,19 +243,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH"
+              permission="WEB_HSDT_CAUHINH_COSO_EDIT"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH"
+              permission="WEB_HSDT_CAUHINH_COSO_DELETE"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHINH', 'CAUHINH')
+    return !ability.can('WEB_HSDT_CAUHINH_COSO_VIEW', 'WEB_HSDT_CAUHINH_COSO_VIEW')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -281,7 +281,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHINH"
+              permission="WEB_HSDT_CAUHINH_COSO_CREATE"
             >
               Thêm mới
             </Button>

@@ -277,7 +277,7 @@ class Index extends PureComponent {
           onCancel={this.cancelModal}
           footer={[
             <div className="d-flex justify-content-between" key="action">
-              <Button key="remove" color="danger" icon="remove" ghost onClick={this.remove}>
+              <Button key="remove" color="danger" icon="remove" ghost onClick={this.remove} permission="WEB_TKB_LICHLAMVIECSUKIEN_DELETE">
                 Xóa
               </Button>
               <Button
@@ -285,6 +285,7 @@ class Index extends PureComponent {
                 color="success"
                 ghost
                 onClick={() => this.redirectDetails(pathname, 'chi-tiet')}
+                permission="WEB_TKB_LICHLAMVIECSUKIEN_DETAIL"
               >
                 Chi tiết
               </Button>
@@ -294,6 +295,7 @@ class Index extends PureComponent {
                 icon="edit"
                 ghost
                 onClick={() => this.redirectDetails(pathname, 'chinh-sua')}
+                permission="WEB_TKB_LICHLAMVIECSUKIEN_EDIT"
               >
                 Chỉnh sửa
               </Button>
@@ -333,7 +335,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="TKB"
+              permission="WEB_TKB_LICHLAMVIECSUKIEN_CREATE"
             >
               Thêm mới
             </Button>
@@ -475,6 +477,18 @@ class Index extends PureComponent {
                     }
                   },
                 },
+                today: {
+                  text: 'Hôm nay',
+                  click: () => {
+                    if (this.calendarComponentRef.current) {
+                      const fromDate = moment().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER);
+                      const toDate = moment().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER);
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.today();
+                      this.debouncedSearchDate(fromDate, toDate, search.type);
+                    }
+                  },
+                },
                 dayGridMonth: {
                   text: 'Tháng',
                   click: () => {
@@ -559,6 +573,11 @@ class Index extends PureComponent {
               slotMinTime="04:00"
               slotMaxTime="20:00"
               editable
+              eventTimeFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                meridiem: false,
+              }}
               fixedWeekCount={false}
               showNonCurrentDates
               locales={allLocales}

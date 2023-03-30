@@ -408,7 +408,7 @@ class Index extends PureComponent {
               </h3> */}
               {
                 data?.length > 0 ?
-                  <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
                     Xuất Excel
                   </Button>
                   : ""

@@ -403,7 +403,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách học sinh theo năm học theo cơ sở/Lớp hoặc Tổng</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>

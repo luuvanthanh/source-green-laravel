@@ -376,12 +376,12 @@ class Index extends PureComponent {
         StudentStatus: 'WITHDRAW_APPLICATION ',
         IsWithDrawApplication: 'false',
         branchId: query?.branchId || defaultBranch?.id,
-        From: dataIDSearch?.length > 0 ? 
+        From: dataIDSearch?.length > 0 ?
           moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
-        : "",
-        To: dataIDSearch?.length > 0 ? 
-        moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-         : "",
+          : "",
+        To: dataIDSearch?.length > 0 ?
+          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+          : "",
       },
       `Danhsachbaocaohocsinhruthoso.xlsx`,
     );
@@ -407,7 +407,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách báo cáo học sinh rút hồ sơ</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>
@@ -423,7 +423,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-              <div className="col-lg-3">
+                <div className="col-lg-3">
                   <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
@@ -472,23 +472,23 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-              <Table
-                columns={this.header(params)}
-                dataSource={data}
-                loading={loading}
-                error={error}
-                isError={error.isError}
-                defaultExpandAllRows
-                childrenColumnName="children"
-                bordered
-                pagination={this.pagination(pagination)}
-                params={{
-                  header: this.header(),
-                  type: 'table',
-                }}
-                rowKey={(record) => record?.branch?.name || record?.id}
-                scroll={{ x: '100%', y: '60vh' }}
-              />
+            <Table
+              columns={this.header(params)}
+              dataSource={data}
+              loading={loading}
+              error={error}
+              isError={error.isError}
+              defaultExpandAllRows
+              childrenColumnName="children"
+              bordered
+              pagination={this.pagination(pagination)}
+              params={{
+                header: this.header(),
+                type: 'table',
+              }}
+              rowKey={(record) => record?.branch?.name || record?.id}
+              scroll={{ x: '100%', y: '60vh' }}
+            />
           </div>
         </div>
       </>

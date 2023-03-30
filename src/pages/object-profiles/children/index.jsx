@@ -349,13 +349,16 @@ class Index extends PureComponent {
                 <Button color="danger" icon="remove" onClick={(e) => {
                   e.stopPropagation();
                   this.onRemove(record.id);
-                }} />
+                }}
+                  permission="WEB_HSDT_HOCSINH_DELETE"
+                />
               )
             }
             <Button
               color="primary"
               icon="edit"
               className='ml10'
+              permission="WEB_HSDT_HOCSINH_EDIT"
               onClick={(e) => {
                 e.stopPropagation();
                 history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chinh-sua`);
@@ -395,7 +398,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              permission="HSDT"
+              permission="WEB_HSDT_HOCSINH_CREATE"
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/tao-moi`)}
             >
               Tạo hồ sơ
@@ -481,7 +484,7 @@ class Index extends PureComponent {
               scroll={{ x: '100%', y: '60vh' }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('HSDT', 'HSDT')) {
+                  if (ability.can('WEB_HSDT_HOCSINH_DETAIL', 'WEB_HSDT_HOCSINH_DETAIL')) {
                     history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
                   }
                 },

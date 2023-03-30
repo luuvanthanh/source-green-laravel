@@ -191,6 +191,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                     color="success"
                     ghost
                     icon="plus"
+                    permission="WEB_HSDT_HOCSINH_EDIT"
                     onClick={() => {
                       add();
                       mountedSet(setFileImage, [...fileImage, null]);
@@ -210,6 +211,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
               size="large"
               htmlType="submit"
               loading={loadingSubmit || loading}
+              permission="WEB_HSDT_HOCSINH_EDIT"
             >
               Lưu
             </Button>

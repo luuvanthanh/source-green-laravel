@@ -501,7 +501,7 @@ const Index = memo(() => {
               loading={
                 loading['HRMusersAdd/ADD_CONTRACT'] || loading['HRMusersAdd/UPDATE_CONTRACT']
               }
-              onClick={finishForm}
+              onClick={() => formRefModal.current.submit()}
             >
               Lưu
             </Button>
@@ -517,6 +517,7 @@ const Index = memo(() => {
             contractTo: details.contractTo && moment(details.contractTo),
             contractDate: details.contractDate && moment(details.contractDate),
           }}
+          onFinish={finishForm}
           onValuesChange={formUpdate}
         >
           <Pane className="row">
@@ -573,6 +574,7 @@ const Index = memo(() => {
                 label="Loại hợp đồng"
                 name="typeOfContractId"
                 type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
                 onChange={changeContract}
               />
             </Pane>

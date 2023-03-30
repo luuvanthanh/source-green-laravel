@@ -17,12 +17,12 @@ export function update(data = {}) {
 }
 
 export function getStudents(params = {}) {
-  return request('/students', {
+  return request('/students/get-with-parent-account', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      classStatus: params.class ? 'HAS_CLASS' : 'ALL',
+      studentStatus: 'OFFICAL',
     },
   });
 }

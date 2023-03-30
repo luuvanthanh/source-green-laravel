@@ -331,6 +331,7 @@ const General = memo(
                     className="mr-3"
                     onClick={updateStatusRestore}
                     loading={effects[`OPchildrenAdd/UPDATE_STATUS_RESTORE`]}
+                    permission="WEB_HSDT_HOSODALUUTRU_HOCSINH_EDIT"
                   >
                     Khôi phục
                   </Button>
@@ -344,6 +345,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.WITHDRAW_APPLICATION)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Rút hồ sơ
                         </Button>
@@ -353,6 +355,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.STOP_STUDYING)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Bảo lưu
                         </Button>
@@ -364,6 +367,7 @@ const General = memo(
                         size="large"
                         htmlType="button"
                         className="mr-3"
+                        permission="WEB_HSDT_HOCSINH_EDIT"
                         onClick={updateStatus}
                         loading={effects[`OPchildrenAdd/UPDATE_STATUS`]}
                       >
@@ -373,12 +377,15 @@ const General = memo(
                   </>
                 }
                 {
-                  user?.roleCode === "admin" && !params?.id ? " " :
-                    <Button color="success" size="large" loading={loadingSubmit} onClick={() => {
-                      history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua`);
-                    }}>
+                  details?.student?.status !== variablesModules.STATUS.STORE && (
+                    <Button
+                      permission="WEB_HSDT_HOCSINH_EDIT"
+                      color="success" size="large" loading={loadingSubmit} onClick={() => {
+                        history.push(`/ho-so-doi-tuong/hoc-sinh/${details?.student?.id}/chinh-sua`);
+                      }}>
                       Chỉnh sửa
                     </Button>
+                  )
                 }
               </Pane>
             </Loading>

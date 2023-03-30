@@ -204,6 +204,11 @@ class Index extends PureComponent {
         ...record,
         status: checked ? variablesModules.STATUS_SHIFT.ON : variablesModules.STATUS_SHIFT.OFF,
       },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
     });
   };
 

@@ -40,7 +40,7 @@ const Index = memo(() => {
   const [listTeacher, setListTeacher] = useState([]);
   const [listStudent, setListStudent] = useState([]);
 
-  const [{ classes, branches }, loading, { defaultBranch }] = useSelector(({ extendedClass, user, loading: { effects } }) => [
+  const [{ classes, branches }, loading, { defaultBranch, user }] = useSelector(({ extendedClass, user, loading: { effects } }) => [
     extendedClass,
     effects,
     user,
@@ -631,7 +631,7 @@ const Index = memo(() => {
                         className={stylesModule.sidebar__list}
                       >
                         {formatTextSearch.map((item, index) => (
-                          <Draggable key={item.id} draggableId={item.id} index={index}>
+                          <Draggable key={item.id} draggableId={user?.permissionGrants?.find(i => i === "WEB_PHANLOP_GIAOVIENPHUTRACHNGOAIGIO_CREATE") ? item.id : ""} index={index}>
                             {(provided) => (
                               <div
                                 ref={provided.innerRef}

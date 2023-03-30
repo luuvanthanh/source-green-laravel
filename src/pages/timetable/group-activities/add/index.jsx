@@ -185,7 +185,7 @@ const Index = memo(() => {
                               </div>
                             ))}
 
-                            <Button color="success" icon="plus" onClick={() => add()}>
+                            <Button color="success" icon="plus" onClick={() => add()} permission={isEmpty(params?.id) ? "WEB_TKB_DANHMUC_NHOMHOATDONG_CREATE" : "WEB_TKB_DANHMUC_NHOMHOATDONG_EDIT"}>
                               Thêm
                             </Button>
                           </>
@@ -215,6 +215,7 @@ const Index = memo(() => {
                     icon="save"
                     htmlType="submit"
                     size="large"
+                    permission={isEmpty(params?.id) ? "WEB_TKB_DANHMUC_NHOMHOATDONG_CREATE" : "WEB_TKB_DANHMUC_NHOMHOATDONG_EDIT"}
                     loading={
                       loading['timetableGroupActivitiesAdd/ADD'] ||
                       loading['timetableGroupActivitiesAdd/UPDATE'] ||

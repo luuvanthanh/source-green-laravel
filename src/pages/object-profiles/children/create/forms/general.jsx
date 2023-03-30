@@ -105,7 +105,22 @@ const General = memo(
               ...details.student,
               ...values,
               // registerDate: wrongDate === 1 ? moment() : values?.registerDate,
-              startDate: values?.startDate,
+              dayOfBirth: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.dayOfBirth,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
+              startDate: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.startDate,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
               branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
@@ -118,6 +133,22 @@ const General = memo(
               ...values,
               fileImage: JSON.stringify(files),
               age,
+              dayOfBirth: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.dayOfBirth,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
+              startDate: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.startDate,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
               branchId: user?.branchs?.length > 0 ? user?.branchs[0]?.id : "",
               // registerDate: moment(),
             },
@@ -508,6 +539,7 @@ const General = memo(
                     className="mr-3"
                     onClick={updateStatusRestore}
                     loading={effects[`OPchildrenAdd/UPDATE_STATUS_RESTORE`]}
+                    permission="WEB_HSDT_HOCSINH_EDIT"
                   >
                     Khôi phục
                   </Button>
@@ -521,6 +553,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.WITHDRAW_APPLICATION)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Rút hồ sơ
                         </Button>
@@ -530,6 +563,7 @@ const General = memo(
                           htmlType="button"
                           className="mr-3"
                           onClick={() => handleModalForm(type.STOP_STUDYING)}
+                          permission="WEB_HSDT_HOCSINH_EDIT"
                         >
                           Bảo lưu
                         </Button>
@@ -543,18 +577,16 @@ const General = memo(
                         className="mr-3"
                         onClick={updateStatus}
                         loading={effects[`OPchildrenAdd/UPDATE_STATUS`]}
+                        permission="WEB_HSDT_HOCSINH_EDIT"
                       >
                         Lưu trữ hồ sơ
                       </Button>
                     )}
                   </>
                 }
-                {
-                  user?.roleCode === "admin" && !params?.id ? " " :
-                    <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                      Lưu
-                    </Button>
-                }
+                <Button permission={isEmpty(params?.id) ? "WEB_HSDT_HOCSINH_CREATE" : "WEB_HSDT_HOCSINH_EDIT"} color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                  Lưu
+                </Button>
               </Pane>
             </Loading>
           </Pane>

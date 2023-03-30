@@ -125,14 +125,28 @@ class Index extends PureComponent {
         ordinalNumber: values.ordinalNumber,
         numberForm: head(dataFormContarct)?.numberForm,
         decisionNumberSampleId: head(dataFormContarct)?.id,
-        decisionDate: values.decisionDate,
         type: values.type,
         reason: values.reason,
+        decisionDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.decisionDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
         data: [
           {
             employeeId: values.employeeId,
             money: values.money,
-            timeApply: values.timeApply,
+            timeApply: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: values.timeApply,
+              }),
+              format: variables.DATE_FORMAT.DATE_AFTER,
+              isUTC: false,
+            }),
             note: values.note,
           },
         ],
@@ -267,8 +281,8 @@ class Index extends PureComponent {
                   <FormItem
                     label="Lý do"
                     name="reason"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    type={variables.TEXTAREA}
+                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>
@@ -298,7 +312,7 @@ class Index extends PureComponent {
                     label="Ghi chú"
                     name="note"
                     type={variables.TEXTAREA}
-                    rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
                   />
                 </div>
               </div>

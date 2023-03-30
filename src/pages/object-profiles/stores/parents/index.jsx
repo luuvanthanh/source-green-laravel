@@ -242,7 +242,7 @@ class Index extends PureComponent {
               color="success"
               ghost
               onClick={() => history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`)}
-              permission="HSDT"
+              permission="WEB_HSDT_HOSODALUUTRU_PHUHUYNH_EDIT"
             >
               Chi tiết
             </Button>
@@ -250,7 +250,7 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return !ability.can('HSDT', 'HSDT')
+    return !ability.can('WEB_HSDT_HOSODALUUTRU_PHUHUYNH_VIEW', 'WEB_HSDT_HOSODALUUTRU_PHUHUYNH_VIEW')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -305,7 +305,7 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('HSDT', 'HSDT')) {
+                  if (ability.can('WEB_HSDT_HOSODALUUTRU_PHUHUYNH_DETAIL', 'WEB_HSDT_HOSODALUUTRU_PHUHUYNH_DETAIL')) {
                     history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
                   }
                 },

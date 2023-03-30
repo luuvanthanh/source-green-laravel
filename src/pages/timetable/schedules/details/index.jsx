@@ -1,11 +1,12 @@
 import { memo, useRef, useEffect } from 'react';
 import csx from 'classnames';
-import { connect, withRouter } from 'umi';
+import { connect, withRouter, history } from 'umi';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
-import { isEmpty } from 'lodash';
+import { isEmpty, head } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
+import { Helmet } from 'react-helmet';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -26,6 +27,7 @@ const Index = memo(
   ({ loading: { effects }, match: { params }, error, menuLeft, details }) => {
     const mounted = useRef(false);
     const dispatch = useDispatch();
+    const file = details?.fileAttach ? JSON.parse(details?.fileAttach) : [];
 
     const loading = effects[`timeTablesScheduleDetails/GET_DETAILS`];
 
@@ -46,6 +48,7 @@ const Index = memo(
 
     return (
       <>
+        <Helmet title="Thời khóa biểu làm việc / sự kiện" />
         <Breadcrumbs last="Chi tiết" menu={menuLeft} />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
           <Loading loading={loading} isError={error.isError} params={{ error }}>
@@ -56,7 +59,7 @@ const Index = memo(
                     Thông tin chung
                   </Heading>
 
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
@@ -66,7 +69,7 @@ const Index = memo(
                       <p className="font-weight-bold">{details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}</p>
                     </Pane>
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
@@ -77,72 +80,65 @@ const Index = memo(
                         {`${Helper.getDate(details.startTime, variables.DATE_FORMAT.DATE_TIME)} - ${Helper.getDate(details.endTime, variables.DATE_FORMAT.HOUR)}`}
                       </p>
                     </Pane>
-                    <Pane className="col-lg-6">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nhắc trước</span>
-                        </label>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.remindBefore || 0} giờ</p>
-                    </Pane>
-                    <Pane className="col-lg-12">
-                      <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Nội dung nhắc nhở</span>
-                        </label>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.note || ''}</p>
-                    </Pane>
+                    {
+                      details?.isReminded && (
+                        <>
+                          <Pane className="col-lg-6">
+                            <Pane className="ant-col ant-form-item-label">
+                              <label>
+                                <span>Nhắc trước</span>
+                              </label>
+                            </Pane>
+                            <p className="font-weight-bold">{details?.remindBefore || 0} giờ</p>
+                          </Pane>
+                          <Pane className="col-lg-12">
+                            <Pane className="ant-col ant-form-item-label">
+                              <label>
+                                <span>Nội dung nhắc nhở</span>
+                              </label>
+                            </Pane>
+                            <p className="font-weight-bold">{details?.note || ''}</p>
+                          </Pane>
+                        </>
+                      )
+                    }
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                    <Pane className="col-lg-12">
-                      <Pane className="ant-col ant-form-item-label">
-                        <span>Đối tượng</span>
-                      </Pane>
-                      <p className="font-weight-bold">{details?.forClass ? 'Lớp' : 'Cá nhân'}</p>
-                    </Pane>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
                         <span>Cơ sở</span>
                       </Pane>
                       <p className="font-weight-bold">{details?.branch?.name || ''}</p>
                     </Pane>
-                    {details?.forPerson && (
-                      <Pane className="col-lg-6">
-                        <Pane className="ant-col ant-form-item-label">
-                          <span>Lớp</span>
-                        </Pane>
-                        <p className="font-weight-bold">{details?.class?.name || ''}</p>
+                    <Pane className="col-lg-6">
+                      <Pane className="ant-col ant-form-item-label">
+                        <span>Lớp</span>
                       </Pane>
-                    )}
+                      <p className="font-weight-bold">{details?.class?.name || 'Tất cả các lớp'}</p>
+                    </Pane>
                   </Pane>
-                  <Pane className={csx('row', 'border-bottom', 'mb20')}>
+                  <Pane className={csx('row', 'border-bottom', 'pb20', 'pt20')}>
                     <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
-                          <span className="mb0">Gửi đến phụ huynh</span>
+                          <span className="mb0">Người nhận thông báo</span>
                         </label>
                       </Pane>
-                      {details?.forClass && !isEmpty(details?.classTimetables) && details?.classTimetables?.map((item, index) => (
-                        <div className="mb20" key={index}>
-                          <div className="d-flex align-items-center mt15">
-                            <span className={styles.circleIcon}>
-                              <span className="icon-open-book" />
-                            </span>
-                            <div className="ml10">
-                              <p className="font-weight-bold font-size-14 mb0">{item?.class?.name || ''}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {details?.forPerson && !isEmpty(details?.parentTimetables) && details?.parentTimetables?.map((item, index) => (
-                        <div className="mb20" key={index}>
-                          <AvatarTable
-                            className="mt10"
-                            fullName={`${item?.student?.fullName} (${item?.student?.age} Tháng tuổi)` || ''}
-                            fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
-                            size={40}
-                          />
+                      {!isEmpty(details?.parentTimetables) && details?.parentTimetables?.map((item, index) => (
+                        <div key={index}>
+                          <Pane
+                            key={index}
+                            className={styles.userInformation}
+                            style={{ paddingTop: 10, paddingBottom: 10 }}
+                          >
+                            <AvatarTable
+                              fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                            />
+                            <Pane>
+                              <h3>{item?.student?.fullName}</h3>
+                              <p>{item?.student?.age} Tháng tuổi</p>
+                            </Pane>
+                          </Pane>
                         </div>
                       ))}
                     </Pane>
@@ -196,7 +192,7 @@ const Index = memo(
                         <p className="mb0">{details?.location || ''}</p>
                       </Pane>
                     </Pane>
-                    <Pane className={csx('row', 'py15')}>
+                    <Pane className={csx('row', 'border-bottom', 'py15')}>
                       <Pane className="col-lg-12">
                         <Pane className="ant-col ant-form-item-label">
                           <label>
@@ -206,24 +202,31 @@ const Index = memo(
                         <div className={stylesModule['wrapper-content']} dangerouslySetInnerHTML={{ __html: details?.content }} />
                       </Pane>
                     </Pane>
-                    {
-                      details?.isScheduled && (
-                        <Pane className={csx('row', 'border-bottom', 'py15')}>
-                          <Pane className="col-lg-12">
-                            <Pane className="ant-col ant-form-item-label">
-                              <label>
-                                <span className="font-weight-bold">Hẹn giờ gửi</span>
-                              </label>
-                            </Pane>
-                            <div className='d-flex'>
-                              <p className="mb0">  {Helper.getDate(details.scheduleSendingDate, variables.DATE_FORMAT.DATE)},</p>
-                              <p className="mb0 ml5">{details.scheduleSendingTime}</p>
-                            </div>
-                          </Pane>
+                    <Pane className={csx('row', 'py15')}>
+                      <Pane className="col-lg-12">
+                        <Pane className="ant-col ant-form-item-label">
+                          <label>
+                            <span className="font-weight-bold">Tài liệu đính kèm</span>
+                          </label>
                         </Pane>
-                      )
-                    }
+                        <p className="mb0">
+                          <a href={`${API_UPLOAD}${head(file)?.url}`} target="_blank" rel="noreferrer">
+                            {head(file)?.name}
+                          </a>
+                        </p>
+                      </Pane>
+                    </Pane>
                   </Pane>
+                </Pane>
+                <Pane className="d-flex justify-content-end align-items-center mb20">
+                  <p
+                    className="btn-delete"
+                    role="presentation"
+
+                    onClick={() => history.goBack()}
+                  >
+                    Đóng
+                  </p>
                 </Pane>
               </Pane>
             </Pane>

@@ -84,6 +84,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
+        port: details?.port.toString(),
       });
     }
   }

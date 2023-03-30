@@ -1,23 +1,23 @@
 export const variables = {
   TYPE_CALENDAR: [
     {
-      id: "SEMINOR ",
+      id: 'SEMINOR',
       name: 'Hội thảo',
     },
     {
-      id: "PARENT_MEETING",
+      id: 'PARENT_MEETING',
       name: 'Họp phụ huynh',
     },
     {
-      id: "APPOINTMENT",
+      id: 'APPOINTMENT',
       name: 'Lịch hẹn',
     },
     {
-      id: "FIELD_TRIP",
+      id: 'FIELD_TRIP',
       name: 'FieldTrip',
     },
     {
-      id: "STUDENT_EVENT",
+      id: 'STUDENT_EVENT',
       name: 'Sự kiện cho trẻ',
     },
   ],
@@ -32,8 +32,8 @@ export const variables = {
   },
   OBJECTS: [
     { value: 'forClass', label: 'Lớp' },
-    {value: 'forPerson', label: 'Cá nhân'}
-  ]
+    { value: 'forPerson', label: 'Cá nhân' },
+  ],
 };
 
 export default variables;

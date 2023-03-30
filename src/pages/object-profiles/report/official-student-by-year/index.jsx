@@ -395,7 +395,7 @@ class Index extends PureComponent {
             <Text color="dark">
               Báo cáo thống kê số lượng học sinh nhập học chính thức theo năm
             </Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+            <Button permission="WEB_HSDT_BAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
               Xuất Excel
             </Button>
           </div>

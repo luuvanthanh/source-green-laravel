@@ -256,6 +256,7 @@ class Index extends PureComponent {
       menuData,
       categories,
       loading: { effects },
+      match: { params },
     } = this.props;
     const { detail } = this.state;
     const loading = effects['busRegistrationsAdd/GET_DETAILS'];
@@ -263,8 +264,18 @@ class Index extends PureComponent {
       effects['busRegistrationsAdd/ADD'] || effects['busRegistrationsAdd/UPDATE'];
     return (
       <>
-        <Helmet title="Tạo mới phiếu ĐK đi xe bus" />
-        <Breadcrumbs last="Tạo mới phiếu ĐK đi xe bus" menu={menuData} />
+        <Helmet title={
+          params.id
+            ? 'Chỉnh sửa phiếu ĐK đi xe bus'
+            : 'Tạo mới phiếu ĐK đi xe bus'
+        } />
+        <Breadcrumbs
+          last={
+            params.id
+              ? 'Chỉnh sửa phiếu ĐK đi xe bus'
+              : 'Tạo mới phiếu ĐK đi xe bus'
+          }
+          menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -336,8 +347,8 @@ class Index extends PureComponent {
                     <FormItem
                       label="Ghi chú"
                       name="note"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
                       type={variables.TEXTAREA}
+                      rules={[variables.RULES.MAX_LENGTH_255]}
                     />
                   </div>
                 </div>
