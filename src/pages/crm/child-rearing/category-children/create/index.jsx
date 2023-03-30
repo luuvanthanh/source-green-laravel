@@ -159,7 +159,7 @@ const Index = memo(() => {
         size="large"
         loading={loadingSubmit}
         onClick={() => saveDraft()}
-        permission={!params?.id ? "WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_CREATE" : "WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_EDIT"}
+      // permission={!params?.id ? "WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_CREATE" : "WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_EDIT"}
       >
         {params?.id ? "Lưu cập nhập" : "Lưu nháp"}
       </Button>
@@ -174,7 +174,7 @@ const Index = memo(() => {
           color="success"
           htmlType="submit"
           size="large"
-          permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_SEND"
+          // permission="WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_SEND"
           loading={loadingSubmit}
         >
           Đăng bài viết
