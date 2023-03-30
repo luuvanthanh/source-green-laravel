@@ -135,19 +135,18 @@ class Index extends PureComponent {
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }),
-        timeApply: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: values.timeApply,
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
         data: [
           {
             employeeId: values.employeeId,
             money: values.money,
-            timeApply: values.timeApply,
+            timeApply: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: values.timeApply,
+              }),
+              format: variables.DATE_FORMAT.DATE_AFTER,
+              isUTC: false,
+            }),
             note: values.note,
           },
         ],

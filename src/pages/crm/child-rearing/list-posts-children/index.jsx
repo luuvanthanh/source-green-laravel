@@ -172,17 +172,19 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
-            permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"
+            // permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record.id}/chinh-sua`);
             }}
           />
-          <Button permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DELETE" color="danger" icon="remove" onClick={(e) => {
-            e.stopPropagation();
-            onRemove(record.id);
-          }
-          } />
+          <Button
+            // permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DELETE"
+            color="danger" icon="remove" onClick={(e) => {
+              e.stopPropagation();
+              onRemove(record.id);
+            }
+            } />
         </div>
       ),
     },
@@ -194,7 +196,9 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Danh mục</Text>
-          <Button permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button
+            //  permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_CREATE"
+            color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
             Thêm mới
           </Button>
         </div>
@@ -243,9 +247,10 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    if (ability.can('WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL', 'WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL')) {
-                      history.push(`${pathname}/${record.id}/chi-tiet`);
-                    }
+                    // if (ability.can('WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL', 'WEB_KIENTHUCNUOIDAYTRE_DANHMUC_DETAIL')) {
+                    //   history.push(`${pathname}/${record.id}/chi-tiet`);
+                    // }
+                    history.push(`${pathname}/${record.id}/chi-tiet`);
                   },
                 })}
               />
