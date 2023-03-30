@@ -283,6 +283,8 @@ const Index = memo(
           loading: false, branchId: branch, class: ''
         });
       }
+      setSearchStudents({ ...searchStudents, branchId: branch });
+      formRef?.current?.setFieldsValue({ classId: undefined });
     };
 
     const onChangeClass = (value) => {
@@ -291,7 +293,7 @@ const Index = memo(
         limit: 10,
         total: 0,
         hasMore: true,
-        loading: false, branchId: searchStudents?.BranchId, class: value
+        loading: false, branchId: searchStudents?.branchId, class: value
       });
     };
 

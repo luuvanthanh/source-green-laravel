@@ -526,16 +526,21 @@ const Index = memo(() => {
           <p key="back" role="presentation" onClick={handleCancel}>
             Hủy
           </p>,
-          <Button
-            key="submit"
-            color="success"
-            type="primary"
-            onClick={handleOk}
-            permission="WEB_TKB_TKBTUDONG_EDIT"
-            loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
-          >
-            Lưu
-          </Button>,
+          <>
+            {
+              user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') && (
+                <Button
+                  key="submit"
+                  color="success"
+                  type="primary"
+                  onClick={handleOk}
+                  loading={loading['timeTablesAuto/UPDATE_ACTIVITIES']}
+                >
+                  Lưu
+                </Button>
+              )
+            }
+          </>
         ]}
       >
         <Form form={propertyForm}>
@@ -677,7 +682,7 @@ const Index = memo(() => {
                                   />
                                 </div>
                                 {formatTextSearch(tasks).map((task, index) => (
-                                  <Draggable key={task.id} draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE') ? task.name : ""} index={index}>
+                                  <Draggable key={task.id} draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') ? task.name : ""} index={index}>
                                     {(provided) => (
                                       <div
                                         ref={provided.innerRef}
@@ -751,7 +756,7 @@ const Index = memo(() => {
                                       {tasks.map((task, index) => (
                                         <Draggable
                                           key={`${task.id}-${indexParent}-${index}`}
-                                          draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE') ? task.dragId : ""}
+                                          draggableId={user?.permissionGrants?.find(i => i === 'WEB_TKB_TKBTUDONG_CREATE' || i === 'WEB_TKB_TKBTUDONG_EDIT') ? task.dragId : ""}
                                           index={index}
                                         >
                                           {(provided) => (
