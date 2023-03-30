@@ -86,6 +86,13 @@ const Index = memo(() => {
 
   const onChangeType = (event) => {
     mountedSet(setType, event.target.value);
+    formRef.current.setFieldsValue({
+      branchId: undefined,
+      divisionId: undefined,
+      class: undefined,
+    });
+    setParents([]);
+    setEmployees([]);
   };
 
   /**
@@ -314,32 +321,6 @@ const Index = memo(() => {
             total: response.pagination.total,
             loading: false,
           });
-        }
-      },
-    });
-    dispatch({
-      type: 'notificationAdd/GET_CLASS',
-      payload: {
-        branch: value,
-      },
-      callback: (response) => {
-        if (response) {
-          mountedSet(setDataClass, response.items);
-        }
-      },
-    });
-    dispatch({
-      type: 'notificationAdd/GET_PARENTS',
-      payload: {
-        ...searchParent,
-      },
-      callback: (response) => {
-        if (response) {
-          mountedSet(
-            setParents,
-            response.items,
-          );
-          mountedSet(setSearchParent, { ...searchParent, total: response.totalCount, loading: false });
         }
       },
     });

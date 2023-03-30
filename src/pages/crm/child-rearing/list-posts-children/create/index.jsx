@@ -125,7 +125,7 @@ const Index = memo(() => {
                       htmlType="submit"
                       size="large"
                       loading={loadingSubmit}
-                    // permission={!params?.id ? "WEB_KIENTHUCNUOIDAYTRE_DANHMUC_CREATE" : "WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"}
+                      permission={!params?.id ? "WEB_KIENTHUCNUOIDAYTRE_DANHMUC_CREATE" : "WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"}
                     >
                       Lưu
                     </Button>

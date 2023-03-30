@@ -2468,8 +2468,7 @@ export async function getLeftMenuCRM() {
       title: 'Kiến thức nuôi dạy trẻ',
       key: 'child rearing',
       icon: 'icon icon-list',
-      // permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_VIEW],
-      permission: [],
+      permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_VIEW],
       children: [
         {
           title: 'Danh sách bài viết',
@@ -2480,8 +2479,7 @@ export async function getLeftMenuCRM() {
             '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chi-tiet',
             '/crm/kien-thuc-nuoi-day-tre/danh-sach-bai-viet/:id/chinh-sua',
           ],
-          // permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_VIEW],
-          permission: [],
+          permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHSACHBAIVIET_VIEW],
           pro: true,
         },
         {
@@ -2493,8 +2491,7 @@ export async function getLeftMenuCRM() {
             '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chi-tiet',
             '/crm/kien-thuc-nuoi-day-tre/danh-muc/:id/chinh-sua',
           ],
-          // permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHMUC_VIEW],
-          permission: [],
+          permission: [permissions.WEB_KIENTHUCNUOIDAYTRE_DANHMUC_VIEW],
           pro: true,
         },
       ],
