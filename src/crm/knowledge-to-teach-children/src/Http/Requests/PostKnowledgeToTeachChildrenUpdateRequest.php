@@ -28,7 +28,7 @@ class PostKnowledgeToTeachChildrenUpdateRequest extends FormRequest
         
         return [
             'name' => [
-                'required',
+                'nullable',
                 function ($attribute, $value, $fail) {
                     $knowledgeToTeachChildren = PostKnowledgeToTeachChildren::where('id', '!=', $this->id)->where('name', $value)->first();
 
@@ -39,9 +39,9 @@ class PostKnowledgeToTeachChildrenUpdateRequest extends FormRequest
                     return $fail('Dữ liệu đã có trong hệ thống');
                 },
             ],
-            'category_knowledge_to_teach_children_id' => 'required',
-            'status' => 'required|in:'. $status,
-            'employee_id' => 'required|exists:employees,employee_id_hrm'
+            'category_knowledge_to_teach_children_id' => 'nullable',
+            'status' => 'nullable|in:'. $status,
+            'employee_id' => 'nullable|check_exists:hrm.Employees,Id'
         ];
     }
 
