@@ -24,12 +24,19 @@ class GetBmiChildrenRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
             'height' => 'required|numeric',
             'weight' => 'required|numeric',
             'number_of_month' => 'required|integer',
             'gender' => 'required|in:MALE,FEMALE'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'height.numeric' => 'Trường :attribute phải là một số',
+            'weight.numeric' => 'Trường :attribute phải là một số' 
         ];
     }
 }

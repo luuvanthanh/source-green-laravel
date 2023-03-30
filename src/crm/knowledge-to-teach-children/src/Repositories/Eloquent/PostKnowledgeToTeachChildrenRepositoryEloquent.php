@@ -94,7 +94,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     }
 
     public function getBmiChildren(array $attributes)
-    {
+    {   
         $message = '';
         $type = null;
         $admissionRegister = [];
@@ -109,7 +109,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         // get model bmi 
         $criteriaStandardsBmi = CriteriaStandardCriteria::where('MonthNumber', $attributes['number_of_month'])->where('Type', $type)->first();
         // get array bmi tieu chuan
-        $result = ($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100);
+        $result = number_format(($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100), 1);
 
         if (!empty($criteriaStandardsBmi)) {
             $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
@@ -145,12 +145,22 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
 
     public function sentNotification($model)
     {
-        $userId = env('ACCOUNT_GUEST_ID');
+        $idRole = null;
+        $dataAbpRoles = \DB::connection('pgsql_second')->table('AbpRoles')->get();
+        foreach ($dataAbpRoles as $key => $value) {
+            $data = json_decode($value->ExtraProperties, true);
+            if (!empty($data) && isset($data['RoleCode'])) {
+                if ($data['RoleCode'] == 'guest') {
+                    $idRole = $value->Id;
+                }
+            }
+        }
+        $AbpUserRoles = \DB::connection('pgsql_second')->table('AbpUserRoles')->where('RoleId', $idRole)->first();
         
         if (!empty($model)) {
             if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
                 $dataNotifiCation = [
-                    'users' => $userId,
+                    'users' => $AbpUserRoles->UserId,
                     'title' => $model->name,
                     'imageURL' => $model->image,
                     'message' => substr(strip_tags($model->content),0, 250),
