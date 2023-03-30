@@ -27,18 +27,15 @@ class CategoryKnowledgeToTeachChildrenGetRequest extends FormRequest
         $status = implode(',', array_values(PostKnowledgeToTeachChildren::STATUS));
 
         return [
-            'status' => 'nullable|in:' . $status,
+            'status' => 'required|in:' . $status,
         ];
     }
 
     public function all($key = null)
     {
         $data = parent::all();
-
-        if (!empty($data['status'])) {
-            $data['status'] = array_key_exists($data['status'], PostKnowledgeToTeachChildren::STATUS) ? PostKnowledgeToTeachChildren::STATUS[$data['status']] : 0;
-        }
-
+        $data['status'] = array_key_exists($data['status'], PostKnowledgeToTeachChildren::STATUS) ? PostKnowledgeToTeachChildren::STATUS[$data['status']] : 0;
+        
         return $data;
     }
 }
