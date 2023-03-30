@@ -78,7 +78,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     {
         $result = PostKnowledgeToTeachChildren::create($attributes);
         
-        $this->sentNotification($result);
+        //$this->sentNotification($result);
 
         return parent::parserResult($result);
     }
@@ -88,7 +88,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         $admissionRegister = PostKnowledgeToTeachChildren::findOrfail($id);
         $admissionRegister->update($attributes);
         
-        $this->sentNotification($admissionRegister);
+        //$this->sentNotification($admissionRegister);
 
         return parent::find($id);
     }
