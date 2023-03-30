@@ -389,11 +389,11 @@ class Index extends PureComponent {
 
               {
                 dataIDSearch.length > 0 ?
-                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
+                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
                     Tải dữ liệu
                   </Button>
                   :
-                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
+                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
                     Tải dữ liệu
                   </Button>
               }
@@ -408,7 +408,7 @@ class Index extends PureComponent {
               </h3> */}
               {
                 data?.length > 0 ?
-                  <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
+                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
                     Xuất Excel
                   </Button>
                   : ""

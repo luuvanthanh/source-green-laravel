@@ -179,7 +179,7 @@ function Index() {
   };
 
   const onChangeSendDivision = (value) => {
-    setSearchEmployee({ ...searchEmployee, loading: true });
+    setSearchEmployee({ ...searchEmployee });
     if (value) {
       dispatch({
         type: 'HRMdocumentaryAdd/GET_EMPLOYEE',

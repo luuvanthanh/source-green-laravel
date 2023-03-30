@@ -78,7 +78,7 @@ const Index = memo(() => {
                       color="success"
                       htmlType="submit"
                       size="large"
-                      permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"
+                      // permission="WEB_KIENTHUCNUOIDAYTRE_DANHMUC_EDIT"
                       onClick={() => history.push(`/crm/kien-thuc-nuoi-day-tre/danh-muc/${params.id}/chinh-sua`)}
                     >
                       Sửa
