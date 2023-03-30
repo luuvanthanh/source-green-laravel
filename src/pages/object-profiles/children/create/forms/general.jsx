@@ -105,7 +105,22 @@ const General = memo(
               ...details.student,
               ...values,
               // registerDate: wrongDate === 1 ? moment() : values?.registerDate,
-              startDate: values?.startDate,
+              dayOfBirth: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.dayOfBirth,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
+              startDate: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.startDate,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
               branchId: details?.student?.branchId || details?.student?.class?.branchId,
               id: params.id,
               fileImage: JSON.stringify(files),
@@ -118,6 +133,22 @@ const General = memo(
               ...values,
               fileImage: JSON.stringify(files),
               age,
+              dayOfBirth: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.dayOfBirth,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
+              startDate: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: values.startDate,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
               branchId: user?.branchs?.length > 0 ? user?.branchs[0]?.id : "",
               // registerDate: moment(),
             },

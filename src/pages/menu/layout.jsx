@@ -4,7 +4,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, size } from 'lodash';
+import { isEmpty } from 'lodash';
 
 const mapStateToProps = ({ settings, menu }) => ({
   isMenuCollapsed: settings.isMenuCollapsed,
@@ -25,27 +25,23 @@ class Index extends PureComponent {
     const {
       dispatch,
     } = this.props;
-    if (this.props.location.pathname.includes('bao-cao-erp') && !isEmpty(this.props.dataReport)) {
-      this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
-    }
+    // if (this.props.location.pathname.includes('bao-cao-erp') && !isEmpty(this.props.dataReport)) {
+    //   this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
+    // }
     if (this.props.location.pathname.includes('bao-cao-erp') && isEmpty(this.props.dataReport)) {
       dispatch({
         type: 'menu/GET_MENU_REPORT',
         payload: { type: 'METABASE' },
-        callback: (response) => {
-          if (response) {
-            this.props.history.push(`/bao-cao-erp/${head(head(response)?.children)?.id}`);
-          }
-        },
+        callback: () => { },
       });
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (size(this.props.dataReport) !== size(prevProps.dataReport)) {
-      this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   if (size(this.props.dataReport) !== size(prevProps.dataReport)) {
+  //     this.props.history.push(`/bao-cao-erp/${head(head(this.props.dataReport)?.children)?.id}`);
+  //   }
+  // }
 
   render() {
     const { children, isMenuCollapsed } = this.props;
@@ -65,7 +61,6 @@ Index.propTypes = {
   isMenuCollapsed: PropTypes.bool,
   dataReport: PropTypes.array,
   location: PropTypes.any,
-  history: PropTypes.any,
   dispatch: PropTypes.objectOf(PropTypes.any),
 
 };
@@ -75,7 +70,6 @@ Index.defaultProps = {
   isMenuCollapsed: false,
   dataReport: [],
   location: {},
-  history: {},
   dispatch: {},
 
 };
