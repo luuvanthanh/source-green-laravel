@@ -212,9 +212,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_EDIT"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button color="danger" permission="WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_DELETE" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
@@ -239,7 +240,7 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Danh sách lý do điểm danh</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button permission="WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>

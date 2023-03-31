@@ -9,6 +9,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -278,6 +279,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
+              permission={`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.EDIT}`}
               onClick={() =>
                 history.push(
                   `/suc-khoe/hom-nay/${record?.student?.id}/chi-tiet?reportDate=${get(
@@ -327,7 +329,7 @@ class Index extends PureComponent {
             <Text color="dark">
               Sức khỏe hôm nay - Ngày {Helper.getDate(moment(), variables.DATE_FORMAT.DATE)}
             </Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button permission={`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.CREATE}`} color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới sức khỏe
             </Button>
           </div>

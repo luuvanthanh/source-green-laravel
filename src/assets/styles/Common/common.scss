@@ -1736,24 +1736,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  .wraper-text {
-    color: #36383a;
-    font-size: 22px;
-    font-family: $bold__font-family;
-    font-style: normal;
-    line-height: 30px;
-    font-weight: 400;
-    // animation: wraper-text 3s ease infinite;
+  .block {
+    display: block;
+    text-align: center;
   }
-  // @keyframes wraper-text {
-  //   0% {
-  //     transform: scale(1, 1);
-  //   }
-  //   50% {
-  //     transform: scale(1.2, 1.2);
-  //   }
-  //   100% {
-  //     transform: scale(1, 1);
-  //   }
-  // }
+  .note {
+    color: #93969a;
+    font-size: 11px;
+    font-family: $base__font-family;
+    font-style: normal;
+    line-height: 24px;
+    margin-top: 3px;
+  }
+  .item {
+    display: flex;
+    justify-content: center;
+    animation: wraper-text 3s ease infinite;
+    .img {
+      width: 200px;
+    }
+  }
+  @keyframes wraper-text {
+    0% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.1, 1.1);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/extensions
-import { permissions } from '../../config/permissions';
+import { permissions, FLATFORM, ACTION } from '../../config/permissions';
 
 export async function getLeftMenuData() {
   return [
@@ -350,7 +350,7 @@ export async function getLeftMenuSchedules() {
       key: 'schedules',
       url: ['/diem-danh/hoc-sinh'],
       icon: 'icon icon-clock',
-      permission: [permissions.DD],
+      permission: [permissions.WEB_DIEMDANH_LICHHOC_VIEW],
       pro: true,
       children: [
         // {
@@ -364,7 +364,7 @@ export async function getLeftMenuSchedules() {
           title: 'Lịch sử ra vào lớp theo (Theo AI)',
           key: 'in-out-histories',
           url: ['/diem-danh/lich-su-vao-ra-lop'],
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_LICHHOC_LICHSURAVAOLOPAI_VIEW],
           pro: true,
         },
         // {
@@ -384,21 +384,21 @@ export async function getLeftMenuSchedules() {
       title: 'Điểm danh',
       key: 'works',
       icon: 'icon icon-open-book',
-      permission: [permissions.DD],
+      permission: [permissions.WEB_DIEMDANH_DIEMDANH_VIEW],
       pro: true,
       children: [
         {
           title: 'Nhập điểm danh',
           key: 'attendances',
           url: ['/diem-danh/nhap-diem-danh'],
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_DIEMDANH_NHAPDIEMDANH_VIEW],
           pro: true,
         },
         {
           title: 'TH điểm danh',
           key: 'timekeeping-report',
           url: ['/diem-danh/tong-hop-diem-danh'],
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_DIEMDANH_THDIEMDANH_VIEW],
           pro: true,
         },
         {
@@ -409,7 +409,7 @@ export async function getLeftMenuSchedules() {
             '/diem-danh/ly-do-diem-danh/tao-moi',
             '/diem-danh/ly-do-diem-danh/:id/chi-tiet',
           ],
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_VIEW],
           pro: true,
         },
       ],
@@ -418,7 +418,7 @@ export async function getLeftMenuSchedules() {
       title: 'Đơn xin phép',
       key: 'absents',
       icon: 'icon icon-clock',
-      permission: [permissions.DD],
+      permission: [permissions.WEB_DIEMDANH_DONXINPHEP_VIEW],
       pro: true,
       children: [
         {
@@ -429,25 +429,25 @@ export async function getLeftMenuSchedules() {
             '/diem-danh/don-xin-phep-cho-be/tao-moi',
             '/diem-danh/don-xin-phep-cho-be/:id/chi-tiet',
           ],
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_VIEW],
           pro: true,
         },
         {
           title: 'Cấu hình',
           key: 'lateEarlyConfig',
-          permission: [permissions.DD],
+          permission: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_VIEW],
           multiple: true,
           children: [
             {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypesConfig',
-              permission: [permissions.DD],
+              permission: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LOAINGHIPHEP_VIEW],
               url: ['/diem-danh/cau-hinh/loai-cong', '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet'],
             },
             {
               title: 'Lý do nghỉ phép',
               key: 'AbsentReasonsConfig',
-              permission: [permissions.DD],
+              permission: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_VIEW],
               url: [
                 '/diem-danh/cau-hinh/ly-do-nghi-phep',
                 '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
@@ -457,7 +457,7 @@ export async function getLeftMenuSchedules() {
             {
               title: 'Thời gian xin phép',
               key: 'AbsentTimelineConfig',
-              permission: [permissions.DD],
+              permission: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_THOIGIANNGHIPHEP_VIEW],
               url: ['/diem-danh/cau-hinh/thoi-gian-xin-phep'],
             },
           ],
@@ -469,7 +469,7 @@ export async function getLeftMenuSchedules() {
       key: 'attendanceLogs',
       icon: 'icon icon-clock',
       url: ['/diem-danh/lich-su-diem-danh'],
-      permission: [permissions.DD],
+      permission: [permissions.WEB_DIEMDANH_LICHSUDIEMDANH_VIEW],
       pro: true,
     },
   ];
@@ -1170,7 +1170,7 @@ export async function getLeftMenuHealth() {
       key: 'today',
       url: ['/suc-khoe/hom-nay', '/suc-khoe/hom-nay/tao-moi', '/suc-khoe/hom-nay/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [permissions.SUCKHOE],
+      permission: [`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.VIEW}`],
     },
     {
       title: 'Cấu hình bình nước',
@@ -1181,21 +1181,21 @@ export async function getLeftMenuHealth() {
         '/suc-khoe/cau-hinh-binh-nuoc/:id/chi-tiet',
       ],
       icon: 'icon icon-setting',
-      permission: [permissions.SUCKHOE],
+      permission: [`${FLATFORM.WEB}${permissions.SUCKHOE_CAUHINHBINHNUOC}${ACTION.VIEW}`],
     },
     {
       title: 'Lịch sử',
       key: 'history',
       url: ['/suc-khoe/lich-su', '/suc-khoe/lich-su/:id/chi-tiet'],
       icon: 'icon icon-clock',
-      permission: [permissions.SUCKHOE],
+      permission: [`${FLATFORM.WEB}${permissions.SUCKHOE_LICHSU}${ACTION.VIEW}`],
     },
     {
       title: 'Thống kê',
       key: 'staticstic',
       url: ['/suc-khoe/thong-ke'],
       icon: 'icon icon-checkmark',
-      permission: [permissions.SUCKHOE],
+      permission: [`${FLATFORM.WEB}${permissions.SUCKHOE_THONGKE}${ACTION.VIEW}`],
     },
   ];
 }
@@ -1950,7 +1950,7 @@ export async function getLeftMenuNotes() {
       key: 'items',
       url: ['/ghi-chu/danh-sach', '/ghi-chu/tao-moi', '/ghi-chu/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [permissions.GHICHU],
+      permission: [`${FLATFORM.WEB}${permissions.DANDO_DANHSACH}${ACTION.VIEW}`],
       pro: true,
     },
   ];

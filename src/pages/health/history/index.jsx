@@ -9,6 +9,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -281,6 +282,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
+              permission={`${FLATFORM.WEB}${permissions.SUCKHOE_LICHSU}${ACTION.DETAIL}`}
               onClick={() =>
                 history.push(
                   `/suc-khoe/lich-su/${record?.student?.id}/chi-tiet?reportDate=${get(

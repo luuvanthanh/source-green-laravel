@@ -529,7 +529,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Tổng hợp điểm danh</Text>
-            <Button color="success" onClick={this.exportData} icon="export">
+            <Button permission="WEB_DIEMDANH_DIEMDANH_THDIEMDANH_EXPORT" color="success" onClick={this.exportData} icon="export">
               Tải bảng điểm danh tháng
             </Button>
           </div>

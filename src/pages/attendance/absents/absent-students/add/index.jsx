@@ -480,6 +480,7 @@ class Index extends PureComponent {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
+                  permission={params?.id ? "WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EDIT" : "WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_CREATE"}
                 >
                   LƯU
                 </Button>
