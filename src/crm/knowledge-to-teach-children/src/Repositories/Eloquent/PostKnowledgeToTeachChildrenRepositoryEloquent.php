@@ -77,7 +77,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     public function create(array $attributes)
     {
         $result = PostKnowledgeToTeachChildren::create($attributes);
-        
+
         //$this->sentNotification($result);
 
         return parent::parserResult($result);
@@ -87,14 +87,14 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
     {
         $admissionRegister = PostKnowledgeToTeachChildren::findOrfail($id);
         $admissionRegister->update($attributes);
-        
+
         //$this->sentNotification($admissionRegister);
 
         return parent::find($id);
     }
 
     public function getBmiChildren(array $attributes)
-    {   
+    {
         $message = '';
         $type = null;
         $admissionRegister = [];
@@ -133,7 +133,7 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
             if ($result > $criteriaStandard['MedianLargerSecondSD']) {
                 $message = 'Thừa cân';
             }
-        }else {
+        } else {
             $message = 'Giá trị Bmi không được tìm thấy';
         }
 
@@ -156,18 +156,18 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
             }
         }
         $AbpUserRoles = \DB::connection('pgsql_second')->table('AbpUserRoles')->where('RoleId', $idRole)->first();
-        
+
         if (!empty($model)) {
             if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
                 $dataNotifiCation = [
                     'users' => $AbpUserRoles->UserId,
                     'title' => $model->name,
                     'imageURL' => $model->image,
-                    'message' => substr(strip_tags($model->content),0, 250),
+                    'message' => substr(strip_tags($model->content), 0, 250),
                     'moduleType' => 31,
                     'refId' => $model->id,
                 ];
-                
+
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
