@@ -2,10 +2,11 @@
 
 namespace GGPHP\Recruitment\Http\Requests;
 
-use GGPHP\Recruitment\Models\RecruitmentManager;
+use GGPHP\Recruitment\Models\Level;
+use GGPHP\Recruitment\Models\RecruitmentCandidateManagement;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RecruitmentConfigurationDeleteRequest extends FormRequest
+class RecruitmentManagerDeleteRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -24,19 +25,19 @@ class RecruitmentConfigurationDeleteRequest extends FormRequest
      */
     public function rules()
     {
-        return [    
+        return [
             'id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $recruitmentConfiguration = RecruitmentManager::where('RecruitmentConfigurationId', $value)->first();
-                    
-                    if (is_null($recruitmentConfiguration)) {
+                    $configureThank = RecruitmentCandidateManagement::where('RecruitmentManagerId', $value)->first();
+
+                    if (is_null($configureThank)) {
                         return true;
                     }
-
+                    
                     return $fail('Dữ liệu đã được sử dụng');
                 },
-            ],
+            ]
         ];
     }
 }

@@ -13,22 +13,16 @@ class CreateRecruitmentLevelsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('RecruitmentLevels')) {
-            Schema::create('RecruitmentLevels', function (Blueprint $table) {
-                $table->uuid('Id')->index()->unique();
-                $table->primary('Id');
-                $table->string('Code');
-                $table->string('Name');
-                $table->string('Decription');
-                $table->longText('Note')->nullable();
-                $table->timestamp('CreationTime', 0)->nullable();
-                $table->timestamp('LastModificationTime', 0)->nullable();
-            });
-        }else {
-            echo 'Table already exists';
-            exit();
-        }
-        
+        Schema::create('RecruitmentLevels', function (Blueprint $table) {
+            $table->uuid('Id')->index()->unique();
+            $table->primary('Id');
+            $table->string('Code');
+            $table->string('Name');
+            $table->string('Decription')->nullable();
+            $table->longText('Note')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
+        });
     }
 
     /**

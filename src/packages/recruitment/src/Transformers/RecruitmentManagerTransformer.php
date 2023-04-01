@@ -2,8 +2,9 @@
 
 namespace GGPHP\Recruitment\Transformers;
 
+use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Recruitment\Models\RecruitmentLevel;
+use GGPHP\Recruitment\Models\RecruitmentManager;
 
 /**
  * Class LevelTransformer.
@@ -29,7 +30,7 @@ class RecruitmentManagerTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['recruitmentConfiguration', 'level', 'division', 'candidate'];
 
     /**
      * Transform the Classes entity.
@@ -40,6 +41,41 @@ class RecruitmentManagerTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'recruitmentConfiguraForm' => $model->question,
+            'domain' => env('LINK_RECRUITMENT_CANDIDATE')
+        ];
+    }
+
+    public function includeRecruitmentConfiguration(RecruitmentManager $recruitmentConfiguration)
+    {
+        if (is_null($recruitmentConfiguration->recruitmentConfiguration)) {
+            return null;
+        }
+
+        return $this->item($recruitmentConfiguration->recruitmentConfiguration, new RecruitmentConfigurationTransformer, 'recruitmentConfiguration');
+    }
+
+    public function includeLevel(RecruitmentManager $recruitmentConfiguration)
+    {
+        if (is_null($recruitmentConfiguration->level)) {
+            return null;
+        }
+
+        return $this->item($recruitmentConfiguration->level, new RecruitmentLevelTransformer, 'level');
+    }
+
+    public function includeDivision(RecruitmentManager $recruitmentConfiguration)
+    {
+        if (is_null($recruitmentConfiguration->division)) {
+            return null;
+        }
+
+        return $this->item($recruitmentConfiguration->division, new DivisionTransformer, 'division');
+    }
+
+    public function includeCandidate(RecruitmentManager $recruitmentConfiguration)
+    {
+        return $this->collection($recruitmentConfiguration->candidate, new RecruitmentCandidateManagementTransformer, 'Cadidate');
     }
 }

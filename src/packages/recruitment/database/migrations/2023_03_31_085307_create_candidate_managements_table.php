@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRecruitmentConfigurationsTable extends Migration
+class CreateCandidateManagementsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,21 @@ class CreateRecruitmentConfigurationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('RecruitmentConfigurations', function (Blueprint $table) {
+        Schema::create('CandidateManagements', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('Code');
             $table->string('Name');
-            $table->longText('Note')->nullable();
+            $table->date('Date')->nullable();
+            $table->string('Location');
+            $table->string('Phone');
             $table->uuid('DivisionId');
             $table->foreign('DivisionId')->references('Id')->on('Divisions');
+            $table->uuid('RecruitmentManagerId');
+            $table->foreign('RecruitmentManagerId')->references('Id')->on('RecruitmentManagers');
             $table->uuid('RecruitmentLevelId');
             $table->foreign('RecruitmentLevelId')->references('Id')->on('RecruitmentLevels');
+            $table->string('Status');
+            $table->string('File');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });
@@ -35,6 +40,6 @@ class CreateRecruitmentConfigurationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('RecruitmentConfigurations');
+        Schema::dropIfExists('CandidateManagements');
     }
 }

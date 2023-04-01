@@ -3,6 +3,10 @@
 namespace GGPHP\Recruitment\Http\Requests;
 
 use GGPHP\Recruitment\Models\RecruitmentConfiguration;
+<<<<<<< HEAD
+=======
+use GGPHP\Recruitment\Models\RecruitmentManager;
+>>>>>>> b998f6848e87fcaeac2386982127bcb51e293610
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecruitmentConfigurationUpdateRequest extends FormRequest
@@ -25,7 +29,18 @@ class RecruitmentConfigurationUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required',
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $recruitmentConfiguration = RecruitmentManager::where('RecruitmentConfigurationId', $value)->first();
+                    
+                    if (is_null($recruitmentConfiguration)) {
+                        return true;
+                    }
+
+                    return $fail('Dữ liệu đã được sử dụng');
+                },
+            ],
             'name' => [
                 'nullable', 'string',
                 function ($attribute, $value, $fail) {

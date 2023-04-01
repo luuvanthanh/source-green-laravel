@@ -2,6 +2,7 @@
 
 namespace GGPHP\Recruitment\Models;
 
+use GGPHP\Category\Models\Division;
 use GGPHP\Core\Models\UuidModel;
 
 class RecruitmentManager extends UuidModel
@@ -23,14 +24,15 @@ class RecruitmentManager extends UuidModel
     protected $fillable = [
         'Code',
         'Name',
-        'startDate',
-        'endDate',
-        'numberOfRecruitments',
+        'StartDate',
+        'EndDate',
+        'NumberOfRecruitments',
         'DivisionId',
         'RecruitmentLevelId',
         'RecruitmentConfigurationId',
-        'numberOfCandidates',
-        'numberOfCandidatesPass'
+        'NumberOfCandidates',
+        'NumberOfCandidatesPass',
+        'Link'
     ];
 
     /**
@@ -39,4 +41,24 @@ class RecruitmentManager extends UuidModel
      * @var array
      */
     protected $hidden = [];
+
+    public function candidate()
+    {
+        return $this->hasMany(RecruitmentCandidateManagement::class, 'RecruitmentManagerId');
+    }
+
+    public function recruitmentConfiguration()
+    {
+        return $this->belongsTo(RecruitmentConfiguration::class, 'RecruitmentConfigurationId');
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(RecruitmentLevel::class, 'RecruitmentLevelId');
+    }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'DivisionId');
+    }
 }

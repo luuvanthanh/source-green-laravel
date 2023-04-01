@@ -6,8 +6,11 @@ use GGPHP\Recruitment\Http\Requests\RecruitmentLevelCreateRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentLevelDeleteRequest;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentLevelRepository;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Recruitment\Http\Requests\RecruitmentGetFormRecruitmentConfiguraRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentLevelUpdateRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentManagerCreateRequest;
+use GGPHP\Recruitment\Http\Requests\RecruitmentManagerDeleteRequest;
+use GGPHP\Recruitment\Http\Requests\RecruitmentManagerUpdateRequest;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentManagerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -73,7 +76,7 @@ class RecruitmentManagerController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function update(RecruitmentLevelUpdateRequest $request, $id)
+    public function update(RecruitmentManagerUpdateRequest $request, $id)
     {
         $credentials = $request->all();
         $block = $this->recruitmentMRepository->update($credentials, $id);
@@ -86,9 +89,29 @@ class RecruitmentManagerController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RecruitmentLevelDeleteRequest $request, $id)
+    public function destroy(RecruitmentManagerDeleteRequest $request, $id)
     {
         $this->recruitmentMRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+     /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getLink(Request $request)
+    {
+        $recruitmentManager = $this->recruitmentMRepository->getLink($request->all());
+
+        return $this->success($recruitmentManager, trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function getFormRecruitment(RecruitmentGetFormRecruitmentConfiguraRequest $request)
+    {
+        $recruitmentManager = $this->recruitmentMRepository->getFormRecruitment($request->all());
+
+        return $this->success($recruitmentManager, trans('lang::messages.common.getListSuccess'));
     }
 }

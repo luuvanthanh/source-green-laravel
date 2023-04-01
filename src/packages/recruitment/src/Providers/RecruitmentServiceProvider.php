@@ -2,9 +2,11 @@
 
 namespace GGPHP\Recruitment\Providers;
 
+use GGPHP\Recruitment\Repositories\Contracts\RecruitmentCandidateManagementRepository;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentLevelRepository;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentConfigurationRepository;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentManagerRepository;
+use GGPHP\Recruitment\Repositories\Eloquent\RecruitmentCandidateManagementRepositoryEloquent;
 use GGPHP\Recruitment\Repositories\Eloquent\RecruitmentLevelRepositoryEloquent;
 use GGPHP\Recruitment\Repositories\Eloquent\RecruitmentConfigurationRepositoryEloquent;
 use GGPHP\Recruitment\Repositories\Eloquent\RecruitmentManagerRepositoryEloquent;
@@ -34,5 +36,6 @@ class RecruitmentServiceProvider extends ServiceProvider
         $this->app->bind(RecruitmentLevelRepository::class, RecruitmentLevelRepositoryEloquent::class);
         $this->app->bind(RecruitmentConfigurationRepository::class, RecruitmentConfigurationRepositoryEloquent::class);
         $this->app->bind(RecruitmentManagerRepository::class, RecruitmentManagerRepositoryEloquent::class);
+        $this->app->bind(RecruitmentCandidateManagementRepository::class, RecruitmentCandidateManagementRepositoryEloquent::class);
     }
 }

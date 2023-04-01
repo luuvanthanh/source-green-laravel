@@ -13,21 +13,15 @@ class CreateRecruitmentQuestionsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('RecruitmentQuestions')) {
-            Schema::create('RecruitmentQuestions', function (Blueprint $table) {
-                $table->uuid('Id')->index()->unique();
-                $table->primary('Id');
-                $table->string('Name');
-                $table->uuid('RecruitmentConfigurationId');
-                $table->foreign('RecruitmentConfigurationId')->references('Id')->on('RecruitmentConfigurations');
-                $table->timestamp('CreationTime', 0)->nullable();
-                $table->timestamp('LastModificationTime', 0)->nullable();
-            });
-        }else {
-            echo 'Table already exists';
-            exit();
-        }
-        
+        Schema::create('RecruitmentQuestions', function (Blueprint $table) {
+            $table->uuid('Id')->index()->unique();
+            $table->primary('Id');
+            $table->string('Name')->nullable();
+            $table->uuid('RecruitmentConfigurationId');
+            $table->foreign('RecruitmentConfigurationId')->references('Id')->on('RecruitmentConfigurations');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
+        });
     }
 
     /**

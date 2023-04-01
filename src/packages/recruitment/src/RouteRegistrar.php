@@ -40,6 +40,13 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::put('configure-thanks/{id}', 'RecruitmentConfigurationController@updateConfigureThanks');
                 // Quản lý tuyển dụng
                 \Route::resource('recruitment-manager', 'RecruitmentManagerController');
+                // get link tuyen dung
+                \Route::get('get-link-recruitment', 'RecruitmentManagerController@getLink');
+                  // get form tuyen dung
+                  \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
+
+                // quản lý ứng viên 
+                \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController');
             });
         });
     }
