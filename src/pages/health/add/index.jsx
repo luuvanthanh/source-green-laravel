@@ -18,6 +18,7 @@ import { Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import InputNumber from '@/components/CommonComponent/InputNumber';
 
@@ -417,6 +418,7 @@ const Index = memo(() => {
                       color="success"
                       disabled={!studentId}
                       loading={loadingSubmit}
+                      permission={`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.CREATE}`}
                     >
                       Tạo mới
                     </Button>

@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { isEmpty, head, debounce, get } from 'lodash';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
+import ability from '@/utils/ability';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -214,6 +215,33 @@ class Index extends PureComponent {
     });
   };
 
+  formDetail = (record) => {
+    if (ability.can('WEB_SUCKHOE_CAUHINHBINHNUOC_DETAIL', 'WEB_SUCKHOE_CAUHINHBINHNUOC_DETAIL')
+      || ability.can('WEB_SUCKHOE_CAUHINHBINHNUOC_CREATE', 'WEB_SUCKHOE_CAUHINHBINHNUOC_CREATE')
+      || ability.can('WEB_SUCKHOE_CAUHINHBINHNUOC_EDIT', 'WEB_SUCKHOE_CAUHINHBINHNUOC_EDIT')) {
+      return <Button color="success" onClick={() => this.showWater(record)} >
+        Cấu hình
+      </Button>;
+    }
+    return "";
+  };
+
+  formAdd = (loadingSubmit) => {
+    if (ability.can('WEB_SUCKHOE_CAUHINHBINHNUOC_CREATE', 'WEB_SUCKHOE_CAUHINHBINHNUOC_CREATE')
+      || ability.can('WEB_SUCKHOE_CAUHINHBINHNUOC_EDIT', 'WEB_SUCKHOE_CAUHINHBINHNUOC_EDIT')) {
+      return <Button
+        color="green"
+        icon="save"
+        loading={loadingSubmit}
+        onClick={this.saveWaterBottles}
+        size="large"
+      >
+        LƯU
+      </Button>;
+    }
+    return "";
+  };
+
   /**
    * Function header table
    */
@@ -253,9 +281,9 @@ class Index extends PureComponent {
       width: 80,
       render: (record) => (
         <div className={styles['list-button']}>
-          <Button color="success" onClick={() => this.showWater(record)}>
-            Cấu hình
-          </Button>
+          {
+            this.formDetail(record)
+          }
         </div>
       ),
     },
@@ -387,15 +415,9 @@ class Index extends PureComponent {
               >
                 HỦY
               </Button>
-              <Button
-                color="green"
-                icon="save"
-                loading={loadingSubmit}
-                onClick={this.saveWaterBottles}
-                size="large"
-              >
-                LƯU
-              </Button>
+              {
+                this.formAdd(loadingSubmit)
+              }
             </div>,
           ]}
           onCancel={this.handleCancel}

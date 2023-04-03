@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/extensions
 import Cookies from 'universal-cookie';
-import { permissions } from '../../config/permissions';
+import { permissions, FLATFORM, ACTION } from '../../config/permissions';
 import animationImage from './animation.json';
 
 const cookies = new Cookies();
@@ -46,14 +46,14 @@ export const feature = {
       src: '/images/home/pages.svg',
       animation: animationImage.note,
       url: '/ghi-chu',
-      permission: [permissions.GHICHU],
+      permission: [`${FLATFORM.WEB}${permissions.DANDO}${ACTION.VIEW}`],
     },
     {
       title: 'Điểm danh trẻ',
       src: '/images/home/note.svg',
       animation: animationImage.attendance,
       url: '/diem-danh',
-      permission: [permissions.DD],
+      permission: [permissions.WEB_DIEMDANH_VIEW],
     },
     {
       title: 'Chương trình học',
@@ -109,7 +109,7 @@ export const feature = {
       src: '/images/home/tumblr.svg',
       animation: animationImage.health,
       url: '/suc-khoe',
-      permission: [permissions.SUCKHOE],
+      permission: [`${FLATFORM.WEB}${permissions.SUCKHOE}${ACTION.VIEW}`],
     },
     {
       title: 'Quản trị nhân sự',
