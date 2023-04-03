@@ -49,7 +49,6 @@ class AppServiceProvider extends ServiceProvider
         PaymentForm::observe(PaymentFormObserver::class);
         FeePolicie::observe(FeePolicieObserver::class);
         ChargeOldStudent::observe(ChargeOldStudentObserver::class);
-        RecruitmentConfiguration::observe(RecruitmentCongigurationObserver::class);
 
         /**
          * Paginate a standard Laravel Collection.
