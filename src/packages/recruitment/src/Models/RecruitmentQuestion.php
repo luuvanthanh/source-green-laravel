@@ -1,20 +1,18 @@
 <?php
 
-namespace GGPHP\Category\Models;
+namespace GGPHP\Recruitment\Models;
 
-use GGPHP\ActivityLog\Traits\ActivityLogTrait;
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Recruitment\Models\RecruitmentConfiguration;
 
-class Division extends UuidModel
+class RecruitmentQuestion extends UuidModel
 {
-    //use ActivityLogTrait;
     public $incrementing = false;
+
 
     /**
      * Declare the table name
      */
-    protected $table = 'Divisions';
+    protected $table = 'RecruitmentQuestions';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +20,8 @@ class Division extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name',
+        'Name',
+        'RecruitmentConfigurationId',
     ];
 
     /**
@@ -34,6 +33,6 @@ class Division extends UuidModel
 
     public function recruitmentConfiguration()
     {
-        return $this->hasMany(RecruitmentConfiguration::class, 'DivisionId');
+        return $this->belongsTo(RecruitmentConfiguration::class, 'RecruitmentConfigurationId');
     }
 }

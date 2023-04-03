@@ -123,7 +123,8 @@
             "GGPHP\\StudyProgram\\ScriptReview\\": "study-program/script-review/src",
             "GGPHP\\StudyProgram\\QuarterReport\\": "study-program/quarter-report/src",
             "GGPHP\\StudyProgram\\MonthlyComment\\": "study-program/monthly-comment/src",
-            "GGPHP\\StudyProgram\\AttendancePhysical\\": "study-program/attendance-physical/src"
+            "GGPHP\\StudyProgram\\AttendancePhysical\\": "study-program/attendance-physical/src",
+            "GGPHP\\Recruitment\\": "packages/recruitment/src"
         },
         "classmap": [
             "database/seeds",
