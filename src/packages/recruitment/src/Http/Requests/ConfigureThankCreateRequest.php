@@ -25,7 +25,7 @@ class ConfigureThankCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'content' => 'required|unique:ConfigureThanks,Content',
+            'content' => 'required',
         ];
     }
 }

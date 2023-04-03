@@ -116,12 +116,4 @@ class RecruitmentConfigurationController extends Controller
 
         return $this->success($configureThank, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
-
-    public function updateConfigureThanks(ConfigureThankUpdateRequest $request, $id)
-    {
-        $credentials = $request->all();
-        $recruitmentConfiguration = $this->recruitmentConfigurationRepository->updateConfigureThanks($credentials, $id);
-
-        return $this->success($recruitmentConfiguration, trans('lang::messages.common.modifySuccess'));
-    }
 }
