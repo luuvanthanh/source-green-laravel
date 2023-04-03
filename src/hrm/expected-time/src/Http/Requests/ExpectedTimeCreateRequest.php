@@ -38,4 +38,11 @@ class ExpectedTimeCreateRequest extends FormRequest
 
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'endDate.after_or_equal' => 'Trường đến ngày phải bắt đầu sau hoặc đúng bằng ngày khởi hành'
+        ];
+    }
 }
