@@ -263,5 +263,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Recruitment\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\InterviewManager\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
