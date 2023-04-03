@@ -203,6 +203,7 @@ class Index extends PureComponent {
               color="success"
               ghost
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_LOAINGHIPHEP_EDIT"
             >
               Chi tiết
             </Button>

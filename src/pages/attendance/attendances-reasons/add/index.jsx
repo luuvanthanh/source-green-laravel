@@ -176,6 +176,7 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
+                  permission={params?.id ? "WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_EDIT" : "WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_CREATE"}
                 >
                   LƯU
                 </Button>

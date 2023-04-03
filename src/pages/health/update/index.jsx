@@ -15,6 +15,8 @@ import Button from '@/components/CommonComponent/Button';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import variables from '@/utils/variables';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import { isEmpty, head, get, toString } from 'lodash';
@@ -526,6 +528,7 @@ const Index = memo(() => {
                       htmlType="submit"
                       color="success"
                       loading={loadingSubmit}
+                      permission={`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.EDIT}`}
                     >
                       Cập nhật
                     </Button>

@@ -1,4 +1,7 @@
 import permissions from './permissions';
+import { FLATFORM } from './permissions';
+import { ACTION } from './permissions';
+
 export default [
   {
     path: '/',
@@ -419,19 +422,25 @@ export default [
         routes: [
           {
             path: '/ghi-chu',
-            redirect: '/ghi-chu/danh-sach',
+            redirect: '/ghi-chu/trang-chu',
+          },
+          {
+            path: '/ghi-chu/trang-chu',
+            component: './waiting-page',
+            wrappers: ['@/wrappers/auth'],
+            authority: [`${FLATFORM.WEB}${permissions.DANDO}${ACTION.VIEW}`],
           },
           {
             path: '/ghi-chu/danh-sach',
             component: './notes/items',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.GHICHU],
+            authority: [`${FLATFORM.WEB}${permissions.DANDO_DANHSACH}${ACTION.VIEW}`],
           },
           {
             path: '/ghi-chu/:id/chi-tiet',
             component: './notes/details',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.GHICHU],
+            authority: [`${FLATFORM.WEB}${permissions.DANDO_DANHSACH}${ACTION.VIEW}`],
           },
         ],
       },
@@ -447,7 +456,7 @@ export default [
           },
           {
             path: '/ho-so-doi-tuong/trang-chu',
-            component: './object-profiles/home',
+            component: './waiting-page',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.WEB_HSDT_VIEW],
           },
@@ -659,133 +668,139 @@ export default [
         routes: [
           {
             path: '/diem-danh',
-            redirect: '/diem-danh/lich-su-vao-ra-lop',
+            redirect: '/diem-danh/trang-chu',
+          },
+          {
+            path: '/diem-danh/trang-chu',
+            component: './waiting-page',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.WEB_DIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/lich-hoc-tre',
             component: './attendance/schedule-students',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/lich-su-vao-ra-lop',
             component: './attendance/in-out-histories',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_LICHHOC_LICHSURAVAOLOPAI_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh-lich-hoc',
             component: './attendance/shift-students',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh-lich-hoc/tao-moi',
             component: './attendance/shift-students/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh-lich-hoc/:id/chi-tiet',
             component: './attendance/shift-students/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh/loai-cong',
             component: './attendance/absents/config/absent-types',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LOAINGHIPHEP_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh/loai-cong/tao-moi',
             component: './attendance/absents/config/absent-types/form',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LOAINGHIPHEP_CREATE],
           },
           {
             path: '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet',
             component: './attendance/absents/config/absent-types/form',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LOAINGHIPHEP_EDIT],
           },
           {
             path: '/diem-danh/cau-hinh/ly-do-nghi-phep',
             component: './attendance/absents/config/absent-reasons',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_VIEW],
           },
           {
             path: '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
             component: './attendance/absents/config/absent-reasons/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_CREATE],
           },
           {
             path: '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
             component: './attendance/absents/config/absent-reasons/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_EDIT],
           },
           {
             path: '/diem-danh/cau-hinh/thoi-gian-xin-phep',
             component: './attendance/absent-config-times',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_CAUHINH_THOIGIANNGHIPHEP_VIEW],
           },
           {
             path: '/diem-danh/don-xin-phep-cho-be',
             component: './attendance/absents/absent-students',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_VIEW],
           },
           {
             path: '/diem-danh/don-xin-phep-cho-be/tao-moi',
             component: './attendance/absents/absent-students/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_CREATE],
           },
           {
             path: '/diem-danh/don-xin-phep-cho-be/:id/chi-tiet',
             component: './attendance/absents/absent-students/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EDIT],
           },
           {
             path: '/diem-danh/nhap-diem-danh',
             component: './attendance/attendances',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DIEMDANH_NHAPDIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/tong-hop-diem-danh',
             component: './attendance/timekeeping-report',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DIEMDANH_THDIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/ly-do-diem-danh',
             component: './attendance/attendances-reasons',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_VIEW],
           },
           {
             path: '/diem-danh/ly-do-diem-danh/tao-moi',
             component: './attendance/attendances-reasons/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_CREATE],
           },
           {
             path: '/diem-danh/ly-do-diem-danh/:id/chi-tiet',
             component: './attendance/attendances-reasons/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_DIEMDANH_LYDODIEMDANH_EDIT],
           },
           {
             path: '/diem-danh/lich-su-diem-danh',
             component: './attendance/attendance-logs',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DD],
+            authority: [permissions.WEB_DIEMDANH_LICHSUDIEMDANH_VIEW],
           },
         ],
       },
@@ -1918,7 +1933,7 @@ export default [
           },
           {
             path: '/phan-bo/trang-chu',
-            component: './allocation/home',
+            component: './waiting-page',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.WEB_PHANLOP_VIEW],
           },
@@ -2156,7 +2171,7 @@ export default [
           },
           {
             path: '/thoi-khoa-bieu/trang-chu',
-            component: './timetable/home',
+            component: './waiting-page',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.WEB_TKB_VIEW],
           },
@@ -2356,49 +2371,55 @@ export default [
         routes: [
           {
             path: '/suc-khoe',
-            redirect: '/suc-khoe/hom-nay',
+            redirect: '/suc-khoe/trang-chu',
+          },
+          {
+            path: '/suc-khoe/trang-chu',
+            component: './waiting-page',
+            wrappers: ['@/wrappers/auth'],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE}${ACTION.VIEW}`],
           },
           {
             path: '/suc-khoe/cau-hinh-binh-nuoc',
             component: './health/water-bottles',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_CAUHINHBINHNUOC}${ACTION.VIEW}`],
           },
           {
             path: '/suc-khoe/hom-nay',
             component: './health/items',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.VIEW}`],
           },
           {
             path: '/suc-khoe/lich-su',
             component: './health/history',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_LICHSU}${ACTION.VIEW}`],
           },
           {
             path: '/suc-khoe/thong-ke',
             component: './health/staticstic',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_THONGKE}${ACTION.VIEW}`],
           },
           {
             path: '/suc-khoe/hom-nay/tao-moi',
             component: './health/add',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.CREATE}`],
           },
           {
             path: '/suc-khoe/hom-nay/:id/chi-tiet',
             component: './health/update',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_SUCKHOEHOMNAY}${ACTION.EDIT}`],
           },
           {
             path: '/suc-khoe/lich-su/:id/chi-tiet',
             component: './health/details',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.SUCKHOE],
+            authority: [`${FLATFORM.WEB}${permissions.SUCKHOE_LICHSU}${ACTION.EDIT}`],
           },
         ],
       },
@@ -3514,7 +3535,13 @@ export default [
         routes: [
           {
             path: '/english',
-            redirect: '/english/monthly-report',
+            redirect: '/english/home',
+          },
+          {
+            path: '/english/home',
+            component: './waiting-page',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.WEB_TIENGANH_VIEW],
           },
           {
             path: '/english/settings/program',
@@ -3718,11 +3745,11 @@ export default [
         routes: [
           {
             path: '/the-chat',
-            redirect: '/the-chat/home',
+            redirect: '/the-chat/trang-chu',
           },
           {
-            path: '/the-chat/home',
-            component: './criteria/physical/home',
+            path: '/the-chat/trang-chu',
+            component: './waiting-page',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.WEB_THECHAT_VIEW],
           },
@@ -3872,6 +3899,16 @@ export default [
         path: '/bao-cao-erp',
         component: './menu/layout',
         routes: [
+          {
+            path: '/bao-cao-erp',
+            redirect: '/bao-cao-erp/trang-chu',
+          },
+          {
+            path: '/bao-cao-erp/trang-chu',
+            component: './waiting-page',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
           {
             path: '/bao-cao-erp/:type',
             component: './report-erp',

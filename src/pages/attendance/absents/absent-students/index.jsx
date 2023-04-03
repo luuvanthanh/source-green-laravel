@@ -418,6 +418,7 @@ class Index extends PureComponent {
             {record.status === variablesModules.STATUS.PENDING && (
               <Button
                 color="success"
+                permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EDIT"
                 onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
               >
                 Chi tiết
@@ -465,10 +466,10 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Đơn xin phép cho bé</Text>
             <div className='d-flex'>
-              <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
+              <Button permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
                 Xuất Excel
               </Button>
-              <Button className="ml-4" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              <Button permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_CREATE" className="ml-4" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
                 Tạo đơn xin phép
               </Button>
             </div>
