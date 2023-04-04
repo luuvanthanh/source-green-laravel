@@ -3,10 +3,7 @@
 namespace GGPHP\Recruitment\Http\Requests;
 
 use GGPHP\Recruitment\Models\RecruitmentConfiguration;
-<<<<<<< HEAD
-=======
 use GGPHP\Recruitment\Models\RecruitmentManager;
->>>>>>> b998f6848e87fcaeac2386982127bcb51e293610
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecruitmentConfigurationUpdateRequest extends FormRequest
