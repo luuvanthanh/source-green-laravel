@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('interviewers', 'InterviewerController');
             \Route::resource('point-evaluations', 'PointEvaluationController');
             \Route::resource('interview-configurations', 'InterviewConfigurationController');
+            \Route::resource('interview-lists', 'InterviewListController');
         });
     }
 }
