@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('evaluation-criterias', 'EvaluationCriteriaController');
+            \Route::resource('interviewers', 'InterviewerController');
             \Route::resource('point-evaluations', 'PointEvaluationController');
         });
     }
