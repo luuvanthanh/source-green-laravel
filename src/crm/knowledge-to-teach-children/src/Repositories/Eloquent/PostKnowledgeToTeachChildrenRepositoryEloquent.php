@@ -9,6 +9,7 @@ use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use GGPHP\Crm\KnowledgeToTeachChildren\Presenters\PostknowledgeToTeachChildrenPresenter;
 use Http\Client\Exception\HttpException;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -159,15 +160,16 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
 
         if (!empty($model)) {
             if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
+                $userId[] = $AbpUserRoles->UserId;
                 $dataNotifiCation = [
-                    'users' => $AbpUserRoles->UserId,
+                    'users' => $userId,
                     'title' => $model->name,
                     'imageURL' => $model->image,
                     'message' => substr(strip_tags($model->content), 0, 250),
                     'moduleType' => 31,
                     'refId' => $model->id,
                 ];
-
+                
                 dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
             }
         }
