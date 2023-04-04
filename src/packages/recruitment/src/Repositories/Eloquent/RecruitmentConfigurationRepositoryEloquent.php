@@ -8,6 +8,7 @@ use GGPHP\Recruitment\Models\RecruitmentConfiguration;
 use GGPHP\Recruitment\Models\RecruitmentQuestion;
 use GGPHP\Recruitment\Presenters\RecruitmentConfigurationPresenter;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentConfigurationRepository;
+use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -159,17 +160,10 @@ class RecruitmentConfigurationRepositoryEloquent extends CoreRepositoryEloquent 
 
     public function storeConfigureThanks(array $attributes)
     {
+        DB::table('ConfigureThanks')->delete();
+
         $result = ConfigureThank::create($attributes);
 
         return parent::parserResult($result);
-    }
-
-    public function updateConfigureThanks(array $attributes, $id)
-    {
-        $configureThank = ConfigureThank::findOrfail($id);
-        
-        $configureThank->update($attributes);
-        
-        return parent::parserResult($configureThank);
     }
 }

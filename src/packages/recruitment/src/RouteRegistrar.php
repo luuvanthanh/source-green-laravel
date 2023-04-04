@@ -37,7 +37,6 @@ class RouteRegistrar extends CoreRegistrar
                 // Cấu hình lời cảm ơn
                 \Route::get('configure-thanks', 'RecruitmentConfigurationController@getConfigureThanks');
                 \Route::post('configure-thanks', 'RecruitmentConfigurationController@storeConfigureThanks');
-                \Route::put('configure-thanks/{id}', 'RecruitmentConfigurationController@updateConfigureThanks');
                 // Quản lý tuyển dụng
                 \Route::resource('recruitment-manager', 'RecruitmentManagerController');
                 // get link tuyen dung
