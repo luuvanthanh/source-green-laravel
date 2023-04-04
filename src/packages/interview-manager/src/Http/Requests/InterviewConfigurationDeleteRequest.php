@@ -2,10 +2,10 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
-use GGPHP\InterviewManager\Models\InterviewerEmployee;
+use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InterviewerDeleteRequest extends FormRequest
+class InterviewConfigurationDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +28,7 @@ class InterviewerDeleteRequest extends FormRequest
             // 'id' => [
             //     'required',
             //     function ($attribute, $value, $fail) {
-            //         $evaluationCriteria = InterviewerEmployee::where('InterviewerId' , '=', $this->id)->first();
+            //         $evaluationCriteria = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId' , '=', $this->id)->first();
 
             //         if (!is_null($evaluationCriteria)) {
 
