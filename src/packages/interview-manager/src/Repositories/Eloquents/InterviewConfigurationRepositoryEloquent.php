@@ -4,10 +4,10 @@ namespace GGPHP\InterviewManager\Repositories\Eloquents;
 
 use Exception;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
-use GGPHP\InterviewManager\Models\EvaluationCriteria;
+use GGPHP\InterviewManager\Models\InterviewConfiguration;
 use GGPHP\InterviewManager\Models\Interviewer;
-use GGPHP\InterviewManager\Presenters\InterviewerPresenter;
-use GGPHP\InterviewManager\Repositories\Contracts\InterviewerRepository;
+use GGPHP\InterviewManager\Presenters\InterviewConfigurationPresenter;
+use GGPHP\InterviewManager\Repositories\Contracts\InterviewConfigurationRepository;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Throwable;
@@ -17,7 +17,7 @@ use Throwable;
  *
  * @package GGPHP\InterviewManager\Repositories\Eloquents;
  */
-class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements InterviewerRepository
+class InterviewConfigurationRepositoryEloquent extends CoreRepositoryEloquent implements InterviewConfigurationRepository
 {
     /**
      * @var array
@@ -31,7 +31,7 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
      */
     public function model()
     {
-        return Interviewer::class;
+        return InterviewConfiguration::class;
     }
 
     /**
@@ -41,7 +41,7 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
      */
     public function presenter()
     {
-        return InterviewerPresenter::class;
+        return InterviewConfigurationPresenter::class;
     }
 
     /**
@@ -62,8 +62,7 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
                 $query->orWhereLike('Code', $attributes['key']);
-            })->orWhereHas('division', function ($query) use ($attributes) {
-                $query->whereLike('Name', $attributes['key']);
+                $query->orWhereLike('Name', $attributes['key']);
             });
         }
 
@@ -82,10 +81,10 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
         try {
             $attributes = $this->creating($attributes);
 
-            $result = Interviewer::create($attributes);
+            $result = InterviewConfiguration::create($attributes);
 
             if (!is_null($result) && !empty($attributes['data'])) {
-                $result->interviewerEmployee()->attach($attributes['data']);
+                $result->interviewConfigurationEvaluationCriteria()->attach($attributes['data']);
             }
 
             DB::commit();
@@ -99,20 +98,20 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
 
     public function creating($attributes)
     {
-        $code = Interviewer::latest()->first();
+        $code = InterviewConfiguration::latest()->first();
 
         if (is_null($code)) {
-            $code = Interviewer::CODE . '001';
+            $code = InterviewConfiguration::CODE . '001';
         } else {
             $stt = substr($code->Code, 4);
             $stt += 1;
 
             if (strlen($stt) == 1) {
-                $code = Interviewer::CODE . '00' . $stt;
+                $code = InterviewConfiguration::CODE . '00' . $stt;
             } elseif (strlen($stt) == 2) {
-                $code = Interviewer::CODE . '0' . $stt;
+                $code = InterviewConfiguration::CODE . '0' . $stt;
             } else {
-                $code = Interviewer::CODE . $stt;
+                $code = InterviewConfiguration::CODE . $stt;
             }
         }
         $attributes['code'] = $code;
@@ -123,14 +122,14 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
     public function update(array $attributes, $id)
     {
         DB::beginTransaction();
-        try {
-            $interviewer = Interviewer::findOrfail($id);
+        try { 
+            $interviewer = InterviewConfiguration::findOrfail($id);
 
             $interviewer->update($attributes);
 
             if (!empty($attributes['data'])) {
-                $interviewer->interviewerEmployee()->detach();
-                $interviewer->interviewerEmployee()->attach($attributes['data']);
+                $interviewer->interviewConfigurationEvaluationCriteria()->detach();
+                $interviewer->interviewConfigurationEvaluationCriteria()->attach($attributes['data']);
             }
 
             DB::commit();
@@ -140,13 +139,5 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
         }
 
         return parent::find($id);
-    }
-
-    public function delete($id)
-    {
-        $interviewer = Interviewer::findOrfail($id);
-        $interviewer->interviewerEmployee()->detach();
-        
-        $interviewer->delete();
     }
 }

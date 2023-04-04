@@ -3,10 +3,12 @@
 namespace GGPHP\InterviewManager\Providers;
 
 use GGPHP\InterviewManager\Repositories\Contracts\EvaluationCriteriaRepository;
+use GGPHP\InterviewManager\Repositories\Contracts\InterviewConfigurationRepository;
 use GGPHP\InterviewManager\Repositories\Contracts\InterviewerRepository;
 use GGPHP\InterviewManager\Repositories\Eloquents\EvaluationCriteriaRepositoryEloquent;
 use GGPHP\InterviewManager\Repositories\Eloquents\InterviewerRepositoryEloquent;
 use GGPHP\InterviewManager\Repositories\Contracts\PointEvaluationRepository;
+use GGPHP\InterviewManager\Repositories\Eloquents\InterviewConfigurationRepositoryEloquent;
 use GGPHP\InterviewManager\Repositories\Eloquents\PointEvaluationRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,5 +37,6 @@ class InterviewManagerServiceProvider extends ServiceProvider
         $this->app->bind(EvaluationCriteriaRepository::class, EvaluationCriteriaRepositoryEloquent::class);
         $this->app->bind(InterviewerRepository::class, InterviewerRepositoryEloquent::class);
         $this->app->bind(PointEvaluationRepository::class, PointEvaluationRepositoryEloquent::class);
+        $this->app->bind(InterviewConfigurationRepository::class, InterviewConfigurationRepositoryEloquent::class);
     }
 }
