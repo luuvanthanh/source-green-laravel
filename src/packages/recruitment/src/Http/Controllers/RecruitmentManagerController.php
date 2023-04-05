@@ -6,6 +6,8 @@ use GGPHP\Recruitment\Http\Requests\RecruitmentLevelCreateRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentLevelDeleteRequest;
 use GGPHP\Recruitment\Repositories\Contracts\RecruitmentLevelRepository;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Recruitment\Http\Requests\RecruitmentCandidateCreateRequest;
+use GGPHP\Recruitment\Http\Requests\RecruitmentCandidateManagerCreateRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentGetFormRecruitmentConfiguraRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentLevelUpdateRequest;
 use GGPHP\Recruitment\Http\Requests\RecruitmentManagerCreateRequest;
@@ -113,5 +115,11 @@ class RecruitmentManagerController extends Controller
         $recruitmentManager = $this->recruitmentMRepository->getFormRecruitment($request->all());
 
         return $this->success($recruitmentManager, trans('lang::messages.common.getListSuccess'));
+    }
+
+    public function createCandidate(RecruitmentCandidateCreateRequest $request)
+    {
+        $block = $this->recruitmentMRepository->createCandidate($request->all());
+        return $this->success($block, trans('lang::messages.common.modifySuccess'));
     }
 }

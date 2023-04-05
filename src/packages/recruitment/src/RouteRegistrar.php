@@ -46,6 +46,8 @@ class RouteRegistrar extends CoreRegistrar
 
                 // quản lý ứng viên 
                 \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController');
+                // Thêm ứng viên
+                \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
             });
         });
     }

@@ -82,8 +82,6 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
 
             $result = RecruitmentManager::create($attributes);
 
-            $this->created($attributes, $result);
-
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
@@ -117,39 +115,6 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         return $attributes;
     }
 
-    public function created($attributes, $model)
-    {
-        $recruitmentConfiguration = RecruitmentConfiguration::findOrFail($model->RecruitmentConfigurationId);
-
-        if (!empty($attributes['data'])) {
-            foreach ($attributes['data'] as $key => $value) {
-                $attributes['data'][$key]['date'] = Carbon::now()->toDateString();
-                $attributes['data'][$key]['divisionId'] = $model->DivisionId;
-                $attributes['data'][$key]['recruitmentLevelId'] = $model->RecruitmentLevelId;
-                $attributes['data'][$key]['RecruitmentManagerId'] = $model->Id;
-                $attributes['data'][$key]['status'] = RecruitmentCandidateManagement::STATUS['UNCONFIMRED'];
-
-                $candidate = RecruitmentCandidateManagement::create($attributes['data'][$key]);
-
-                if (!is_null($candidate)) {
-
-                    if (!is_null($recruitmentConfiguration) && !empty($recruitmentConfiguration->question)) {
-                        foreach ($recruitmentConfiguration->question->toArray() as $keyq => $value) {
-
-                            if (!empty($attributes['data'][$key]['question'])) {
-                                $dataQuestion['CandidateManagementId'] = $candidate->Id;
-                                $dataQuestion['RecruitmentQuestionId'] = $value['Id'];
-                                $dataQuestion['Answer'] = $attributes['data'][$key]['question'][$keyq]['answer'];
-
-                                QuestionCandidate::create($dataQuestion);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public function update(array $attributes, $id)
     {
         $admissionRegister = RecruitmentManager::findOrFail($id);
@@ -178,5 +143,21 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         }
         
         return parent::parserResult($recruitmentConfiguration);;
+    }
+
+    public function createCandidate(array $attributes)
+    {
+            $recruimentManager = RecruitmentManager::Where('Id', $attributes['recruitmentManagerId'])->first();
+            if (!is_null($recruimentManager)) {
+                $attributes['date'] = Carbon::now()->toDateString();
+                $attributes['status'] = RecruitmentCandidateManagement::STATUS['UNCONFIMRED'];
+                $attributes['DivisionId'] = $recruimentManager->DivisionId;
+                $attributes['RecruitmentLevelId'] = $recruimentManager->RecruitmentLevelId;
+                $attributes['RecruitmentManagerId'] = $recruimentManager->Id;
+            }
+            
+            $result = RecruitmentCandidateManagement::create($attributes);
+
+        return parent::parserResult($result);
     }
 }

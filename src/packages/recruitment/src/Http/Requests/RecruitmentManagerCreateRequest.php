@@ -33,13 +33,6 @@ class RecruitmentManagerCreateRequest extends FormRequest
             'recruitmentLevelId' => 'required|exists:RecruitmentLevels,Id',
             'recruitmentConfigurationId' => 'required|exists:RecruitmentConfigurations,Id',
             'link' => 'nullable|string|unique:RecruitmentManagers,Link',
-            'data' => 'array|nullable',
-            'data.*.name' => 'required|string',
-            'data.*.location' => 'required|string',
-            'data.*.phone' => 'required|string|min:10',
-            'data.*.file' => 'required|string',
-            'data.*.question' => 'array|nullable',
-            'data.*.question.*.answer' => 'required|string'
         ];
     }
 }
