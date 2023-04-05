@@ -3,24 +3,26 @@
 namespace GGPHP\InterviewManager\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\InterviewManager\Http\Requests\InterviewerCreateRequest;
-use GGPHP\InterviewManager\Http\Requests\InterviewerDeleteRequest;
-use GGPHP\InterviewManager\Http\Requests\InterviewerUpdateRequest;
-use GGPHP\InterviewManager\Repositories\Contracts\InterviewerRepository;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateCompletedInterviewRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionsRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListDeleteRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListUpdateRequest;
+use GGPHP\InterviewManager\Repositories\Contracts\InterviewListRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class InterviewListController extends Controller
 {
-    protected $interviewerRepository;
+    protected $interviewListRepository;
 
     /**
      * RefundController constructor.
-     * @param InterviewerRepository $refundRepository
+     * @param InterviewListRepository $refundRepository
      */
-    public function __construct(InterviewerRepository $interviewerRepository)
+    public function __construct(InterviewListRepository $interviewListRepository)
     {
-        $this->interviewerRepository = $interviewerRepository;
+        $this->interviewListRepository = $interviewListRepository;
     }
 
     /**
@@ -30,9 +32,9 @@ class InterviewListController extends Controller
      */
     public function index(Request $request)
     {
-        $interviewerRepository = $this->interviewerRepository->index($request->all());
+        $interviewList = $this->interviewListRepository->index($request->all());
 
-        return $this->success($interviewerRepository, trans('lang::messages.common.getListSuccess'));
+        return $this->success($interviewList, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -40,11 +42,11 @@ class InterviewListController extends Controller
      * @param  Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(InterviewerCreateRequest $request)
+    public function store(InterviewerListCreateRequest $request)
     {
-        $interviewerRepository = $this->interviewerRepository->create($request->all());
+        $interviewList = $this->interviewListRepository->create($request->all());
 
-        return $this->success($interviewerRepository, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($interviewList, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -56,9 +58,9 @@ class InterviewListController extends Controller
      */
     public function show($id)
     {
-        $interviewerRepository = $this->interviewerRepository->find($id);
+        $interviewList = $this->interviewListRepository->find($id);
 
-        return $this->success($interviewerRepository, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($interviewList, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -69,11 +71,11 @@ class InterviewListController extends Controller
      *
      * @return Response
      */
-    public function update(InterviewerUpdateRequest $request, $id)
+    public function update(InterviewerListUpdateRequest $request, $id)
     {
-        $interviewerRepository = $this->interviewerRepository->update($request->all(), $id);
+        $interviewList = $this->interviewListRepository->update($request->all(), $id);
 
-        return $this->success($interviewerRepository, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+        return $this->success($interviewList, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 
     /**
@@ -83,10 +85,24 @@ class InterviewListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InterviewerDeleteRequest $request, $id)
+    public function destroy(InterviewerListDeleteRequest $request, $id)
     {
-        $this->interviewerRepository->delete($id);
+        $this->interviewListRepository->delete($id);
 
         return $this->success([], '', ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
+    }
+
+    public function sendSuggestions(InterviewerListCreateSendSuggestionsRequest $request, $id)
+    {
+        $sendSuggestions = $this->interviewListRepository->sendSuggestions($request->all(), $id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
+
+    public function completeInterview(InterviewerListCreateCompletedInterviewRequest $request, $id)
+    {
+        $completeInterview = $this->interviewListRepository->completeInterview($request->all(), $id);
+
+        return $this->success($completeInterview, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 }

@@ -3,11 +3,8 @@
 namespace GGPHP\InterviewManager\Transformers;
 
 use GGPHP\Category\Transformers\DivisionTransformer;
-use GGPHP\InterviewManager\Models\Refund;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Fee\Transformers\SchoolYearTransformer;
-use GGPHP\InterviewManager\Models\Interviewer;
-use GGPHP\Users\Transformers\UserTransformer;
+use GGPHP\InterviewManager\Models\InterviewList;
 
 /**
  * Class RefundTransformer.
@@ -21,7 +18,7 @@ class InterviewListTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['division', 'interviewerEmployee'];
+    protected $availableIncludes = ['division', 'interviewListEmployee', 'interviewConfiguration', 'pointEvaluation', 'interviewDetail'];
 
     /**
      * Transform the custom field entity.
@@ -30,20 +27,45 @@ class InterviewListTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'Status' => array_search($model->Status, InterviewList::STATUS),
+        ];
     }
 
-    public function includeDivision(Interviewer $interviewer)
+    public function includeDivision(InterviewList $interviewList)
     {
-        if (is_null($interviewer->division)) {
+        if (is_null($interviewList->division)) {
             return null;
         }
 
-        return $this->item($interviewer->division, new DivisionTransformer, 'division');
+        return $this->item($interviewList->division, new DivisionTransformer, 'division');
     }
 
-    public function includeInterviewerEmployee(Interviewer $interviewer)
+    public function includeInterviewListEmployee(InterviewList $interviewList)
     {
-        return $this->collection($interviewer->interviewerEmployee, new InterviewerEmployeeTransformer, 'InterviewerEmployee');
+        return $this->collection($interviewList->interviewListEmployee, new InterviewListEmployeeTransformer, 'InterviewListEmployee');
+    }
+
+    public function includeInterviewConfiguration(InterviewList $interviewList)
+    {
+        if (is_null($interviewList->interviewConfiguration)) {
+            return null;
+        }
+
+        return $this->item($interviewList->interviewConfiguration, new InterviewConfigurationTransformer, 'InterviewConfiguration');
+    }
+
+    public function includePointEvaluation(InterviewList $interviewList)
+    {
+        if (is_null($interviewList->PointEvaluation)) {
+            return null;
+        }
+
+        return $this->item($interviewList->PointEvaluation, new PointEvaluationTransformer  , 'PointEvaluation');
+    }
+
+    public function includeInterviewDetail(InterviewList $interviewList)
+    {
+        return $this->collection($interviewList->interviewDetail, new InterviewDetailTransformer, 'InterviewDetail');
     }
 }

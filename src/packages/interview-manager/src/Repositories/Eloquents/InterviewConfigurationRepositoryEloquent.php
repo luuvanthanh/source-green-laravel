@@ -83,8 +83,8 @@ class InterviewConfigurationRepositoryEloquent extends CoreRepositoryEloquent im
 
             $result = InterviewConfiguration::create($attributes);
 
-            if (!is_null($result) && !empty($attributes['data'])) {
-                $result->interviewConfigurationEvaluationCriteria()->attach($attributes['data']);
+            if (!is_null($result) && !empty($attributes['evaluationCriteriaId'])) {
+                $result->interviewConfigurationEvaluationCriteria()->attach($attributes['evaluationCriteriaId']);
             }
 
             DB::commit();
@@ -127,9 +127,9 @@ class InterviewConfigurationRepositoryEloquent extends CoreRepositoryEloquent im
 
             $interviewer->update($attributes);
 
-            if (!empty($attributes['data'])) {
+            if (!empty($attributes['evaluationCriteriaId'])) {
                 $interviewer->interviewConfigurationEvaluationCriteria()->detach();
-                $interviewer->interviewConfigurationEvaluationCriteria()->attach($attributes['data']);
+                $interviewer->interviewConfigurationEvaluationCriteria()->attach($attributes['evaluationCriteriaId']);
             }
 
             DB::commit();

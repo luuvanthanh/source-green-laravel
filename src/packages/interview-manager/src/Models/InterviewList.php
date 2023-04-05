@@ -8,7 +8,21 @@ use GGPHP\Core\Models\UuidModel;
 
 class InterviewList extends UuidModel
 {
-    CONST CODE = 'NPV';
+    CONST CODE = 'PV';
+    // chưa phỏng vấn
+    // đã phỏng vấn
+    // không duyệt lương
+    // chờ duyệt
+    // không duyệt ứng viên
+    // đã duyệt
+    CONST STATUS = [
+        'NOT_INTERVIEWED_YET' => 1,
+        'INTERVIEWED' => 2,
+        'NO_SALARY_APPROVAL' => 3,
+        'PENDING' => 4,
+        'DO_NOT_APPROVECANDIDATES' => 5,
+        'APPROVED' => 6
+    ];
     //use ActivityLogTrait;
     /**
      * Declare the table name
@@ -33,17 +47,32 @@ class InterviewList extends UuidModel
         'Address',
         'Status',
         'MediumScore',
-        'Result',
+        'PointEvaluationId',
         'SuggestedSalary'
     ];
 
-    public function interviewerEmployee()
+    public function interviewListEmployee()
     {
-        return $this->belongsToMany(User::class, 'InterviewerEmployees', 'InterviewerId', 'EmployeeId');
+        return $this->belongsToMany(User::class, 'InterviewListEmployees', 'InterviewListId', 'EmployeeId');
     }
 
     public function division()
     {
         return $this->belongsTo(Division::class, 'DivisionId');
+    }
+
+    public function interviewConfiguration()
+    {
+        return $this->belongsTo(InterviewConfiguration::class, 'InterviewConfigurationId');
+    }
+
+    public function pointEvaluation()
+    {
+        return $this->belongsTo(PointEvaluation::class, 'PointEvaluationId');
+    }
+
+    public function interviewDetail()
+    {
+        return $this->hasMany(InterviewDetail::class, 'InterviewListId');
     }
 }

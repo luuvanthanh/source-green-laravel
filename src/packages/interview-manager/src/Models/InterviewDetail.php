@@ -2,18 +2,17 @@
 
 namespace GGPHP\InterviewManager\Models;
 
-use GGPHP\ActivityLog\Traits\ActivityLogTrait;
+use App\Models\User;
+use GGPHP\Category\Models\Division;
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Fee\Models\SchoolYear;
 
-class EvaluationCriteria extends UuidModel
+class InterviewDetail extends UuidModel
 {
-    CONST CODE = 'TCDG';
     //use ActivityLogTrait;
     /**
      * Declare the table name
      */
-    protected $table = 'EvaluationCriteriass';
+    protected $table = 'InterviewDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -21,8 +20,8 @@ class EvaluationCriteria extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code',
-        'Name',
-        'Note'
+      'InterviewListId',
+      'PointEvaluation',
+      'Comment'
     ];
 }
