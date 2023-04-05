@@ -3,6 +3,7 @@
 namespace GGPHP\InterviewManager\Http\Requests;
 
 use GGPHP\InterviewManager\Models\EvaluationCriteria;
+use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EvaluationCriteriaUpdateRequest extends FormRequest
@@ -25,6 +26,16 @@ class EvaluationCriteriaUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $interviewConfigura = InterviewConfigurationEvaluationCriteria::where('EvaluationCriteriaId' , $value)->get();
+                    if (!is_null($interviewConfigura)) {
+
+                        return $fail('Dữ liệu đã được sử dụng');
+                    }
+                },
+            ],
             'name' => [
                 'nullable','string',
                 function ($attribute, $value, $fail) {
