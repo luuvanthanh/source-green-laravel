@@ -2,6 +2,7 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\Interviewer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InterviewerCreateRequest extends FormRequest
@@ -24,7 +25,7 @@ class InterviewerCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'divisionId' => 'required|exists:Divisions,Id',
+            'divisionId' => 'required|exists:Divisions,Id|unique:Interviewers,DivisionId',
             'data' => 'required|array',
             'data.*' => 'required|exists:Employees,Id'
         ];

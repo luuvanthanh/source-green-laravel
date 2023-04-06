@@ -27,19 +27,14 @@ class PointEvaluationCreateRequest extends FormRequest
             'data' => [
                 'array', 'nullable',
                 function ($attribute, $value, $fail) {
-                    foreach ($value as $key => $item) {
-                        if ($value[$key + 1]['pointFrom'] > $value[$key]['pointTo']) {
-                            return true;
-                        }else {
-                            return $fail('Dữ liệu pointTo không được trùng với pointFrom');
+                    for ($i = 1; $i < count($value); $i++) {
+                        $prevPointTo = $value[$i-1]["pointTo"];
+                        $currentPointFrom = $value[$i]["pointFrom"];
+                        
+                        if ($prevPointTo >= $currentPointFrom) {
+                            return $fail('Khoảng điểm từ của phần tử sau phải lớn hơn khoảng điểm đến của phần tử trước.');
                         }
                     }
-                    // $evaluationCriteria = EvaluationCriteria::where('Name', $value)->where('Id' , '!=', $this->evaluation_criteria)->first();
-
-                    // if (!is_null($evaluationCriteria)) {
-
-                    //     return $fail('Dữ liệu đã có trong hệ thống');
-                    // }
                 },
             ],
             'data.*.pointFrom' => 'required|numeric',
