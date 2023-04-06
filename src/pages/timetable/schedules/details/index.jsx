@@ -84,7 +84,7 @@ const Index = memo(({ loading: { effects }, match: { params }, error, menuLeft, 
                     <p className="font-weight-bold">
                       {`${Helper.getDate(
                         details?.applyDate,
-                        variables.DATE_FORMAT.DATE_AFTER,
+                        variables.DATE_FORMAT.DATE_VI,
                       )}, ${Helper.getDateSearch(
                         details?.startTime,
                         variables.DATE_FORMAT.HOUR,

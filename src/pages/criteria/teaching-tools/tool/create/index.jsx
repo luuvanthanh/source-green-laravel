@@ -425,9 +425,12 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Tạo giáo cụ" />
+      <Helmet title={params?.id ? 'Chi tiết giáo cụ' : 'Tạo giáo cụ'} />
       <Pane style={{ paddingTop: 20 }}>
-        <Breadcrumbs last="Tạo giáo cụ" menu={menuLeftCriteria} />
+        <Breadcrumbs
+          last={params?.id ? 'Chi tiết giáo cụ' : 'Tạo giáo cụ'}
+          menu={menuLeftCriteria}
+        />
         <Pane style={{ padding: 20, paddingTop: 0 }} className={stylesModule['wrapper-table']}>
           <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
             <Pane className="my20 mb0 card">

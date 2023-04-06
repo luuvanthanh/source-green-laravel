@@ -736,7 +736,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
             '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
           ],
-          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC}${ACTION.VIEW}`],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -746,7 +746,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam',
             '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/:id/chi-tiet',
           ],
-          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.VIEW}`],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC}${ACTION.VIEW}`],
           pro: true,
         },
         {
