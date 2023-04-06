@@ -152,49 +152,87 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function sendSuggestions(array $attributes, $id)
     {
+        $attributes['status'] = InterviewList::STATUS['PENDING'];
         $interviewerList = InterviewList::findOrfail($id);
 
         $interviewerList->update($attributes);
 
         return parent::find($id);
     }
-    
+
+    public function sendSuggestionDoNotApprove(array $attributes, $id)
+    {
+        $attributes['status'] = InterviewList::STATUS['PENDING'];
+        $interviewerList = InterviewList::findOrfail($id);
+
+        $interviewerList->update($attributes);
+
+        return parent::find($id);
+    }
+
     public function completeInterview(array $attributes, $id)
     {
         $interviewList = InterviewList::findOrfail($id);
-        if (!empty($attributes['pointEvaluation'])) {
-            foreach ($attributes['pointEvaluation'] as $key => $value) {
-               $interviewDetail['interviewListId'] = $id;
-               $interviewDetail['pointEvaluation'] = $value;
-               $interviewDetail['comment'] = $attributes['pointEvaluation'][$key];
-
-                InterviewDetail::create($interviewDetail);
-            }
-        }
-
-        $listInterViewDetail = InterviewDetail::where('InterviewListId', $id)->get()->toArray();
-        $sum = 0;
-
-        if (!empty($listInterViewDetail)) {
-            foreach ($listInterViewDetail as $key => $value) {
-                $sum = $sum + $value['PointEvaluation'];
-            }
-        }
-        // trung binh cong
-        $attributes['mediumScore'] = number_format($sum / count($listInterViewDetail), 2);
-        // diem danh gia
-        $pointValue = PointEvaluation::all()->toArray();
-
-        if (!empty($pointValue)) {
-            foreach ($pointValue as $key => $value) {
-                if ($attributes['mediumScore'] >= $value['PointFrom'] && $attributes['mediumScore'] <= $value['PointTo']) {
-                    $attributes['PointEvaluationId'] =  $value['Id'];
+        $arrayInterviewDetail = [];
+        if (!empty($attributes['evaluate'])) {
+            foreach ($attributes['evaluate'] as $key => $evaluateItem) {
+                $interviewDetail['interviewListId'] = $id;
+                $interviewDetail['EmployeeId'] = $evaluateItem['employeeId'];
+                if (!empty($evaluateItem['pointEvaluation'])) {
+                    foreach ($evaluateItem['pointEvaluation'] as $key => $pointEvaluation) {
+                        $interviewDetail['pointEvaluation'] = $pointEvaluation;
+                        $interviewDetail['comment'] = $evaluateItem['comment'][$key];
+                        $interviewDetail['status'] = InterviewDetail::STATUS['HAVE_EVALUATED'];
+                        $arrayInterviewDetail[] = $interviewDetail;
+                    }
                 }
             }
         }
 
-        $interviewList->update($attributes);
+        if (!empty($arrayInterviewDetail)) {
+            $sum = 0;
+            $poinEvaluetionId = null;
+            foreach ($arrayInterviewDetail as $key => $value) {
+                $sum = $sum + $value['pointEvaluation'];
+            }
+            $avg = number_format($sum / count($arrayInterviewDetail), 2);
 
-        return parent::find($id);
+            // diem danh gia
+            $pointValue = PointEvaluation::all()->toArray();
+            if (!empty($pointValue)) {
+                foreach ($pointValue as $key => $value) {
+                    if ($avg >= $value['PointFrom'] && $avg  <= $value['PointTo']) {
+                        $poinEvaluetionId =  $value['Id'];
+                    }
+                }
+            }
+
+
+            foreach ($arrayInterviewDetail as $key => $value) {
+                $arrayInterviewDetail[$key]['averageScoreAsAssessedByStaff'] = $avg;
+                $arrayInterviewDetail[$key]['pointEvaluationId'] = $poinEvaluetionId;
+                // InterviewDetail::create($arrayInterviewDetail[$key]);
+            }
+        }
+
+        $getEmployeeInterviewDetail = DB::table('InterviewDetails')->where('InterviewListId', $id)->distinct('EmployeeId')->get()->toArray();
+        $getEmployeeInterviewerListEmployee = DB::table('InterviewListEmployees')->select('EmployeeId')->get()->pluck('EmployeeId')->toArray();
+        
+        if (!empty($getEmployeeInterviewDetail) && !empty($getEmployeeInterviewerListEmployee)) {
+            $sumInterviewList = 0;
+            $pointEvaluationId = '';
+            if (count($getEmployeeInterviewDetail) == count($getEmployeeInterviewerListEmployee)) {
+                foreach ($getEmployeeInterviewDetail as $key => $value) {
+                    $sumInterviewList = $sumInterviewList + $value->AverageScoreAsAssessedByStaff;
+                    $pointEvaluationId = $value->PointEvaluationId;
+                }
+                $attributes['mediumScore'] = number_format($sumInterviewList / count($getEmployeeInterviewDetail), 2);;
+                $attributes['pointEvaluationId'] = $pointEvaluationId;
+                $attributes['status'] = InterviewList::STATUS['INTERVIEWED'];
+                $interviewList->update($attributes);
+            }
+        }
+        
+        return parent::parserResult($interviewList);
     }
 }

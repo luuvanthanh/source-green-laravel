@@ -33,7 +33,7 @@ class InterviewerListCreateRequest extends FormRequest
             'employeeId' => 'required|array',
             'employeeId.*' => 'required|exists:Employees,Id',
             'date' => 'required|date|date_format:d-m-Y',
-            'time' => 'nullable',
+            'time' => 'required|string',
             'address' => 'required|string'
         ];
     }

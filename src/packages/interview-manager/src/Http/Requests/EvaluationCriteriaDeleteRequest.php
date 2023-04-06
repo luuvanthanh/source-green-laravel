@@ -6,7 +6,7 @@ use GGPHP\InterviewManager\Models\EvaluationCriteria;
 use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EvaluationCriteriaUpdateRequest extends FormRequest
+class EvaluationCriteriaDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -35,19 +35,7 @@ class EvaluationCriteriaUpdateRequest extends FormRequest
                         return $fail('Dữ liệu đã được sử dụng');
                     }
                 },
-            ],
-            'name' => [
-                'nullable','string',
-                function ($attribute, $value, $fail) {
-                    $evaluationCriteria = EvaluationCriteria::where('Name', $value)->where('Id' , '!=', $this->evaluation_criteria)->first();
-
-                    if (!is_null($evaluationCriteria)) {
-
-                        return $fail('Dữ liệu đã có trong hệ thống');
-                    }
-                },
-            ],
-            'note' => 'nullable|string'
+            ]
         ];
     }
 }

@@ -24,9 +24,10 @@ class InterviewerListUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $status = implode(',', InterviewList::STATUS);
         return [
             'interviewName' => [
-                'required', 'string',
+                'nullable', 'string',
                 function ($attribute, $value, $fail) {
                     $interviewList = InterviewList::where('InterviewName', $value)->where('Id' , '!=', $this->interview_list)->first();
 
@@ -36,16 +37,34 @@ class InterviewerListUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'candidateName' => 'required|string',
-            'location' => 'required|string',
-            'divisionId' => 'required|exists:Divisions,Id',
-            'file' => 'required|string',
-            'interviewConfigurationId' => 'required|exists:InterviewConfigurations,Id',
-            'employeeId' => 'required|array',
-            'employeeId.*' => 'required|exists:Employees,Id',
-            'date' => 'required|date|date_format:d-m-Y',
+            'candidateName' => 'nullable|string',
+            'location' => 'nullable|string',
+            'divisionId' => 'nullable|exists:Divisions,Id',
+            'file' => 'nullable|string',
+            'interviewConfigurationId' => 'nullable|exists:InterviewConfigurations,Id',
+            'employeeId' => 'nullable|array',
+            'employeeId.*' => 'nullable|exists:Employees,Id',
+            'date' => 'nullable|date|date_format:d-m-Y',
             'time' => 'nullable',
-            'address' => 'required|string'
+            'address' => 'nullable|string',
+            'status' => 'required|in:'.$status
+        ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        if (!empty($data['status']) && $data['status'] == 'NOT_INTERVIEWED_YET') {
+            $data['status'] = array_key_exists($data['status'], InterviewList::STATUS) ? InterviewList::STATUS[$data['status']] : 0;
+        }
+
+        return $data;
+    }
+
+    public function messages()
+    {
+        return [
+            'status.in' => 'Giá trị đã chọn không hợp lệ, giá trị phải là NOT_INTERVIEWED_YET'
         ];
     }
 }
