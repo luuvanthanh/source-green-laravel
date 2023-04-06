@@ -51,13 +51,16 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
-      user
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       dataYear: user ? user?.schoolYear : {},
       search: {
-        classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+        classId:
+          query?.classId ||
+          (user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER &&
+            head(user?.objectInfo?.classTeachers)?.classId),
         fullName: query?.fullName,
         branchId: query?.branchId || defaultBranch?.id,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -214,24 +217,23 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
-    const {
-      years,
-    } = this.props;
+    const { years } = this.props;
     if (type === 'schoolYearId') {
-      const data = years?.find(i => i.id === e);
+      const data = years?.find((i) => i.id === e);
       this.setStateData({
         dataYear: data,
       });
-      this.setState(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            startDate: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            endDate: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
-          },
-        }),
-      );
-      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+      this.setState((prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          endDate: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        },
+      }));
+      this.formRef.current.setFieldsValue({
+        date: [moment(data?.startDate), moment(data?.endDate)],
+        isset_history_care: undefined,
+      });
     }
     this.debouncedSearch(e, type);
   };
@@ -346,7 +348,14 @@ class Index extends PureComponent {
         key: 'year',
         width: 200,
         className: 'min-width-200',
-        render: (record) => record?.schoolYear?.yearFrom ? <Text size="normal">{record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}</Text> : "",
+        render: (record) =>
+          record?.schoolYear?.yearFrom ? (
+            <Text size="normal">
+              {record?.schoolYear?.yearFrom} - {record?.schoolYear?.yearTo}
+            </Text>
+          ) : (
+            ''
+          ),
       },
       {
         title: 'Cơ sở',
@@ -465,11 +474,23 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Đơn xin phép cho bé</Text>
-            <div className='d-flex'>
-              <Button permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
+            <div className="d-flex">
+              <Button
+                permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_EXPORT"
+                color="primary"
+                icon="export"
+                className="ml-2"
+                onClick={this.onChangeExcel}
+              >
                 Xuất Excel
               </Button>
-              <Button permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_CREATE" className="ml-4" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              <Button
+                permission="WEB_DIEMDANH_DONXINPHEP_DONXINPHEPCHOBE_CREATE"
+                className="ml-4"
+                color="success"
+                icon="plus"
+                onClick={() => history.push(`${pathname}/tao-moi`)}
+              >
                 Tạo đơn xin phép
               </Button>
             </div>
@@ -519,7 +540,15 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...classes?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]
+                    }
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -544,8 +573,7 @@ class Index extends PureComponent {
                     disabledDate={(current) =>
                       (dataYear?.startDate &&
                         current < moment(dataYear?.startDate).startOf('day')) ||
-                      (dataYear?.endDate &&
-                        current >= moment(dataYear?.endDate).endOf('day'))
+                      (dataYear?.endDate && current >= moment(dataYear?.endDate).endOf('day'))
                     }
                   />
                 </div>

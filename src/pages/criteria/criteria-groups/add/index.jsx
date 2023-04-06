@@ -8,6 +8,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
@@ -141,7 +142,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: "/chuong-trinh-hoc/cau-hinh/nhom-tieu-chi" }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/chuong-trinh-hoc/cau-hinh/nhom-tieu-chi' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -183,6 +188,11 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
+                  permission={
+                    params?.id
+                      ? `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.CREATE}`
+                  }
                 >
                   LƯU
                 </Button>

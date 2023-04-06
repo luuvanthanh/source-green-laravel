@@ -8,6 +8,7 @@ import { head, isEmpty, size } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -216,6 +217,7 @@ const Index = memo(() => {
               <Pane className="py20 d-flex justify-content-between align-items-center">
                 <p
                   className="btn-delete mr20"
+                  color="white"
                   role="presentation"
                   onClick={() => history.goBack()}
                 >
@@ -223,9 +225,14 @@ const Index = memo(() => {
                 </p>
                 {params.id && (
                   <>
-                    <p className="btn-delete" role="presentation" onClick={remove}>
+                    <Button
+                      color="none"
+                      className={csx(styles['btn-delete-none-bg'])}
+                      onClick={remove}
+                      permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.DELETE}`}
+                    >
                       Xóa
-                    </p>
+                    </Button>
                   </>
                 )}
                 <Button
@@ -233,6 +240,11 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  permission={
+                    params?.id
+                      ? `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.CREATE}`
+                  }
                   loading={
                     loading['criteriaAngleToolCreate/ADD'] ||
                     loading['criteriaAngleToolCreate/UPDATE'] ||

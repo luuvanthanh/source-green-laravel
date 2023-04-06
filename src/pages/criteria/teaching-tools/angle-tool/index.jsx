@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import { variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -64,6 +65,7 @@ const Index = memo(() => {
             color="success"
             ghost
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+            permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.EDIT}`}
           >
             Chi tiết
           </Button>
@@ -129,6 +131,7 @@ const Index = memo(() => {
             color="success"
             icon="plus"
             onClick={() => history.push(`${pathname}/them-moi`)}
+            permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.CREATE}`}
           >
             Tạo mới
           </Button>
