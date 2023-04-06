@@ -24,7 +24,10 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/information.module.scss';
 import stylesForm from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import EditorToolbar, { modules, formats } from './EditorToolbar';
+import EditorToolbar, {
+  modules,
+  formats,
+} from '@/components/CommonComponent/EditorToolbarNoUploadVideo';
 
 import variablesModules from '../variables';
 
@@ -67,7 +70,6 @@ const Index = memo(
       class: null,
     });
     const [students, setStudents] = useState([]);
-    const [dataCheck, setDataCheck] = useState([]);
     const [type, setType] = useState('');
     const [errorStudent, setError] = useState(false);
     const [fileImage, setFileImage] = useState([]);
@@ -251,17 +253,11 @@ const Index = memo(
         callback: (response, error) => {
           if (response) {
             let newStudent = response.items || [];
-            if (!isEmpty(dataCheck) && !isEmpty(response.items)) {
-              newStudent = response.items.map((item) => {
-                const reuslt = dataCheck.find((obj) => obj?.student?.id === item?.id);
-                if (reuslt) {
-                  return {
-                    ...item,
-                    checked: true,
-                  };
-                }
-                return item;
-              });
+            if (isAllStudent) {
+              newStudent = response.items.map((item) => ({
+                ...item,
+                checked: true,
+              }));
             }
             // mountedSet(setStudents, newStudent);
             mountedSet(setStudents, students.concat(newStudent));
@@ -373,7 +369,6 @@ const Index = memo(
               if (res?.branch?.id) {
                 getClasses(res?.branch?.id);
               }
-              setDataCheck(res?.parentTimetables);
               if (res?.class?.id) {
                 getStudents(
                   { ...searchStudents, branchId: res?.branch?.id, class: res?.class?.id },
