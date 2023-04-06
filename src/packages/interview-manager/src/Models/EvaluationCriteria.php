@@ -13,7 +13,7 @@ class EvaluationCriteria extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'EvaluationCriterias';
+    protected $table = 'EvaluationCriteriass';
 
     /**
      * The attributes that are mass assignable.
