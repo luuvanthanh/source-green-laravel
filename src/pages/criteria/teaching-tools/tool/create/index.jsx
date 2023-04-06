@@ -4,13 +4,15 @@ import { Form, Upload, message, Input } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty, last } from 'lodash';
+import csx from 'classnames';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
+import styles from '@/assets/styles/Common/common.scss';
 
-
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
@@ -21,9 +23,6 @@ import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
 import Select from '@/components/CommonComponent/Select';
 import stylesModule from '../styles.module.scss';
-
-
-
 
 const Index = memo(() => {
   const [
@@ -283,17 +282,15 @@ const Index = memo(() => {
         align: 'center',
         render: (record) => (
           <>
-            {
-              toolDetailSensitives?.length > 1 && (
-                <div className="groups-input">
-                  <span
-                    className="icon icon-remove"
-                    role="presentation"
-                    onClick={() => onRemove(record)}
-                  />
-                </div>
-              )
-            }
+            {toolDetailSensitives?.length > 1 && (
+              <div className="groups-input">
+                <span
+                  className="icon icon-remove"
+                  role="presentation"
+                  onClick={() => onRemove(record)}
+                />
+              </div>
+            )}
           </>
         ),
       },
@@ -323,7 +320,7 @@ const Index = memo(() => {
   const onAddLevels = async () => {
     const objects = {
       id: uuidv4(),
-      level: undefined
+      level: undefined,
     };
     await setToolDetailLevels((prevState) => [...prevState, objects]);
 
@@ -346,7 +343,7 @@ const Index = memo(() => {
   };
 
   const onChangeInput = (record, e, type) => {
-    if (toolDetailLevels?.find(i => i?.level === e)?.level !== e) {
+    if (toolDetailLevels?.find((i) => i?.level === e)?.level !== e) {
       setToolDetailLevels((prev) =>
         prev.map((item) => ({
           ...item,
@@ -363,14 +360,15 @@ const Index = memo(() => {
         key: 'level',
         className: 'labelRequired',
         width: 200,
-        render: (record) =>
+        render: (record) => (
           <FormItem
             value={record?.level}
             placeholder="Nhập"
             rules={[variables.RULES.EMPTY_INPUT]}
             type={variables.NUMBER_INPUT}
             onChange={(e) => onChangeInput(record, e, 'level')}
-          />,
+          />
+        ),
       },
       {
         title: 'Chi tiết cấp độ giáo cụ',
@@ -388,20 +386,19 @@ const Index = memo(() => {
         className: 'min-width-50',
         width: 50,
         align: 'center',
-        render: (record) =>
+        render: (record) => (
           <>
-            {
-              toolDetailLevels?.length > 1 && (
-                <div className="groups-input">
-                  <span
-                    className="icon icon-remove"
-                    role="presentation"
-                    onClick={() => onRemoveLevels(record)}
-                  />
-                </div>
-              )
-            }
+            {toolDetailLevels?.length > 1 && (
+              <div className="groups-input">
+                <span
+                  className="icon icon-remove"
+                  role="presentation"
+                  onClick={() => onRemoveLevels(record)}
+                />
+              </div>
+            )}
           </>
+        ),
       },
     ];
     return columns;
@@ -428,10 +425,13 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Tạo giáo cụ" />
+      <Helmet title={params?.id ? 'Chi tiết giáo cụ' : 'Tạo giáo cụ'} />
       <Pane style={{ paddingTop: 20 }}>
-        <Breadcrumbs last="Tạo giáo cụ" menu={menuLeftCriteria} />
-        <Pane style={{ padding: 20, paddingTop: 0 }} className={stylesModule['wrapper-table']} >
+        <Breadcrumbs
+          last={params?.id ? 'Chi tiết giáo cụ' : 'Tạo giáo cụ'}
+          menu={menuLeftCriteria}
+        />
+        <Pane style={{ padding: 20, paddingTop: 0 }} className={stylesModule['wrapper-table']}>
           <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
             <Pane className="my20 mb0 card">
               <Loading
@@ -542,18 +542,19 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
-              <p
-                className="btn-delete mr20"
-                role="presentation"
-                onClick={() => history.goBack()}
-              >
+              <p className="btn-delete mr20" role="presentation" onClick={() => history.goBack()}>
                 Hủy
               </p>
               {params.id && (
                 <>
-                  <p className="btn-delete" role="presentation" onClick={remove}>
+                  <Button
+                    className={csx(styles['btn-delete-none-bg'])}
+                    permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.DELETE}`}
+                    role="presentation"
+                    onClick={remove}
+                  >
                     Xóa
-                  </p>
+                  </Button>
                 </>
               )}
               <Button
@@ -561,10 +562,19 @@ const Index = memo(() => {
                 color="success"
                 htmlType="submit"
                 size="large"
+                permission={
+                  params?.id
+                    ? `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.EDIT}`
+                    : `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.CREATE}`
+                }
                 loading={loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']}
                 disabled={
-                  !!toolDetailSensitives.find((item) => !item?.sensitivePeriodId || isEmpty(item?.activity?.trim()) || isEmpty(item?.parentInvolvement?.trim()))
-                  || !isEmpty(toolDetailLevels?.find(item => !item?.level))
+                  !!toolDetailSensitives.find(
+                    (item) =>
+                      !item?.sensitivePeriodId ||
+                      isEmpty(item?.activity?.trim()) ||
+                      isEmpty(item?.parentInvolvement?.trim()),
+                  ) || !isEmpty(toolDetailLevels?.find((item) => !item?.level))
                 }
               >
                 Lưu

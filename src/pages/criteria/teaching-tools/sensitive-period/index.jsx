@@ -11,6 +11,8 @@ import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
@@ -64,6 +66,7 @@ const Index = memo(() => {
             <Button
               color="success"
               ghost
+              permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.EDIT}`}
               onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
             >
               Chi tiết
@@ -133,6 +136,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="success"
             icon="plus"
+            permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.CREATE}`}
             onClick={() => history.push(`${pathname}/them-moi`)}
           >
             Tạo mới

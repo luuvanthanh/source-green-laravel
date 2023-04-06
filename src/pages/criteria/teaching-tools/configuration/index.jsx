@@ -7,17 +7,15 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import stylesModule from './styles.module.scss';
 
-
 const Index = memo(() => {
   const [form] = Form.useForm();
-  const [
-    effects
-  ] = useSelector(({ sensitivePeriodConfiguration, loading, user, menu }) => [
+  const [effects] = useSelector(({ sensitivePeriodConfiguration, loading, user, menu }) => [
     sensitivePeriodConfiguration,
     loading,
     user,
@@ -29,11 +27,10 @@ const Index = memo(() => {
     dispatch({
       type: 'sensitivePeriodConfiguration/ADD',
       payload: {
-        dateConfig:
-        {
+        dateConfig: {
           dateTotal: value?.dateTotal,
           name: value?.name,
-        }
+        },
       },
       callback: (response, error) => {
         if (error) {
@@ -51,7 +48,6 @@ const Index = memo(() => {
       },
     });
   };
-
 
   useEffect(() => {
     dispatch({
@@ -77,7 +73,7 @@ const Index = memo(() => {
             <Heading type="form-title" className="pb20">
               Cấu hình TKNC
             </Heading>
-            <Loading loading={effects['sensitivePeriodConfiguration/GET_DETAILS']} >
+            <Loading loading={effects['sensitivePeriodConfiguration/GET_DETAILS']}>
               <div className="card p20">
                 <Pane className="row">
                   <Pane className="col-lg-12">
@@ -94,17 +90,19 @@ const Index = memo(() => {
                     />
                   </Pane>
                   <Pane className="col-lg-6">
-                    <FormItem
-                      label="Gọi tên"
-                      name="name"
-                      type={variables.INPUT}
-                    />
+                    <FormItem label="Gọi tên" name="name" type={variables.INPUT} />
                   </Pane>
                 </Pane>
               </div>
             </Loading>
-            <Pane className={stylesModule['wrapper-btn']} >
-              <Button color="success" size="large" htmlType="submit" loading={effects['sensitivePeriodConfiguration/ADD']}>
+            <Pane className={stylesModule['wrapper-btn']}>
+              <Button
+                permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_CAUHINHTKNC}${ACTION.EDIT}`}
+                color="success"
+                size="large"
+                htmlType="submit"
+                loading={effects['sensitivePeriodConfiguration/ADD']}
+              >
                 Lưu
               </Button>
             </Pane>
@@ -115,10 +113,8 @@ const Index = memo(() => {
   );
 });
 
-Index.propTypes = {
-};
+Index.propTypes = {};
 
-Index.defaultProps = {
-};
+Index.defaultProps = {};
 
 export default Index;

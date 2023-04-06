@@ -4,6 +4,10 @@ import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty } from 'lodash';
+import csx from 'classnames';
+
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import styles from '@/assets/styles/Common/common.scss';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -107,7 +111,11 @@ const Index = memo(() => {
   return (
     <Pane style={{ paddingTop: 20 }}>
       <Helmet title={params.id ? 'Chỉnh sửa thời kỳ nhạy cảm' : 'Tạo thời kỳ nhạy cảm'} />
-      <Breadcrumbs className="pb30 pt0" last={params.id ? 'Chỉnh sửa thời kỳ nhạy cảm' : 'Tạo thời kỳ nhạy cảm'} menu={menuLeftCriteria} />
+      <Breadcrumbs
+        className="pb30 pt0"
+        last={params.id ? 'Chỉnh sửa thời kỳ nhạy cảm' : 'Tạo thời kỳ nhạy cảm'}
+        menu={menuLeftCriteria}
+      />
       <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 0 }}>
         <Pane className="justify-content-center">
           <Pane className="col-lg-6 offset-lg-3">
@@ -160,18 +168,19 @@ const Index = memo(() => {
                 </Loading>
               </Pane>
               <Pane className="d-flex justify-content-between align-items-center mb20">
-                <p
-                  className="btn-delete mr20"
-                  role="presentation"
-                  onClick={() => history.goBack()}
-                >
+                <p className="btn-delete mr20" role="presentation" onClick={() => history.goBack()}>
                   Hủy
                 </p>
                 {params.id && (
                   <>
-                    <p className="btn-delete" role="presentation" onClick={remove}>
+                    <Button
+                      className={csx(styles['btn-delete-none-bg'])}
+                      role="presentation"
+                      onClick={remove}
+                      permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.DELETE}`}
+                    >
                       Xóa
-                    </p>
+                    </Button>
                   </>
                 )}
                 <Button
@@ -179,6 +188,11 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  permission={
+                    params?.id
+                      ? `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.CREATE}`
+                  }
                   loading={
                     loading['sensitivePeriodCreate/ADD'] || loading['sensitivePeriodCreate/UPDATE']
                   }

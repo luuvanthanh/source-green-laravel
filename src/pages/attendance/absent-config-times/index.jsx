@@ -176,9 +176,11 @@ const Index = memo(() => {
         align: 'center',
         render: (record) => (
           <div className="groups-input">
-            <span
-              className="icon icon-remove"
+            <Button
+              icon="remove"
+              color="danger"
               role="presentation"
+              permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_THOIGIANNGHIPHEP_EDIT"
               onClick={() => onRemove(record)}
             />
           </div>
@@ -236,7 +238,7 @@ const Index = memo(() => {
                     rowKey={(record) => record.id}
                     scroll={{ x: '100%' }}
                     footer={() => (
-                      <Button color="success" icon="plus" onClick={onAdd}>
+                      <Button color="success" icon="plus" onClick={onAdd} permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_THOIGIANNGHIPHEP_EDIT">
                         Thêm
                       </Button>
                     )}
@@ -249,6 +251,7 @@ const Index = memo(() => {
                   color="success"
                   htmlType="submit"
                   size="large"
+                  permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_THOIGIANNGHIPHEP_EDIT"
                   loading={loading['absentConfigTimes/ADD'] || loading['absentConfigTimes/UPDATE']}
                 >
                   Lưu

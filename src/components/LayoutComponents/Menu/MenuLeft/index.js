@@ -1,4 +1,4 @@
-import _, { size } from 'lodash';
+import _, {  size } from 'lodash';
 import React from 'react';
 import store from 'store';
 import classnames from 'classnames';
@@ -119,14 +119,35 @@ class MenuLeft extends React.Component {
 
   // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
-    const { dataReport } = this.props;
     if (newProps.isMenuCollapsed && !newProps.isMobileView) {
       this.setState({
         openedKeys: [],
       });
     }
     if (this.props.location.pathname === '/bao-cao-erp') {
-      this.onSetMenu(dataReport);
+      this.props.dispatch({
+        type: 'menu/GET_MENU_REPORT',
+        payload: { type: 'METABASE' },
+        callback: (response) => {
+          if (response) {
+            const dataMenu = response?.map((item) => ({
+              title: item.name,
+              key: `report-${item.id}`,
+              url: [],
+              permission: [],
+              children: item?.children?.map((i) => ({
+                title: i.name,
+                key: `report-${i.id}`,
+                url: [`/bao-cao-erp/${i.id}`],
+                permission: [],
+                pro: true,
+              })),
+              pro: true,
+            }));
+            this.onSetMenu(dataMenu);
+          }
+        },
+      });
     }
     this.setSelectedKeys(newProps);
   }

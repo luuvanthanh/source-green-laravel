@@ -388,6 +388,7 @@ class Index extends PureComponent {
                   get(record, 'attendance[0].status') ===
                   variablesModules.STATUS_ABSENT.ANNUAL_LEAVE,
               })}
+              permission="WEB_DIEMDANH_DIEMDANH_NHAPDIEMDANH_CREATE"
               onClick={() => this.add(record, variablesModules.STATUS_ABSENT.ANNUAL_LEAVE)}
             >
               Vắng có phép
@@ -462,7 +463,7 @@ class Index extends PureComponent {
               <ButtonCustom key="cancel" color="white" icon="fe-x" onClick={this.cancelModal}>
                 Hủy
               </ButtonCustom>
-              <ButtonCustom key="choose" color="success" icon="fe-save" onClick={this.onSave}>
+              <ButtonCustom permission="WEB_DIEMDANH_DIEMDANH_NHAPDIEMDANH_CREATE" key="choose" color="success" icon="fe-save" onClick={this.onSave}>
                 Lưu
               </ButtonCustom>
             </div>

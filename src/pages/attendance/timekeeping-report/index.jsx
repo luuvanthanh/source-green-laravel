@@ -56,7 +56,10 @@ class Index extends PureComponent {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       dataYear: user ? user?.schoolYear : {},
       search: {
-        classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+        classId:
+          query?.classId ||
+          (user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER &&
+            head(user?.objectInfo?.classTeachers)?.classId),
         fullName: query?.fullName,
         branchId: query?.branchId || defaultBranch?.id,
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
@@ -263,26 +266,32 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
-    const {
-      years,
-      user
-    } = this.props;
+    const { years, user } = this.props;
     if (type === 'schoolYearId') {
-      const data = years?.find(i => i.id === e);
+      const data = years?.find((i) => i.id === e);
       this.setStateData({
         dataYear: data,
       });
-      this.setState(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            startDate: user?.schoolYear?.id === e ? moment().startOf('months') : moment(data?.startDate).startOf('months'),
-            endDate: user?.schoolYear?.id === e ? moment().endOf('months') : moment(data?.startDate).endOf('months'),
-          },
-        }),
-      );
-      this.formRef.
-        current.setFieldsValue({ date: user?.schoolYear?.id === e ? [moment().startOf('months'), moment().endOf('months')] : [moment(data?.startDate).startOf('months'), moment(data?.startDate).endOf('months')], isset_history_care: undefined });
+      this.setState((prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate:
+            user?.schoolYear?.id === e
+              ? moment().startOf('months')
+              : moment(data?.startDate).startOf('months'),
+          endDate:
+            user?.schoolYear?.id === e
+              ? moment().endOf('months')
+              : moment(data?.startDate).endOf('months'),
+        },
+      }));
+      this.formRef.current.setFieldsValue({
+        date:
+          user?.schoolYear?.id === e
+            ? [moment().startOf('months'), moment().endOf('months')]
+            : [moment(data?.startDate).startOf('months'), moment(data?.startDate).endOf('months')],
+        isset_history_care: undefined,
+      });
     }
     this.debouncedSearch(e, type);
   };
@@ -529,7 +538,12 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Tổng hợp điểm danh</Text>
-            <Button color="success" onClick={this.exportData} icon="export">
+            <Button
+              permission="WEB_DIEMDANH_DIEMDANH_THDIEMDANH_DOWNLOAD"
+              color="success"
+              onClick={this.exportData}
+              icon="export"
+            >
               Tải bảng điểm danh tháng
             </Button>
           </div>
@@ -578,7 +592,15 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...classes?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]
+                    }
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -603,8 +625,7 @@ class Index extends PureComponent {
                     disabledDate={(current) =>
                       (dataYear?.startDate &&
                         current < moment(dataYear?.startDate).startOf('day')) ||
-                      (dataYear?.endDate &&
-                        current >= moment(dataYear?.endDate).endOf('day'))
+                      (dataYear?.endDate && current >= moment(dataYear?.endDate).endOf('day'))
                     }
                   />
                 </div>

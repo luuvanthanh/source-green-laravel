@@ -236,9 +236,10 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_EDIT"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_DELETE" color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
@@ -267,7 +268,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách lý do nghỉ phép</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button permission="WEB_DIEMDANH_DONXINPHEP_CAUHINH_LYDONGHIPHEP_CREATE" color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
           </div>

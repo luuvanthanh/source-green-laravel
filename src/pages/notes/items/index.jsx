@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../utils/Helper';
@@ -69,7 +70,7 @@ class Index extends PureComponent {
           : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        status: query?.status || variablesModules.STATUS.CONFIRMING,
+        status: query?.status || head(variablesModules.STATUS_TABS)?.id,
       },
     };
     setIsMounted(true);
@@ -361,6 +362,7 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const { search } = this.state;
     const columns = [
       {
         title: 'STT',
@@ -448,7 +450,7 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success" onClick={() => history.push(`/ghi-chu/${record.id}/chi-tiet`)}>
+            <Button permission={search?.status === variablesModules.STATUS.CONFIRMING ? `${FLATFORM.WEB}${permissions.DANDO_DANHSACH_CHOXACNHAN}${ACTION.DETAIL}` : `${FLATFORM.WEB}${permissions.DANDO_DANHSACH_DANHAN}${ACTION.DETAIL}`} color="success" onClick={() => history.push(`/ghi-chu/${record.id}/chi-tiet`)}>
               Chi tiết
             </Button>
           </div>
@@ -564,19 +566,23 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
-            />
+            {
+              !isEmpty(head(variablesModules.STATUS_TABS)?.id) && (
+                <Table
+                  bordered
+                  columns={this.header(params)}
+                  dataSource={data}
+                  loading={loading}
+                  pagination={this.pagination(pagination)}
+                  params={{
+                    header: this.header(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%', y: '60vh' }}
+                />
+              )
+            }
           </div>
         </div>
       </>
