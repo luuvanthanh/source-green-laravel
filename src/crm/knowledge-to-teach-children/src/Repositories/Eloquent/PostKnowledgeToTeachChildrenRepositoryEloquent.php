@@ -162,7 +162,8 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
             $AbpUserRoles = \DB::connection('pgsql_second')->table('AbpUserRoles')->where('RoleId', $idRole)->first();
 
             if (!empty($model)) {
-                $str = substr(strip_tags($model->content), 0, 250);
+                $str = mb_substr(strip_tags(trim(html_entity_decode($model->content,   ENT_QUOTES, 'UTF-8'))), 0, 250);
+
                 $str = str_replace('&lt;', '', $str);
                 $str = str_replace('&nbsp;', '', $str);
                 $str = str_replace('&ensp;', '', $str);
