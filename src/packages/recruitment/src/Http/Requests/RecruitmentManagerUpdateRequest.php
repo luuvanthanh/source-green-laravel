@@ -4,6 +4,7 @@ namespace GGPHP\Recruitment\Http\Requests;
 
 use GGPHP\Recruitment\Models\Level;
 use GGPHP\Recruitment\Models\RecruitmentCandidateManagement;
+use GGPHP\Recruitment\Models\RecruitmentManager;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecruitmentManagerUpdateRequest extends FormRequest
@@ -45,7 +46,18 @@ class RecruitmentManagerUpdateRequest extends FormRequest
             'divisionId' => 'nullable|exists:Divisions,Id',
             'recruitmentLevelId' => 'nullable|exists:RecruitmentLevels,Id',
             'recruitmentConfigurationId' => 'nullable|exists:RecruitmentConfigurations,Id',
-            'link' => 'nullable|string|unique:RecruitmentManagers,Link',
+            'link' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $configureThank = RecruitmentManager::where('Link', $value)->where('Id', $this->id)->first();
+
+                    if (!is_null($configureThank)) {
+                        return true;
+                    }
+                    
+                    return $fail('Dữ liệu đã có trong hệ thống');
+                },
+            ]
         ];
     }
 }
