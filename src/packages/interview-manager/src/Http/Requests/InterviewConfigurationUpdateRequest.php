@@ -38,8 +38,8 @@ class InterviewConfigurationUpdateRequest extends FormRequest
                 },
             ],
             'note' => 'nullable|string',
-            'data' => 'nullable|array',
-            'data.*' => 'nullable|exists:EvaluationCriterias,Id'
+            'evaluationCriteriaId' => 'nullable|array',
+            'evaluationCriteriaId.*' => 'nullable|exists:EvaluationCriterias,Id'
         ];
     }
 }

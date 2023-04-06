@@ -2,9 +2,10 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\InterviewList;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InterviewerListCreateRequest extends FormRequest
+class InterviewerListUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,17 @@ class InterviewerListCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'interviewName' => 'required|string',
+            'interviewName' => [
+                'required', 'string',
+                function ($attribute, $value, $fail) {
+                    $interviewList = InterviewList::where('InterviewName', $value)->where('Id' , '!=', $this->interview_list)->first();
+
+                    if (!is_null($interviewList)) {
+
+                        return $fail('Dữ liệu đã có trong hệ thống');
+                    }
+                },
+            ],
             'candidateName' => 'required|string',
             'location' => 'required|string',
             'divisionId' => 'required|exists:Divisions,Id',

@@ -47,7 +47,7 @@ class InterviewList extends UuidModel
         'Address',
         'Status',
         'MediumScore',
-        'Result',
+        'PointEvaluationId',
         'SuggestedSalary'
     ];
 
@@ -64,5 +64,15 @@ class InterviewList extends UuidModel
     public function interviewConfiguration()
     {
         return $this->belongsTo(InterviewConfiguration::class, 'InterviewConfigurationId');
+    }
+
+    public function pointEvaluation()
+    {
+        return $this->belongsTo(PointEvaluation::class, 'PointEvaluationId');
+    }
+
+    public function interviewDetail()
+    {
+        return $this->hasMany(InterviewDetail::class, 'InterviewListId');
     }
 }

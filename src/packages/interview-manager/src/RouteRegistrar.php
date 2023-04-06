@@ -34,6 +34,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('point-evaluations', 'PointEvaluationController');
             \Route::resource('interview-configurations', 'InterviewConfigurationController');
             \Route::resource('interview-lists', 'InterviewListController');
+            \Route::put('sendSuggestions/{id}', 'InterviewListController@sendSuggestions');
+            \Route::put('complete-interview/{id}', 'InterviewListController@completeInterview');
         });
     }
 }

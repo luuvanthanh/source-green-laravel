@@ -18,7 +18,7 @@ class InterviewListTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['division', 'interviewListEmployee', 'interviewConfiguration'];
+    protected $availableIncludes = ['division', 'interviewListEmployee', 'interviewConfiguration', 'pointEvaluation', 'interviewDetail'];
 
     /**
      * Transform the custom field entity.
@@ -27,7 +27,9 @@ class InterviewListTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'Status' => array_search($model->Status, InterviewList::STATUS),
+        ];
     }
 
     public function includeDivision(InterviewList $interviewList)
@@ -51,5 +53,19 @@ class InterviewListTransformer extends BaseTransformer
         }
 
         return $this->item($interviewList->interviewConfiguration, new InterviewConfigurationTransformer, 'InterviewConfiguration');
+    }
+
+    public function includePointEvaluation(InterviewList $interviewList)
+    {
+        if (is_null($interviewList->PointEvaluation)) {
+            return null;
+        }
+
+        return $this->item($interviewList->PointEvaluation, new PointEvaluationTransformer  , 'PointEvaluation');
+    }
+
+    public function includeInterviewDetail(InterviewList $interviewList)
+    {
+        return $this->collection($interviewList->interviewDetail, new InterviewDetailTransformer, 'InterviewDetail');
     }
 }

@@ -3,9 +3,11 @@
 namespace GGPHP\InterviewManager\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\InterviewManager\Http\Requests\InterviewerDeleteRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateCompletedInterviewRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateRequest;
-use GGPHP\InterviewManager\Http\Requests\InterviewerUpdateRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionsRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListDeleteRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListUpdateRequest;
 use GGPHP\InterviewManager\Repositories\Contracts\InterviewListRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -69,7 +71,7 @@ class InterviewListController extends Controller
      *
      * @return Response
      */
-    public function update(InterviewerUpdateRequest $request, $id)
+    public function update(InterviewerListUpdateRequest $request, $id)
     {
         $interviewList = $this->interviewListRepository->update($request->all(), $id);
 
@@ -83,10 +85,24 @@ class InterviewListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InterviewerDeleteRequest $request, $id)
+    public function destroy(InterviewerListDeleteRequest $request, $id)
     {
         $this->interviewListRepository->delete($id);
 
         return $this->success([], '', ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
+    }
+
+    public function sendSuggestions(InterviewerListCreateSendSuggestionsRequest $request, $id)
+    {
+        $sendSuggestions = $this->interviewListRepository->sendSuggestions($request->all(), $id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
+
+    public function completeInterview(InterviewerListCreateCompletedInterviewRequest $request, $id)
+    {
+        $completeInterview = $this->interviewListRepository->completeInterview($request->all(), $id);
+
+        return $this->success($completeInterview, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 }

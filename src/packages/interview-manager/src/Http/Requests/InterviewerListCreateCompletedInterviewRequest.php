@@ -2,9 +2,10 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\InterviewList;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InterviewConfigurationCreateRequest extends FormRequest
+class InterviewerListCreateCompletedInterviewRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +25,11 @@ class InterviewConfigurationCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'divisionId' => 'required|exists:Divisions,Id',
-            'name' => 'required|string|unique:InterviewConfigurations,Name',
-            'note' => 'required|string',
-            'evaluationCriteriaId' => 'nullable|array',
-            'evaluationCriteriaId.*' => 'required|exists:EvaluationCriterias,Id'
+            'interviewListId' => 'required|exists:InterviewLists,Id',
+            'pointEvaluation' => 'required|array',
+            'pointEvaluation.*' => 'required|numeric',
+            'comment' => 'nullable|array',
+            'comment.*' => 'nullable|string',
         ];
     }
 }

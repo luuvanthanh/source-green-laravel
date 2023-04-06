@@ -30,7 +30,7 @@ class CreateInterviewListsTable extends Migration
             $table->string('Address');
             $table->string('Status')->nullable();
             $table->string('MediumScore')->nullable();
-            $table->string('Result')->nullable();
+            $table->uuid('PointEvaluationId')->nullable();
             $table->string('SuggestedSalary')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

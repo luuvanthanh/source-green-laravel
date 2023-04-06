@@ -30,4 +30,15 @@ class PointEvaluationCreateRequest extends FormRequest
             'data.*.classification' => 'required|string'
         ];
     }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        foreach ($data['data'] as $key => $value) {
+            $data['data'][$key]['pointFrom'] = number_format($data['data'][$key]['pointFrom'], 1);
+            $data['data'][$key]['pointTo'] = number_format($data['data'][$key]['pointTo'], 1);
+        }
+        
+        return $data;
+    }
 }
