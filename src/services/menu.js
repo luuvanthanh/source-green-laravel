@@ -681,7 +681,7 @@ export async function getLeftMenuCriteria() {
       title: 'Học tập giáo cụ',
       key: 'teaching-tools',
       icon: 'icon icon-list',
-      permission: [permissions.CTH],
+      permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU}${ACTION.VIEW}`],
       pro: true,
       children: [
         // {
@@ -714,7 +714,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/them-moi',
             '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -725,7 +725,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi',
             '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -736,7 +736,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
             '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -746,14 +746,14 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam',
             '/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_TKNC}${ACTION.VIEW}`],
           pro: true,
         },
         {
           title: 'Cấu hình TKNC',
           key: 'configuration',
           url: ['/chuong-trinh-hoc/TKNC'],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_CAUHINHTKNC}${ACTION.VIEW}`],
           pro: true,
         },
       ],
@@ -779,14 +779,14 @@ export async function getLeftMenuCriteria() {
       key: 'history',
       url: ['/chuong-trinh-hoc/lich-su'],
       icon: 'icon icon-clock',
-      permission: [permissions.CTH],
+      permission: [`${FLATFORM.WEB}${permissions.CTH_LICHSU}${ACTION.VIEW}`],
       pro: true,
     },
     {
       title: 'Cấu hình',
       key: 'categories',
       icon: 'icon icon-setting',
-      permission: [permissions.CTH],
+      permission: [`${FLATFORM.WEB}${permissions.CTH_CAUHINH}${ACTION.VIEW}`],
       children: [
         {
           title: 'Nhóm tiêu chí',
@@ -796,7 +796,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/nhom-tieu-chi/tao-moi',
             '/chuong-trinh-hoc/cau-hinh/nhom-tieu-chi/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -807,7 +807,7 @@ export async function getLeftMenuCriteria() {
             '/chuong-trinh-hoc/cau-hinh/thuoc-nhom-tieu-chi/tao-moi',
             '/chuong-trinh-hoc/cau-hinh/thuoc-nhom-tieu-chi/:id/chi-tiet',
           ],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_CAUHINH_THUOCNHOMTIEUCHI}${ACTION.VIEW}`],
           pro: true,
         },
       ],
@@ -816,13 +816,13 @@ export async function getLeftMenuCriteria() {
       title: 'Báo cáo',
       key: 'program-report',
       icon: 'icon icon-list',
-      permission: [permissions.CTH],
+      permission: [`${FLATFORM.WEB}${permissions.CTH_BAOCAO}${ACTION.VIEW}`],
       children: [
         {
           title: 'Báo cáo quản trị HS - Học thuật theo từng góc giáo cụ',
           key: 'program-report-angle-tools',
           url: ['/chuong-trinh-hoc/bao-cao-quan-tri-hs/hoc-thuat-theo-tung-goc-giao-cu'],
-          permission: [permissions.CTH],
+          permission: [`${FLATFORM.WEB}${permissions.CTH_BAOCAO}${ACTION.VIEW}`],
           pro: true,
         },
       ],

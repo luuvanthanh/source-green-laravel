@@ -12,6 +12,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import PropTypes from 'prop-types';
 import stylesModule from './styles.module.scss';
 
@@ -51,7 +52,7 @@ class Index extends PureComponent {
     const {
       defaultBranch,
       location: { query },
-      user
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -62,12 +63,11 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         FromDate: query?.FromDate,
         ToDate: query?.ToDate,
-        date: query?.FromDate &&
-          query?.ToDate && [
-            moment(query?.FromDate),
-            moment(query?.ToDate),
-          ],
-        ClassId: query?.ClassId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+        date: query?.FromDate && query?.ToDate && [moment(query?.FromDate), moment(query?.ToDate)],
+        ClassId:
+          query?.ClassId ||
+          (user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER &&
+            head(user?.objectInfo?.classTeachers)?.classId),
       },
       dataIDSearch: [],
     };
@@ -259,7 +259,6 @@ class Index extends PureComponent {
     );
   };
 
-
   debouncedSearchDateRank = debounce((FromDate, ToDate) => {
     this.setStateData(
       (prevState) => ({
@@ -319,15 +318,9 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value?.children ?
-                  <Text size="normal">{value?.student?.fullName}</Text> : ""
-                }
-                {value?.branch ?
-                  <Text size="normal">{value?.branch?.name}</Text> : ""
-                }
-                {value?.class ?
-                  <Text size="normal">{value?.class?.name}</Text> : ""
-                }
+                {value?.children ? <Text size="normal">{value?.student?.fullName}</Text> : ''}
+                {value?.branch ? <Text size="normal">{value?.branch?.name}</Text> : ''}
+                {value?.class ? <Text size="normal">{value?.class?.name}</Text> : ''}
               </div>
             ),
             props: {},
@@ -335,11 +328,9 @@ class Index extends PureComponent {
           if (value?.class || value?.branch) {
             obj.props.rowSpan = 1;
             obj.props.colSpan = 1;
-          }
-          else if (value?.student?.fullName && value?.children) {
+          } else if (value?.student?.fullName && value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -354,9 +345,11 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value?.children ?
-                  <Text size="normal">{value?.student?.class?.branch?.name}</Text> : ""
-                }
+                {value?.children ? (
+                  <Text size="normal">{value?.student?.class?.branch?.name}</Text>
+                ) : (
+                  ''
+                )}
               </div>
             ),
             props: {},
@@ -364,11 +357,9 @@ class Index extends PureComponent {
           if (value?.class || value?.branch) {
             obj.props.rowSpan = 1;
             obj.props.colSpan = 1;
-          }
-          else if (value?.student?.fullName && value?.children) {
+          } else if (value?.student?.fullName && value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -383,9 +374,7 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value?.children ?
-                  <Text size="normal">{value?.student?.class?.name}</Text> : ""
-                }
+                {value?.children ? <Text size="normal">{value?.student?.class?.name}</Text> : ''}
               </div>
             ),
             props: {},
@@ -393,11 +382,9 @@ class Index extends PureComponent {
           if (value?.class || value?.branch) {
             obj.props.rowSpan = 1;
             obj.props.colSpan = 1;
-          }
-          else if (value?.student?.fullName && value?.children) {
+          } else if (value?.student?.fullName && value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -412,9 +399,7 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value?.children ?
-                  <Text size="normal">{value?.toolGroup?.name}</Text> : ""
-                }
+                {value?.children ? <Text size="normal">{value?.toolGroup?.name}</Text> : ''}
               </div>
             ),
             props: {},
@@ -422,11 +407,9 @@ class Index extends PureComponent {
           if (value?.class || value?.branch) {
             obj.props.rowSpan = 1;
             obj.props.colSpan = 1;
-          }
-          else if (value?.student?.fullName && value?.children) {
+          } else if (value?.student?.fullName && value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -441,9 +424,7 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.toolGroup?.meanOfLife}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.toolGroup?.meanOfLife}</Text> : ''}
               </div>
             ),
             props: {},
@@ -451,11 +432,9 @@ class Index extends PureComponent {
           if (value?.class || value?.branch) {
             obj.props.rowSpan = 1;
             obj.props.colSpan = 1;
-          }
-          else if (value?.student?.fullName && value?.children) {
+          } else if (value?.student?.fullName && value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -469,9 +448,7 @@ class Index extends PureComponent {
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{Helper.getDate(value?.reportDate)}</Text> : ""
-                }
+                {value ? <Text size="normal">{Helper.getDate(value?.reportDate)}</Text> : ''}
               </div>
             ),
             props: {},
@@ -487,13 +464,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.totalMinutes}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.totalMinutes}</Text> : ''}
               </div>
             ),
             props: {},
@@ -509,13 +483,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.toolDetail?.name}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.toolDetail?.name}</Text> : ''}
               </div>
             ),
             props: {},
@@ -531,16 +502,16 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value?.toolDetail ?
+                {value?.toolDetail ? (
                   <AvatarTable
                     fileImage={Helper.getPathAvatarJson(value?.toolDetail?.fileUrl[0]?.url)}
                   />
-                  : ""
-                }
+                ) : (
+                  ''
+                )}
               </div>
             ),
             props: {},
@@ -556,14 +527,14 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value && !value?.children ?
+                {value && !value?.children ? (
                   <Text size="normal">{value?.toolDetail?.content}</Text>
-                  : ""
-                }
+                ) : (
+                  ''
+                )}
               </div>
             ),
             props: {},
@@ -579,13 +550,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.toolDetail?.meanOfLife}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.toolDetail?.meanOfLife}</Text> : ''}
               </div>
             ),
             props: {},
@@ -601,13 +569,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.toolDetail?.skillGained}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.toolDetail?.skillGained}</Text> : ''}
               </div>
             ),
             props: {},
@@ -623,13 +588,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.level}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.level}</Text> : ''}
               </div>
             ),
             props: {},
@@ -645,13 +607,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.levelContent}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.levelContent}</Text> : ''}
               </div>
             ),
             props: {},
@@ -667,13 +626,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.sensitivePeriod?.name}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.sensitivePeriod?.name}</Text> : ''}
               </div>
             ),
             props: {},
@@ -689,13 +645,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.sensitivePeriod?.explaination}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.sensitivePeriod?.explaination}</Text> : ''}
               </div>
             ),
             props: {},
@@ -711,13 +664,14 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.sensitivePeriod?.parentInvolvement}</Text> : ""
-                }
+                {value ? (
+                  <Text size="normal">{value?.sensitivePeriod?.parentInvolvement}</Text>
+                ) : (
+                  ''
+                )}
               </div>
             ),
             props: {},
@@ -733,13 +687,10 @@ class Index extends PureComponent {
         key: 'name',
         width: 250,
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.reviewOfTeacher}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.reviewOfTeacher}</Text> : ''}
               </div>
             ),
             props: {},
@@ -770,12 +721,14 @@ class Index extends PureComponent {
         ToolGroupId: query?.ToolGroupId,
         ToolDetailId: query?.ToolDetailId,
         branchId: query?.branchId || defaultBranch?.id,
-        FromDate: dataIDSearch?.length > 0 ?
-          moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
-          : "",
-        ToDate: dataIDSearch?.length > 0 ?
-          moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
-          : "",
+        FromDate:
+          dataIDSearch?.length > 0
+            ? moment(dataIDSearch[0]).format(variables.DATE_FORMAT.DATE_AFTER)
+            : '',
+        ToDate:
+          dataIDSearch?.length > 0
+            ? moment(dataIDSearch[1]).format(variables.DATE_FORMAT.DATE_AFTER)
+            : '',
       },
       `Baocaoquantrihocsinhtheogocgiaocu.xlsx`,
     );
@@ -804,7 +757,13 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Báo cáo quản trị học sinh theo góc giáo cụ</Text>
-            <Button color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel} >
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.CTH_BAOCAO}${ACTION.EXPORT}`}
+              color="primary"
+              icon="export"
+              className="ml-2"
+              onClick={this.onChangeExcel}
+            >
               Xuất Excel
             </Button>
           </div>
@@ -852,7 +811,15 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-2">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...classes?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]
+                    }
                     name="ClassId"
                     onChange={(event) => this.onChangeSelect(event, 'ClassId')}
                     type={variables.SELECT}

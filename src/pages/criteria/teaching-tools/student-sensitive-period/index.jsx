@@ -11,6 +11,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 // import HelperModules from './utils/Helper';
@@ -50,7 +52,7 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
-      user
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -59,7 +61,10 @@ class Index extends PureComponent {
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId || defaultBranch?.id,
-        classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+        classId:
+          query?.classId ||
+          (user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER &&
+            head(user?.objectInfo?.classTeachers)?.classId),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
@@ -173,7 +178,7 @@ class Index extends PureComponent {
               data: response?.items,
               dataTotal: {
                 not_send: response?.totalCount,
-                send: response?.summary
+                send: response?.summary,
               },
             });
           }
@@ -191,7 +196,7 @@ class Index extends PureComponent {
               data: response?.items,
               dataTotal: {
                 send: response?.totalCount,
-                not_send: response?.summary
+                not_send: response?.summary,
               },
             });
           }
@@ -384,15 +389,14 @@ class Index extends PureComponent {
     dispatch({
       type: type === 'one' ? 'teachingToolsStudent/ADD' : 'teachingToolsStudent/ADD_ALL',
       payload:
-        type === 'one' ?
-          data?.filter((item) => item?.isActive)?.map((item) => item.id) :
-          {
-            branchId: search?.branchId,
-            classId: search?.classId,
-            sensitivePeriodId: search?.sensitivePeriodId,
-            keyWord: search?.keyWord,
-
-          },
+        type === 'one'
+          ? data?.filter((item) => item?.isActive)?.map((item) => item.id)
+          : {
+              branchId: search?.branchId,
+              classId: search?.classId,
+              sensitivePeriodId: search?.sensitivePeriodId,
+              keyWord: search?.keyWord,
+            },
       callback: (response) => {
         if (response) {
           self.onLoad();
@@ -442,35 +446,51 @@ class Index extends PureComponent {
         title: 'Thời kỳ nhạy cảm',
         key: 'email',
         width: 150,
-        render: (record) => <Text size="normal">  {record?.sensitivePeriods?.map((item, index) =>
-          <div size="normal" key={index} className='d-flex'>
-            {item?.name}{index + 1 === record.sensitivePeriods.length ? "" : ",  "}
-          </div>
-        )}</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {' '}
+            {record?.sensitivePeriods?.map((item, index) => (
+              <div size="normal" key={index} className="d-flex">
+                {item?.name}
+                {index + 1 === record.sensitivePeriods.length ? '' : ',  '}
+              </div>
+            ))}
+          </Text>
+        ),
       },
-      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
-        [{
-          title: "Thời gian gửi",
-          key: 'text',
-          width: 200,
-          render: (record) => Helper.getDate(record?.sentDate, variables.DATE_FORMAT.DATE_TIME),
-        },] : []),
-      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ?
-        [{
-          key: 'action',
-          width: 80,
-          fixed: 'right',
-          render: (record) => (
-            <div className="d-flex flex-row-reverse">
-              <Button
-                color="success"
-                className="ml5"
-                icon="redo2"
-                onClick={(e) => { e.stopPropagation(); this.onChangeItem(record); }}
-              />
-            </div>
-          ),
-        },] : []),
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED
+        ? [
+            {
+              title: 'Thời gian gửi',
+              key: 'text',
+              width: 200,
+              render: (record) => Helper.getDate(record?.sentDate, variables.DATE_FORMAT.DATE_TIME),
+            },
+          ]
+        : []),
+      ...(search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED
+        ? [
+            {
+              key: 'action',
+              width: 80,
+              fixed: 'right',
+              render: (record) => (
+                <div className="d-flex flex-row-reverse">
+                  <Button
+                    color="success"
+                    className="ml5"
+                    icon="redo2"
+                    permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.SEND}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.onChangeItem(record);
+                    }}
+                  />
+                </div>
+              ),
+            },
+          ]
+        : []),
     ];
     return columns;
   };
@@ -504,7 +524,8 @@ class Index extends PureComponent {
       }),
     };
     const { search, defaultBranchs } = this.state;
-    const loading = effects['teachingToolsStudent/GET_DATA'] || effects['teachingToolsStudent/GET_SENDING'];
+    const loading =
+      effects['teachingToolsStudent/GET_DATA'] || effects['teachingToolsStudent/GET_SENDING'];
     return (
       <>
         <Helmet title="Học sinh có thời kỳ nhạy cảm" />
@@ -512,24 +533,30 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Học sinh có thời kỳ nhạy cảm</Text>
-            {
-              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
-                <div className='d-flex'>
-                  <Button disabled={!size(data.filter((item) => item.isActive))} color="primary" icon="redo2" className="ml-2" onClick={() => this.onClickAddReview('one')}>
-                    Gửi đánh giá đã chọn
-                  </Button>
-                  <Button
-                    color="success"
-                    icon="redo2"
-                    className="ml-2"
-                    onClick={() => this.onClickAddReview('all')}
-                    disabled={isEmpty(data)}
-                  >
-                    Gửi tất cả
-                  </Button>
-                </div>
-              )
-            }
+            {search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
+              <div className="d-flex">
+                <Button
+                  permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.SEND}`}
+                  disabled={!size(data.filter((item) => item.isActive))}
+                  color="primary"
+                  icon="redo2"
+                  className="ml-2"
+                  onClick={() => this.onClickAddReview('one')}
+                >
+                  Gửi đánh giá đã chọn
+                </Button>
+                <Button
+                  color="success"
+                  icon="redo2"
+                  className="ml-2"
+                  onClick={() => this.onClickAddReview('all')}
+                  disabled={isEmpty(data)}
+                  permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.SEND}`}
+                >
+                  Gửi tất cả
+                </Button>
+              </div>
+            )}
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
@@ -537,10 +564,18 @@ class Index extends PureComponent {
               onChange={(event) => this.onChangeSelectStatus(event, 'approvalStatus')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={`${item.name}  ${(!isEmpty(dataTotal))
-                  ?
-                  `(${dataTotal?.[variablesModules.STATUS_TABS.find(i => i?.id === item?.id)?.type]})`
-                  : ""}  `} key={item.id} />
+                <TabPane
+                  tab={`${item.name}  ${
+                    !isEmpty(dataTotal)
+                      ? `(${
+                          dataTotal?.[
+                            variablesModules.STATUS_TABS.find((i) => i?.id === item?.id)?.type
+                          ]
+                        })`
+                      : ''
+                  }  `}
+                  key={item.id}
+                />
               ))}
             </Tabs>
             <Form
@@ -587,7 +622,15 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...classes?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]
+                    }
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -606,25 +649,62 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered={false}
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              rowSelection={search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? { ...rowSelection } : null}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
-              onRow={(record) => ({
-                onClick: () => {
-                  history.push(`/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/${record.id}/chi-tiet`);
-                },
-              })}
-            />
+            {!isEmpty(
+              user?.permissionGrants?.filter(
+                (i) =>
+                  i ===
+                    `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.VIEW}` ||
+                  i ===
+                    `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_DAGUI}${ACTION.VIEW}`,
+              ),
+            ) && (
+              <Table
+                bordered={false}
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                rowSelection={
+                  search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED
+                    ? { ...rowSelection }
+                    : null
+                }
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: '60vh' }}
+                onRow={(record) => ({
+                  onClick: () => {
+                    if (
+                      search.approvalStatus === variablesModules.STATUS.PENDING_APPROVED &&
+                      user?.permissions?.find(
+                        (i) =>
+                          i ===
+                          `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(
+                        `/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/${record.id}/chi-tiet`,
+                      );
+                    }
+                    if (
+                      search.approvalStatus === variablesModules.STATUS.APPROVED &&
+                      user?.permissions?.find(
+                        (i) =>
+                          i ===
+                          `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_DAGUI}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(
+                        `/chuong-trinh-hoc/hoc-sinh-co-thoi-ky-nhay-cam/${record.id}/chi-tiet`,
+                      );
+                    }
+                  },
+                })}
+              />
+            )}
           </div>
         </div>
       </>

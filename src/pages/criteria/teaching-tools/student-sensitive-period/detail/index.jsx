@@ -13,11 +13,10 @@ import Text from '@/components/CommonComponent/Text';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import Button from '@/components/CommonComponent/Button';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import stylesModule from '../styles.module.scss';
 import HelperModules from '../utils/Helper';
 import VariableModules from '../utils/variables';
-
-
 
 const Index = memo(() => {
   const [form] = Form.useForm();
@@ -62,18 +61,24 @@ const Index = memo(() => {
             children: (
               <div className={stylesModule['table-name']}>
                 {Helper.getDate(value?.information?.reportDate, variables.DATE_FORMAT.DATE)}
-                <div className='d-flex'>
-                  <p> {value?.information?.checkin?.hours}:{value?.information?.checkin?.minutes}</p>
-                  <p className='ml5 mr5'>-</p>
-                  <p> {value?.information?.checkout?.hours}:{value?.information?.checkout?.minutes}</p>
+                <div className="d-flex">
+                  <p>
+                    {' '}
+                    {value?.information?.checkin?.hours}:{value?.information?.checkin?.minutes}
+                  </p>
+                  <p className="ml5 mr5">-</p>
+                  <p>
+                    {' '}
+                    {value?.information?.checkout?.hours}:{value?.information?.checkout?.minutes}
+                  </p>
                 </div>
               </div>
             ),
             props: {},
-          }; if (value?.children) {
+          };
+          if (value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -89,14 +94,16 @@ const Index = memo(() => {
             children: (
               <div className={stylesModule['table-name']}>
                 <Text size="normal">{value?.information?.toolDetail?.name}</Text>
-                <p style={{ color: "#6D7177", fontweight: 400, fontSize: 14 }}>{value?.information?.toolGroup?.name}</p>
+                <p style={{ color: '#6D7177', fontweight: 400, fontSize: 14 }}>
+                  {value?.information?.toolGroup?.name}
+                </p>
               </div>
             ),
             props: {},
-          }; if (value?.children) {
+          };
+          if (value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -117,10 +124,10 @@ const Index = memo(() => {
               </div>
             ),
             props: {},
-          }; if (value?.children) {
+          };
+          if (value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -141,10 +148,10 @@ const Index = memo(() => {
               </div>
             ),
             props: {},
-          }; if (value?.children) {
+          };
+          if (value?.children) {
             obj.props.rowSpan = count;
-          }
-          else {
+          } else {
             obj.props.rowSpan = 0;
           }
           return obj;
@@ -155,13 +162,10 @@ const Index = memo(() => {
         key: 'statusParent',
         className: 'min-width-200',
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.activity}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.activity}</Text> : ''}
               </div>
             ),
             props: {},
@@ -177,13 +181,10 @@ const Index = memo(() => {
         key: 'statusParent',
         className: 'min-width-200',
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.parentInvolvement}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.parentInvolvement}</Text> : ''}
               </div>
             ),
             props: {},
@@ -199,13 +200,10 @@ const Index = memo(() => {
         key: 'statusParent',
         className: 'min-width-150',
         render: (value) => {
-
           const obj = {
             children: (
               <div className={stylesModule['table-name']}>
-                {value ?
-                  <Text size="normal">{value?.reviewOfTeacher}</Text> : ""
-                }
+                {value ? <Text size="normal">{value?.reviewOfTeacher}</Text> : ''}
               </div>
             ),
             props: {},
@@ -237,12 +235,14 @@ const Index = memo(() => {
       <Breadcrumbs last="Chi tiết" menu={menuLeftCriteria} />
       <Helmet title="Học sinh có TKNC" />
       <Pane className="pl20 pr20">
-        <Pane >
-          <Form layout="vertical" form={form} initialValues={{
-            data: [
-              {},
-            ],
-          }}>
+        <Pane>
+          <Form
+            layout="vertical"
+            form={form}
+            initialValues={{
+              data: [{}],
+            }}
+          >
             <Loading
               params={{ type: 'container' }}
               loading={effects['teachingToolsStudent/GET_DETAIL']}
@@ -253,16 +253,22 @@ const Index = memo(() => {
                     Thông tin chung
                   </Heading>
                   <div className={stylesModule['header-tag']}>
-                    {HelperModules.tagStatus(detail?.isSent ? VariableModules.STATUS.SEND : VariableModules.STATUS.NOT_SEND)}
-                    {detail?.isSent && (<p className={stylesModule.time}>Lúc {Helper.getDate(detail?.sentDate, variables.DATE_FORMAT.DATE_TIME)} </p>)}
+                    {HelperModules.tagStatus(
+                      detail?.isSent
+                        ? VariableModules.STATUS.SEND
+                        : VariableModules.STATUS.NOT_SEND,
+                    )}
+                    {detail?.isSent && (
+                      <p className={stylesModule.time}>
+                        Lúc {Helper.getDate(detail?.sentDate, variables.DATE_FORMAT.DATE_TIME)}{' '}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <Pane className="row">
                   <Pane className="col-lg-3">
                     <div className={stylesModule['wrapper-student']}>
-                      <ImgDetail
-                        fileImage={detail?.student?.fileImage}
-                      />
+                      <ImgDetail fileImage={detail?.student?.fileImage} />
                       <div className={stylesModule?.content}>
                         <h3 className={stylesModule?.lable}>{detail?.student?.fullName}</h3>
                         <p className={stylesModule?.age}>{detail?.student?.age} Tháng tuổi</p>
@@ -270,69 +276,72 @@ const Index = memo(() => {
                     </div>
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={detail?.student?.branch?.name} label="Cơ sở" type={variables.TYPE.TEXT} />
+                    <FormDetail
+                      name={detail?.student?.branch?.name}
+                      label="Cơ sở"
+                      type={variables.TYPE.TEXT}
+                    />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={detail?.student?.class?.name} label="Lớp" type={variables.TYPE.TEXT} />
+                    <FormDetail
+                      name={detail?.student?.class?.name}
+                      label="Lớp"
+                      type={variables.TYPE.TEXT}
+                    />
                   </Pane>
                   <Pane className="col-lg-3">
-                    <FormDetail name={Helper.getDate(detail?.creationTime, variables.DATE_FORMAT.DATE_TIME)} label="Thời gian phát hiện TKNC" type={variables.TYPE.TEXT} />
+                    <FormDetail
+                      name={Helper.getDate(detail?.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+                      label="Thời gian phát hiện TKNC"
+                      type={variables.TYPE.TEXT}
+                    />
                   </Pane>
                 </Pane>
               </Pane>
-              {
-                detail?.studentHasSensitivePeriodDetailGroupSensitivePeriods?.map((item, index) => (
-                  <Pane className="card p20" key={index}>
-                    <Heading type="form-title" className="mb15">
-                      Thời kỳ nhạy cảm: {item?.sensitivePeriod?.name}
-                    </Heading>
-                    <Pane className="row">
-                      <Pane className="col-lg-12">
-                        <div className={stylesModule['wrapper-table']}>
-                          <Table
-                            columns={header()}
-                            bordered
-                            dataSource={item?.groupBy}
-                            pagination={false}
-                            className="table-normal"
-                            defaultExpandAllRows
-                            childrenColumnName="children"
-                            isEmpty
-                            params={{
-                              header: header(),
-                              type: 'table',
-                            }}
-                            rowKey={(record) => record?.id}
-                            scroll={{ x: '100%' }}
-                          />
-                        </div>
-                      </Pane>
+              {detail?.studentHasSensitivePeriodDetailGroupSensitivePeriods?.map((item, index) => (
+                <Pane className="card p20" key={index}>
+                  <Heading type="form-title" className="mb15">
+                    Thời kỳ nhạy cảm: {item?.sensitivePeriod?.name}
+                  </Heading>
+                  <Pane className="row">
+                    <Pane className="col-lg-12">
+                      <div className={stylesModule['wrapper-table']}>
+                        <Table
+                          columns={header()}
+                          bordered
+                          dataSource={item?.groupBy}
+                          pagination={false}
+                          className="table-normal"
+                          defaultExpandAllRows
+                          childrenColumnName="children"
+                          isEmpty
+                          params={{
+                            header: header(),
+                            type: 'table',
+                          }}
+                          rowKey={(record) => record?.id}
+                          scroll={{ x: '100%' }}
+                        />
+                      </div>
                     </Pane>
                   </Pane>
-                ))
-              }
+                </Pane>
+              ))}
               <Pane className="d-flex justify-content-between align-items-center pb20">
-                <p
-                  className="btn-delete"
-                  role="presentation"
-                  onClick={() => history.goBack()}
-                >
+                <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                   Đóng
                 </p>
-                {
-                  !detail?.isSent && (
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      size="large"
-                      onClick={() =>
-                        onChangeItem()
-                      }
-                    >
-                      Gửi TKNC
-                    </Button>
-                  )
-                }
+                {!detail?.isSent && (
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    size="large"
+                    onClick={() => onChangeItem()}
+                    permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_HOCSINHCOTKNC_CHOGUI}${ACTION.SEND}`}
+                  >
+                    Gửi TKNC
+                  </Button>
+                )}
               </Pane>
             </Loading>
           </Form>

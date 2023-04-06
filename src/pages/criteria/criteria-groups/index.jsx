@@ -8,6 +8,8 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -219,9 +221,15 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission={`${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.EDIT}`}
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.DELETE}`}
+              color="danger"
+              icon="remove"
+              onClick={() => this.onRemove(record.id)}
+            />
           </div>
         ),
       },
@@ -246,7 +254,12 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH NHÓM TIÊU CHÍ</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.CREATE}`}
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
               Thêm mới
             </Button>
           </div>

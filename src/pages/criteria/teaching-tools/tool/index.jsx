@@ -11,6 +11,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
@@ -84,6 +86,7 @@ const Index = memo(() => {
               color="success"
               ghost
               onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+              permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.CREATE}`}
             >
               Chi tiết
             </Button>
@@ -143,7 +146,7 @@ const Index = memo(() => {
     });
 
   return (
-    <div >
+    <div>
       <Helmet title="Danh sách giáo cụ" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
@@ -153,6 +156,7 @@ const Index = memo(() => {
             color="success"
             icon="plus"
             onClick={() => history.push(`${pathname}/them-moi`)}
+            permission={`${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GIAOCU}${ACTION.CREATE}`}
           >
             Tạo mới
           </Button>
