@@ -5,6 +5,7 @@ namespace GGPHP\InterviewManager\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateCompletedInterviewRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionDoNotApproveMoneyRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionsRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListDeleteRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListUpdateRequest;
@@ -104,5 +105,13 @@ class InterviewListController extends Controller
         $completeInterview = $this->interviewListRepository->completeInterview($request->all(), $id);
 
         return $this->success($completeInterview, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
+
+    // gửi dề xuất không duyệt lương
+    public function sendSuggestionDoNotApprove(InterviewerListCreateSendSuggestionDoNotApproveMoneyRequest $request, $id)
+    {
+        $sendSuggestions = $this->interviewListRepository->sendSuggestionDoNotApprove($request->all(), $id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
 }

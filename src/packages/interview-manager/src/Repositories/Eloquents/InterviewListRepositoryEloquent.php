@@ -152,6 +152,17 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function sendSuggestions(array $attributes, $id)
     {
+        $attributes['status'] = InterviewList::STATUS['PENDING'];
+        $interviewerList = InterviewList::findOrfail($id);
+
+        $interviewerList->update($attributes);
+
+        return parent::find($id);
+    }
+
+    public function sendSuggestionDoNotApprove(array $attributes, $id)
+    {
+        $attributes['status'] = InterviewList::STATUS['PENDING'];
         $interviewerList = InterviewList::findOrfail($id);
 
         $interviewerList->update($attributes);
@@ -161,6 +172,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
     
     public function completeInterview(array $attributes, $id)
     {
+        dd($attributes);
         $interviewList = InterviewList::findOrfail($id);
         if (!empty($attributes['pointEvaluation'])) {
             foreach ($attributes['pointEvaluation'] as $key => $value) {

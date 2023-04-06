@@ -4,6 +4,7 @@ namespace GGPHP\InterviewManager\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\InterviewManager\Http\Requests\EvaluationCriteriaCreateRequest;
+use GGPHP\InterviewManager\Http\Requests\EvaluationCriteriaDeleteRequest;
 use GGPHP\InterviewManager\Http\Requests\EvaluationCriteriaUpdateRequest;
 use GGPHP\InterviewManager\Repositories\Contracts\EvaluationCriteriaRepository;
 use Illuminate\Http\Request;
@@ -82,7 +83,7 @@ class EvaluationCriteriaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(EvaluationCriteriaDeleteRequest $request, $id)
     {
         $this->evaluationCriteriaRepository->delete($id);
 
