@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Eloquent;
 
 use GGPHP\Crm\Clover\Models\CriteriaStandardCriteria;
+use GGPHP\Crm\Clover\Models\ParentAccount;
 use GGPHP\Crm\KnowledgeToTeachChildren\Models\PostKnowledgeToTeachChildren;
 use GGPHP\Crm\KnowledgeToTeachChildren\Repositories\Contracts\PostKnowledgeToTeachChildrenRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -89,8 +90,6 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         $admissionRegister = PostKnowledgeToTeachChildren::findOrfail($id);
         $admissionRegister->update($attributes);
 
-        $this->sentNotification($admissionRegister);
-
         return parent::find($id);
     }
 
@@ -110,7 +109,10 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
         // get model bmi 
         $criteriaStandardsBmi = CriteriaStandardCriteria::where('MonthNumber', $attributes['number_of_month'])->where('Type', $type)->first();
         // get array bmi tieu chuan
-        $result = number_format(($attributes['weight'] / $attributes['height'] * $attributes['height']) * ($attributes['height'] / 100), 1);
+        $result = number_format($attributes['weight'] / (($attributes['height'] / 100) * ($attributes['height'] / 100)), 1);
+
+        // cân nặng / chiều cao binh phuong ra met 
+        // $attributes['weight'] / ($attributes['height'] * $attributes['height'] * $attributes['height'] / 100)
 
         if (!empty($criteriaStandardsBmi)) {
             $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
@@ -146,31 +148,52 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
 
     public function sentNotification($model)
     {
-        $idRole = null;
-        $dataAbpRoles = \DB::connection('pgsql_second')->table('AbpRoles')->get();
-        foreach ($dataAbpRoles as $key => $value) {
-            $data = json_decode($value->ExtraProperties, true);
-            if (!empty($data) && isset($data['RoleCode'])) {
-                if ($data['RoleCode'] == 'guest') {
-                    $idRole = $value->Id;
+        if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
+            $idRole = null;
+            $dataAbpRoles = \DB::connection('pgsql_second')->table('AbpRoles')->get();
+            foreach ($dataAbpRoles as $key => $value) {
+                $data = json_decode($value->ExtraProperties, true);
+                if (!empty($data) && isset($data['RoleCode'])) {
+                    if ($data['RoleCode'] == 'guest') {
+                        $idRole = $value->Id;
+                    }
                 }
             }
-        }
-        $AbpUserRoles = \DB::connection('pgsql_second')->table('AbpUserRoles')->where('RoleId', $idRole)->first();
+            $AbpUserRoles = \DB::connection('pgsql_second')->table('AbpUserRoles')->where('RoleId', $idRole)->first();
 
-        if (!empty($model)) {
-            if ($model->status == PostKnowledgeToTeachChildren::STATUS['POSTED']) {
-                $userId[] = $AbpUserRoles->UserId;
-                $dataNotifiCation = [
-                    'users' => $userId,
-                    'title' => $model->name,
-                    'imageURL' => $model->image,
-                    'message' => substr(strip_tags($model->content), 0, 250),
-                    'moduleType' => 31,
-                    'refId' => $model->id,
-                ];
-                
-                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+            if (!empty($model)) {
+                $str = substr(strip_tags($model->content), 0, 250);
+                $str = str_replace('&lt;', '', $str);
+                $str = str_replace('&nbsp;', '', $str);
+                $str = str_replace('&ensp;', '', $str);
+                $str = str_replace('&emsp;', '', $str);
+                $str = str_replace('&thinsp;', '', $str);
+                $str = str_replace('&zwnj;', '', $str);
+                $str = str_replace('&zwnj;', '', $str);
+                $str = str_replace('&zwj;', '', $str);
+                $str = str_replace('&thinsp;', '', $str);
+                $str = str_replace('&nnbsp;', '', $str);
+                $str = str_replace('&emsp13;', '', $str);
+                $str = str_replace('&emsp14;', '', $str);
+                $str = str_replace('&emsp18;', '', $str);
+                $str = str_replace('&thinsp;', '', $str);
+
+                $arrayAppUserId = ParentAccount::get()->pluck('AppUserId')->toArray();
+                array_unshift($arrayAppUserId, $AbpUserRoles->UserId);
+                $arrayAppUserId = array_chunk($arrayAppUserId, 10);
+
+                foreach ($arrayAppUserId as $key => $appUserId) {
+                    $dataNotifiCation = [
+                        'users' => $appUserId,
+                        'title' => $model->name,
+                        'imageURL' => $model->image,
+                        'message' => $str,
+                        'moduleType' => 31,
+                        'refId' => $model->id,
+                    ];
+
+                    dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+                }
             }
         }
     }
