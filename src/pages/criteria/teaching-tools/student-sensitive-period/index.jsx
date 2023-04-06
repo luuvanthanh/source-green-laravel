@@ -67,7 +67,7 @@ class Index extends PureComponent {
             head(user?.objectInfo?.classTeachers)?.classId),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
+        approvalStatus: query?.approvalStatus || head(variablesModules.STATUS_TABS)?.id,
       },
     };
     setIsMounted(true);

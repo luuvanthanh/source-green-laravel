@@ -128,13 +128,17 @@ class Index extends PureComponent {
       menuData,
       dataSelect,
       loading: { effects },
+      match: { params },
     } = this.props;
     const { type } = this.state;
     const loadingSubmit = effects['criteriaGroupsAdd/ADD'] || effects['criteriaGroupsAdd/UPDATE'];
     const loading = effects['criteriaGroupsAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo nhóm tiêu chí" menu={menuData} />
+        <Breadcrumbs
+          last={params?.id ? 'Chi tiết nhóm tiêu chí' : 'Tạo nhóm tiêu chí'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -190,8 +194,8 @@ class Index extends PureComponent {
                   loading={loadingSubmit}
                   permission={
                     params?.id
-                      ? `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.EDIT}`
-                      : `${FLATFORM.WEB}${permissions.CTH_HOCTAPGIAOCU_GOCGIAOCU}${ACTION.CREATE}`
+                      ? `${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.CTH_CAUHINH_NHOMTIEUCHI}${ACTION.CREATE}`
                   }
                 >
                   LƯU

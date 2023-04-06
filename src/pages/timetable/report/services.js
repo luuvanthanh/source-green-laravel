@@ -15,7 +15,7 @@ export function remove(id = {}) {
 }
 
 export function getEvents() {
-  return request(`/time-tables/events`, {
+  return request(`/time-tables/events/for-report`, {
     method: 'GET',
     params: {
       skipCount: '0',
