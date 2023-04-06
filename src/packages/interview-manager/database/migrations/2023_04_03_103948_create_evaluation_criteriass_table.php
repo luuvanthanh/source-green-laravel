@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEvaluationsCriteriasTable extends Migration
+class CreateEvaluationsCriteriassTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateEvaluationsCriteriasTable extends Migration
      */
     public function up()
     {
-        Schema::create('EvaluationCriterias', function (Blueprint $table) {
+        Schema::create('EvaluationCriteriass', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
@@ -31,6 +31,6 @@ class CreateEvaluationsCriteriasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('EvaluationCriterias');
+        Schema::dropIfExists('EvaluationCriteriass');
     }
 }
