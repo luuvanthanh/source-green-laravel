@@ -39,7 +39,7 @@ class InterviewConfigurationUpdateRequest extends FormRequest
             ],
             'note' => 'nullable|string',
             'evaluationCriteriaId' => 'nullable|array',
-            'evaluationCriteriaId.*' => 'nullable|exists:EvaluationCriterias,Id'
+            'evaluationCriteriaId.*' => 'nullable|exists:EvaluationCriteriass,Id'
         ];
     }
 }

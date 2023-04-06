@@ -5,7 +5,7 @@ namespace GGPHP\InterviewManager\Http\Requests;
 use GGPHP\InterviewManager\Models\InterviewList;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InterviewerListCreateSendSuggestionsRequest extends FormRequest
+class InterviewerListCreateSendSuggestionDoNotApproveMoneyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,8 +29,6 @@ class InterviewerListCreateSendSuggestionsRequest extends FormRequest
         return [
             'status' => 'required|in:'.$status,
             'suggestedSalary' => 'required|numeric',
-            'pointEvaluationId' => 'required|exists:PointEvaluations,Id',
-            'mediumScore' => 'required|numeric'
         ];
     }
 
@@ -38,7 +36,7 @@ class InterviewerListCreateSendSuggestionsRequest extends FormRequest
     {
         $data = parent::all($keys);
 
-        if (!empty($data['status']) && $data['status'] != 'NO_SALARY_APPROVAL' && $data['status'] != 'NOT_INTERVIEWED_YET' && $data['status'] != 'PENDING' && $data['status'] != 'DO_NOT_APPROVECANDIDATES' && $data['status'] != 'APPROVED') {
+        if (!empty($data['status']) && $data['status'] != 'INTERVIEWED' && $data['status'] != 'NOT_INTERVIEWED_YET' && $data['status'] != 'PENDING' && $data['status'] != 'DO_NOT_APPROVECANDIDATES' && $data['status'] != 'APPROVED') {
            $data['status'] = array_key_exists($data['status'] , InterviewList::STATUS) ? InterviewList::STATUS[$data['status']] : 0;
         }
 
@@ -48,7 +46,7 @@ class InterviewerListCreateSendSuggestionsRequest extends FormRequest
     public function messages()
     {
         return [
-            'status.in' => 'Giá trị đã chọn không hợp lệ, giá trị phải là INTERVIEWED'
+            'status.in' => 'Giá trị đã chọn không hợp lệ, giá trị phải là NO_SALARY_APPROVAL'
         ];
     }
 }

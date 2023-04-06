@@ -2,9 +2,9 @@
 
 namespace GGPHP\InterviewManager\Transformers;
 
-use GGPHP\Category\Transformers\DivisionTransformer;
+use GGPHP\InterviewManager\Transformers\PointEvaluationTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\InterviewManager\Models\InterviewList;
+use GGPHP\InterviewManager\Models\InterviewDetail;
 
 /**
  * Class RefundTransformer.
@@ -18,7 +18,7 @@ class InterviewDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['pointEvaluation'];
 
     /**
      * Transform the custom field entity.
@@ -29,5 +29,14 @@ class InterviewDetailTransformer extends BaseTransformer
     {
         return [
         ];
+    }
+
+    public function includePointEvaluation(InterviewDetail $interviewDetail)
+    {
+        if (is_null($interviewDetail->pointEvaluation)) {
+            return null;
+        }
+
+        return $this->item($interviewDetail->pointEvaluation, new PointEvaluationTransformer, 'pointEvaluetion');
     }
 }

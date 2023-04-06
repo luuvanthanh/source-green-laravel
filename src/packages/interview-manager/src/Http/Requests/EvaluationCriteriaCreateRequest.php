@@ -24,7 +24,7 @@ class EvaluationCriteriaCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:EvaluationCriterias,Name',
+            'name' => 'required|string|unique:EvaluationCriteriass,Name',
             'note' => 'nullable|string'
         ];
     }

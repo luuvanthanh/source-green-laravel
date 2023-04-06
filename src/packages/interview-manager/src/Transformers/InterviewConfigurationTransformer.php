@@ -18,7 +18,7 @@ class InterviewConfigurationTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['division', 'interviewConfigurationEvaluationCriteria'];
+    protected $availableIncludes = ['division', 'interviewConfigurationEvaluationCriteria', 'interviewer'];
 
     /**
      * Transform the custom field entity.
@@ -42,5 +42,14 @@ class InterviewConfigurationTransformer extends BaseTransformer
     public function includeInterviewConfigurationEvaluationCriteria(InterviewConfiguration $interviewConfiguration)
     {
         return $this->collection($interviewConfiguration->interviewConfigurationEvaluationCriteria, new InterviewConfigurationEvaluationCriteriaTransformer, 'InterviewConfigurationEvaluationCriteria');
+    }
+
+    public function includeInterviewer(InterviewConfiguration $interviewConfiguration)
+    {
+        if (is_null($interviewConfiguration->interviewer)) {
+            return null;
+        }
+
+        return $this->item($interviewConfiguration->interviewer, new InterviewerTransformer, 'Interviewer');
     }
 }
