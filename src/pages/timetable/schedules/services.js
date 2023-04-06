@@ -29,7 +29,7 @@ export function get(params = {}) {
 }
 
 export function remove(id) {
-  return request(`/time-tables/events-no-detail/${id}`, {
+  return request(`/time-tables/events/${id}`, {
     method: 'DELETE',
     parse: true,
   });

@@ -3,14 +3,14 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/time-tables/events-no-detail', {
+  return request('/time-tables/events', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/time-tables/events-no-detail/${data?.id}`, {
+  return request(`/time-tables/events/${data?.id}`, {
     method: 'PUT',
     data,
   });
