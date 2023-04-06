@@ -344,11 +344,7 @@ class Index extends PureComponent {
 
   onChangDataSelect = () => {
     const { event } = this.props;
-    let sum = [];
-    _.forEachRight(event, (value) => {
-      sum = sum?.concat(value?.eventTimetables);
-    });
-    const a = sum?.map((i, index) => (
+    const a = event?.map((i, index) => (
       <Option value={i?.id} key={index}>
         {i?.title}
       </Option>
@@ -387,17 +383,26 @@ class Index extends PureComponent {
                 {this.onChangDataSelect()}
               </Select>
 
-              {
-                dataIDSearch.length > 0 ?
-                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch}>
-                    Tải dữ liệu
-                  </Button>
-                  :
-                  <Button color="success" icon="report" className="ml-4" onClick={this.onChangeSearch} disabled>
-                    Tải dữ liệu
-                  </Button>
-              }
-
+              {dataIDSearch.length > 0 ? (
+                <Button
+                  color="success"
+                  icon="report"
+                  className="ml-4"
+                  onClick={this.onChangeSearch}
+                >
+                  Tải dữ liệu
+                </Button>
+              ) : (
+                <Button
+                  color="success"
+                  icon="report"
+                  className="ml-4"
+                  onClick={this.onChangeSearch}
+                  disabled
+                >
+                  Tải dữ liệu
+                </Button>
+              )}
             </div>
           </div>
 
@@ -406,13 +411,19 @@ class Index extends PureComponent {
               {/* <h3 className={stylesModule.title} color="dark">
                 Chi tiết báo cáo tổng các khoản phải nộp{' '}
               </h3> */}
-              {
-                data?.length > 0 ?
-                  <Button permission="WEB_TKB_THONGKEBAOCAO_EXPORT" color="primary" icon="export" className="ml-2" onClick={this.onChangeExcel}>
-                    Xuất Excel
-                  </Button>
-                  : ""
-              }
+              {data?.length > 0 ? (
+                <Button
+                  permission="WEB_TKB_THONGKEBAOCAO_EXPORT"
+                  color="primary"
+                  icon="export"
+                  className="ml-2"
+                  onClick={this.onChangeExcel}
+                >
+                  Xuất Excel
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <div className={classnames(styles['block-table'])}>
               <Table
