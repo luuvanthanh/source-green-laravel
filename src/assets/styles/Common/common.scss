@@ -1,5 +1,11 @@
 @import "@/assets/styles/mixins.scss";
 
+.btn-delete-none-bg{
+  background-color: #f2f4f8 !important;
+  border: none !important;
+  text-decoration:underline !important;
+}
+
 .menu-horizontal-children {
   padding: 0 rem(20);
 }
