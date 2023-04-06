@@ -17,7 +17,7 @@ class CreateInterviewConfigurationEvaluationCriteriasTable extends Migration
             $table->uuid('InterviewConfigurationId');
             $table->foreign('InterviewConfigurationId')->references('Id')->on('InterviewConfigurations')->onDelete('cascade');
             $table->uuid('EvaluationCriteriaId');
-            $table->foreign('EvaluationCriteriaId')->references('Id')->on('EvaluationCriterias')->onDelete('cascade');
+            $table->foreign('EvaluationCriteriaId')->references('Id')->on('EvaluationCriteriass')->onDelete('cascade');
         });
     }
 
