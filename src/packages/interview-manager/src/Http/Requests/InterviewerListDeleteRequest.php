@@ -2,6 +2,7 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\InterviewDetail;
 use GGPHP\InterviewManager\Models\InterviewList;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,7 +26,16 @@ class InterviewerListDeleteRequest extends FormRequest
     public function rules()
     {
         return [
-            
+            "id" => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $interviewerListDetail = InterviewDetail::where('InterviewListId', $value)->first();
+                    if (!is_null($interviewerListDetail)) {
+
+                        return $fail('Dữ liệu đã được sử dụng');
+                    }
+                }
+            ]
         ];
     }
 }

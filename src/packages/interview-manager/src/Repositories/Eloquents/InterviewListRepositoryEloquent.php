@@ -73,6 +73,12 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             });
         }
 
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Status', $attributes['status']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $results = $this->paginate($attributes['limit']);
         } else {
@@ -93,6 +99,8 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             if (!is_null($result) && !empty($attributes['employeeId'])) {
                 $result->interviewListEmployee()->attach($attributes['employeeId']);
             }
+
+            $this->sentNotification($result);
 
             DB::commit();
         } catch (Throwable $th) {
@@ -149,7 +157,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return parent::find($id);
     }
-
+    // gửi đề xuất lương đã phỏng vấn
     public function sendSuggestions(array $attributes, $id)
     {
         $attributes['status'] = InterviewList::STATUS['PENDING'];
@@ -159,7 +167,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return parent::find($id);
     }
-
+    // gửi đề xuất lương không duyệt lương
     public function sendSuggestionDoNotApprove(array $attributes, $id)
     {
         $attributes['status'] = InterviewList::STATUS['PENDING'];
@@ -169,44 +177,126 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return parent::find($id);
     }
-    
+    // làm đánh giá của từng nhân viên
     public function completeInterview(array $attributes, $id)
     {
-        dd($attributes);
         $interviewList = InterviewList::findOrfail($id);
-        if (!empty($attributes['pointEvaluation'])) {
-            foreach ($attributes['pointEvaluation'] as $key => $value) {
-               $interviewDetail['interviewListId'] = $id;
-               $interviewDetail['pointEvaluation'] = $value;
-               $interviewDetail['comment'] = $attributes['pointEvaluation'][$key];
+        $arrayInterviewDetail = [];
 
-                InterviewDetail::create($interviewDetail);
-            }
-        }
-
-        $listInterViewDetail = InterviewDetail::where('InterviewListId', $id)->get()->toArray();
-        $sum = 0;
-
-        if (!empty($listInterViewDetail)) {
-            foreach ($listInterViewDetail as $key => $value) {
-                $sum = $sum + $value['PointEvaluation'];
-            }
-        }
-        // trung binh cong
-        $attributes['mediumScore'] = number_format($sum / count($listInterViewDetail), 2);
-        // diem danh gia
-        $pointValue = PointEvaluation::all()->toArray();
-
-        if (!empty($pointValue)) {
-            foreach ($pointValue as $key => $value) {
-                if ($attributes['mediumScore'] >= $value['PointFrom'] && $attributes['mediumScore'] <= $value['PointTo']) {
-                    $attributes['PointEvaluationId'] =  $value['Id'];
+        if (!empty($attributes['interviewDetails'])) {
+            $interviewDetail['interviewListId'] = $id;
+            $interviewDetail['EmployeeId'] = $attributes['employeeId'];
+            if (!empty($attributes['interviewDetails'])) {
+                foreach ($attributes['interviewDetails'] as $key => $interviewDetailItem) {
+                    $interviewDetail['evaluationCriteriaId'] = $interviewDetailItem['evaluationCriteriaId'];
+                    $interviewDetail['pointEvaluation'] = $interviewDetailItem['pointEvaluation'];
+                    $interviewDetail['comment'] = $interviewDetailItem['comment'];
+                    $interviewDetail['status'] = InterviewDetail::STATUS['HAVE_EVALUATED'];
+                    $arrayInterviewDetail[] = $interviewDetail;
                 }
             }
         }
 
-        $interviewList->update($attributes);
+        if (!empty($arrayInterviewDetail)) {
+            $sum = 0;
+            $poinEvaluetionId = null;
+            foreach ($arrayInterviewDetail as $key => $value) {
+                $sum = $sum + $value['pointEvaluation'];
+            }
+            $avg = number_format($sum / count($arrayInterviewDetail), 2);
+
+            // diem danh gia
+            $pointValue = PointEvaluation::all()->toArray();
+
+            if (!empty($pointValue)) {
+                for ($i = 1; $i < count($pointValue); $i++) {
+                    $prevPointFrom = $pointValue[$i - 1]["PointFrom"];
+                    $currentPointFrom = $pointValue[$i]["PointFrom"];
+                    if ($avg >= $prevPointFrom && $avg < $currentPointFrom) {
+                        $poinEvaluetionId =  $pointValue[$i - 1]['Id'];
+                    } elseif ($avg >= $currentPointFrom) {
+                        $poinEvaluetionId =  $pointValue[$i]['Id'];
+                    }
+                }
+            }
+
+            foreach ($arrayInterviewDetail as $key => $value) {
+                $arrayInterviewDetail[$key]['averageScoreAsAssessedByStaff'] = $avg;
+                $arrayInterviewDetail[$key]['pointEvaluationId'] = $poinEvaluetionId;
+                InterviewDetail::create($arrayInterviewDetail[$key]);
+            }
+        }
+        // lấy ra để mục đích đếm số nhân viên đã đánh giá.
+        $getEmployeeInterviewDetail = DB::table('InterviewDetails')->where('InterviewListId', $id)->distinct('EmployeeId')->get()->toArray();
+        // Lấy ra với mục đích đếm số người phỏng vấn.
+        $getEmployeeInterviewerListEmployee = DB::table('InterviewListEmployees')->select('EmployeeId')->get()->pluck('EmployeeId')->toArray();
+
+        if (!empty($getEmployeeInterviewDetail) && !empty($getEmployeeInterviewerListEmployee)) {
+            $sumInterviewList = 0;
+            $pointEvaluationId = '';
+            if (count($getEmployeeInterviewDetail) == count($getEmployeeInterviewerListEmployee)) {
+                // lấy tổng điểm tất cả nhân viên đã đánh giá.
+                foreach ($getEmployeeInterviewDetail as $key => $value) {
+                    $sumInterviewList = $sumInterviewList + $value->AverageScoreAsAssessedByStaff;
+                }
+                $attributes['mediumScore'] = number_format($sumInterviewList / count($getEmployeeInterviewDetail), 2);
+
+                // ddunwgs
+                if (!empty($pointValue)) {
+                    for ($i = 1; $i < count($pointValue); $i++) {
+                        $prevPointFrom = $pointValue[$i - 1]["PointFrom"];
+                        $currentPointFrom = $pointValue[$i]["PointFrom"];
+                        if ($attributes['mediumScore'] >= $prevPointFrom && $attributes['mediumScore'] < $currentPointFrom) {
+                            $pointEvaluationId =  $pointValue[$i - 1]['Id'];
+                        } elseif ($attributes['mediumScore'] >= $currentPointFrom) {
+                            $pointEvaluationId =  $pointValue[$i]['Id'];
+                        }
+                    }
+                }
+                $attributes['pointEvaluationId'] = $pointEvaluationId;
+                $attributes['status'] = InterviewList::STATUS['INTERVIEWED'];
+                $interviewList->update($attributes);
+            }
+        }
+
+        return parent::parserResult($interviewList);
+    }
+    // duyệt lương bới ceo
+    public function salaryApproval(array $attributes, $id)
+    {
+        if ($attributes['flag'] == InterviewList::STATUS['APPROVED']) {
+            $attributes['status'] = InterviewList::STATUS['APPROVED'];
+        }
+
+        if ($attributes['flag'] == InterviewList::STATUS['NO_SALARY_APPROVAL']) {
+            $attributes['status'] = InterviewList::STATUS['NO_SALARY_APPROVAL'];
+        }
+
+        if ($attributes['flag'] == InterviewList::STATUS['DO_NOT_APPROVECANDIDATES']) {
+            $attributes['status'] = InterviewList::STATUS['DO_NOT_APPROVECANDIDATES'];
+        }
+
+        $interviewerList = InterviewList::findOrfail($id);
+
+        $interviewerList->update($attributes);
 
         return parent::find($id);
+    }
+
+    public function sentNotification($model)
+    {
+        $UserId = $model->interviewListEmployee()->get()->pluck('Id')->toArray();
+        if (!empty($model)) {
+            $dataNotifiCation = [
+                'users' => $UserId,
+                'title' => $model->InterviewName,
+                'imageURL' => '',
+                'message' => '',
+                'moduleType' => 32,
+                'refId' => $model->Id,
+            ];
+
+            dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+        }
     }
 }
