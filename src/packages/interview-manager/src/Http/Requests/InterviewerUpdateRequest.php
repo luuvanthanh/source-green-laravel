@@ -3,6 +3,7 @@
 namespace GGPHP\InterviewManager\Http\Requests;
 
 use GGPHP\InterviewManager\Models\Interviewer;
+use GGPHP\InterviewManager\Models\InterviewerEmployee;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InterviewerUpdateRequest extends FormRequest
@@ -25,6 +26,16 @@ class InterviewerUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $interviewerEmployee = InterviewerEmployee::where('InterviewerId', $value)->first();
+                    if (!is_null($interviewerEmployee)) {
+
+                        return $fail('Dữ liệu đã được sử dụng');
+                    }
+                }
+            ],
             'divisionId' => [
                 'nullable','exists:Divisions,Id',
                 function ($attribute, $value, $fail) {

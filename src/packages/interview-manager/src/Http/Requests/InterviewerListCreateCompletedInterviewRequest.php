@@ -27,22 +27,21 @@ class InterviewerListCreateCompletedInterviewRequest extends FormRequest
     {
         return [
             'interviewListId' => 'required|exists:InterviewLists,Id',
-            'evaluate' => 'required|array',
-            'evaluate.*.employeeId' => [
+            'employeeId' => [
                 'required','exists:Employees,Id',
                 function($atribute, $value, $fail){
                     $interviewDetail = InterviewDetail::where('InterviewListId', $this->id)->where('EmployeeId', $value)->first();
 
                     if (!is_null($interviewDetail)) {
 
-                        return 'Mỗi nhân viên chỉ được đánh giá một lần';
+                        return $fail('Mỗi nhân viên chỉ được đánh giá một lần');
                     }
                 }
             ],
-            'evaluate.*.pointEvaluation' => 'required|array',
-            'evaluate.*.pointEvaluation.*' => 'required|integer',
-            'evaluate.*.comment' => 'nullable|array',
-            'evaluate.*.comment.*' => 'nullable|string'
+            'interviewDetails' => 'required|array',
+            'interviewDetails.*evaluationCriteriaId' => 'required|exists:EvaluationCriteriass,Id',
+            'interviewDetails.*pointEvaluation' => 'required|integer',
+            'interviewDetails.*comment' => 'nullable|string'
         ];
     }
 }

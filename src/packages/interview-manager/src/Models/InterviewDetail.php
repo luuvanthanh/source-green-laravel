@@ -30,7 +30,8 @@ class InterviewDetail extends UuidModel
     'EmployeeId',
     'Status',
     'AverageScoreAsAssessedByStaff',
-    'PointEvaluationId'
+    'PointEvaluationId',
+    'EvaluationCriteriaId'
   ];
 
   public function pointEvaluation()

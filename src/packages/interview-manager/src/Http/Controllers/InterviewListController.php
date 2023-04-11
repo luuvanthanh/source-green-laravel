@@ -8,6 +8,9 @@ use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionDoNotApproveMoneyRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListCreateSendSuggestionsRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListDeleteRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListGetRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListNoSalaryApprovalCreateRequest;
+use GGPHP\InterviewManager\Http\Requests\InterviewerListSalaryApprovalCreateRequest;
 use GGPHP\InterviewManager\Http\Requests\InterviewerListUpdateRequest;
 use GGPHP\InterviewManager\Repositories\Contracts\InterviewListRepository;
 use Illuminate\Http\Request;
@@ -31,7 +34,7 @@ class InterviewListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(InterviewerListGetRequest $request)
     {
         $interviewList = $this->interviewListRepository->index($request->all());
 
@@ -111,6 +114,13 @@ class InterviewListController extends Controller
     public function sendSuggestionDoNotApprove(InterviewerListCreateSendSuggestionDoNotApproveMoneyRequest $request, $id)
     {
         $sendSuggestions = $this->interviewListRepository->sendSuggestionDoNotApprove($request->all(), $id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
+    // duyệt lương từ ceo
+    public function salaryApproval(InterviewerListSalaryApprovalCreateRequest $request, $id)
+    {
+        $sendSuggestions = $this->interviewListRepository->salaryApproval($request->all(), $id);
 
         return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }

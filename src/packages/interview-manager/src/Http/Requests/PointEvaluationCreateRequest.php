@@ -2,6 +2,8 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\InterviewDetail;
+use GGPHP\InterviewManager\Models\PointEvaluation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PointEvaluationCreateRequest extends FormRequest
@@ -33,6 +35,12 @@ class PointEvaluationCreateRequest extends FormRequest
                         
                         if ($prevPointTo >= $currentPointFrom) {
                             return $fail('Khoảng điểm từ của phần tử sau phải lớn hơn khoảng điểm đến của phần tử trước.');
+                        }
+
+                        $interViewDetail = InterviewDetail::distinct('PointEvaluationId')->get()->pluck('PointEvaluationId')->toArray();
+                        $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->get();
+                        if (!is_null($pointValue)) {
+                            return $fail('Dữ liệu đã được sử dụng');
                         }
                     }
                 },

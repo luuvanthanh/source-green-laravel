@@ -20,9 +20,11 @@ class AddFieldEmployeeIdToInterviewDetailsTable extends Migration
             $table->string('AverageScoreAsAssessedByStaff')->nullable();
             $table->uuid('PointEvaluationId')->nullable();
             $table->foreign('PointEvaluationId')->references('Id')->on('PointEvaluations')->onDelete('cascade');
+            $table->uuid('EvaluationCriteriaId')->nullable();
+            $table->foreign('EvaluationCriteriaId')->references('Id')->on('EvaluationCriteriass')->onDelete('cascade');
         });
     }
-
+    
     /**
      * Reverse the migrations.
      *
@@ -35,6 +37,7 @@ class AddFieldEmployeeIdToInterviewDetailsTable extends Migration
             $table->dropColumn('Status');
             $table->dropColumn('AverageScoreAsAssessedByStaff');
             $table->dropColumn('PointEvaluationId');
+            $table->dropColumn('EvaluationCriteriaId');
         });
     }
 }
