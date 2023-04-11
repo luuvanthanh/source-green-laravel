@@ -13,16 +13,9 @@ class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
      */
     public function up()
     {
-        if (Schema::hasColumn('CandidateManagements', 'File'))
-        {
-            Schema::table('CandidateManagements', function (Blueprint $table) {
-                $table->dropColumn('File');
-            });
-        }else {
-            Schema::table('CandidateManagements', function (Blueprint $table) {
-                $table->json('File');
-            });
-        }
+        Schema::table('"CandidateManagements"', function (Blueprint $table) {
+            $table->text('File')->change();
+        });
     }
 
     /**
