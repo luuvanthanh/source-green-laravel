@@ -8,6 +8,8 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 
@@ -158,9 +160,9 @@ class Index extends PureComponent {
     });
 
   /**
- * Function remove items
- * @param {uid} id id of items
- */
+   * Function remove items
+   * @param {uid} id id of items
+   */
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
@@ -213,8 +215,14 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.EDIT}`}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              color="danger"
+              icon="remove"
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.DELETE}`}
+              onClick={() => this.onRemove(record.id)}
+            />
           </div>
         ),
       },
@@ -237,10 +245,15 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Vấn đề khó khăn của trẻ" />
-        <div className='pl20 pr20 pb20'>
+        <div className="pl20 pr20 pb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4 pt0">
             <Text color="dark">Vấn đề khó khăn của trẻ</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.CREATE}`}
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
               Thêm mới
             </Button>
           </div>

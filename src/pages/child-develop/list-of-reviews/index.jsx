@@ -10,6 +10,7 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
@@ -51,7 +52,7 @@ class Index extends PureComponent {
     const {
       location: { query },
       defaultBranch,
-      user
+      user,
     } = props;
     this.state = {
       defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
@@ -59,7 +60,10 @@ class Index extends PureComponent {
       search: {
         key: query?.key,
         branchId: query?.branchId || defaultBranch?.id,
-        classId: query?.classId || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER && head(user?.objectInfo?.classTeachers)?.classId,
+        classId:
+          query?.classId ||
+          (user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER &&
+            head(user?.objectInfo?.classTeachers)?.classId),
         schoolYearId: query?.schoolYearId || user?.schoolYear?.id,
         // from: query?.from
         //   ? query?.from
@@ -69,7 +73,7 @@ class Index extends PureComponent {
         //   : moment(user?.schoolYear?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        approvalStatus: query?.approvalStatus || variablesModules.STATUS.PENDING_APPROVED,
+        approvalStatus: query?.approvalStatus || head(variablesModules.STATUS_TABS)?.id,
       },
     };
     setIsMounted(true);
@@ -268,24 +272,23 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
-    const {
-      years,
-    } = this.props;
+    const { years } = this.props;
     if (type === 'schoolYearId') {
-      const data = years?.find(i => i.id === e);
+      const data = years?.find((i) => i.id === e);
       this.setStateData({
         dataYear: data,
       });
-      this.setState(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            from: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
-            to: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
-          },
-        }),
-      );
-      this.formRef.current.setFieldsValue({ date: [moment(data?.startDate), moment(data?.endDate)], isset_history_care: undefined });
+      this.setState((prevState) => ({
+        search: {
+          ...prevState.search,
+          from: moment(data?.startDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          to: moment(data?.endDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        },
+      }));
+      this.formRef.current.setFieldsValue({
+        date: [moment(data?.startDate), moment(data?.endDate)],
+        isset_history_care: undefined,
+      });
       this.props.dispatch({
         type: 'listOfReviews/GET_ASESSMENT_PERIOD',
         payload: {
@@ -401,7 +404,10 @@ class Index extends PureComponent {
       type: 'listOfReviews/ADD_REVIEW',
       payload: {
         type,
-        id: type === 'all' ? data?.filter((item, index) => index <= 9)?.map((item) => item.id) : data?.filter((item, index) => item?.isActive && index <= 9)?.map((item) => item.id),
+        id:
+          type === 'all'
+            ? data?.filter((item, index) => index <= 9)?.map((item) => item.id)
+            : data?.filter((item, index) => item?.isActive && index <= 9)?.map((item) => item.id),
       },
       callback: (response) => {
         if (response) {
@@ -429,15 +435,20 @@ class Index extends PureComponent {
         title: 'Thời gian duyệt',
         key: 'name',
         width: 200,
-        render: (record) => moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
+        render: (record) =>
+          moment(record?.timePendingApproved).format(variables.DATE_FORMAT.DATE_TIME),
       },
-      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED ?
-        [{
-          title: 'Thời gian gửi',
-          key: 'name',
-          width: 200,
-          render: (record) => moment(record?.timeApproved).format(variables.DATE_FORMAT.DATE_TIME),
-        },] : []),
+      ...(search?.approvalStatus !== variablesModules.STATUS.PENDING_APPROVED
+        ? [
+            {
+              title: 'Thời gian gửi',
+              key: 'name',
+              width: 200,
+              render: (record) =>
+                moment(record?.timeApproved).format(variables.DATE_FORMAT.DATE_TIME),
+            },
+          ]
+        : []),
       {
         title: 'Loại đánh giá',
         key: 'email',
@@ -475,16 +486,15 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className="d-flex flex-row-reverse">
-            {
-              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
-                <Button
-                  color="success"
-                  className="ml5"
-                  icon="redo2"
-                  onClick={() => this.onChangeItem(record)}
-                />
-              )
-            }
+            {search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
+              <Button
+                color="success"
+                className="ml5"
+                icon="redo2"
+                permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_CHOGUI}${ACTION.SEND}`}
+                onClick={() => this.onChangeItem(record)}
+              />
+            )}
           </div>
         ),
       },
@@ -530,30 +540,32 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách đánh giá đã duyệt</Text>
-            {
-              search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
-                <div className='d-flex'>
-                  <Button
-                    disabled={!size(data.filter((item) => item.isActive))}
-                    color="primary" icon="redo2"
-                    className="ml-2"
-                    loading={effects['listOfReviews/ADD_REVIEW']}
-                    onClick={() => this.onClickAddReview()}>
-                    Gửi đánh giá đã chọn
-                  </Button>
-                  <Button
-                    color="success"
-                    icon="redo2"
-                    className="ml-2"
-                    loading={effects['listOfReviews/ADD_REVIEW']}
-                    disabled={!size(data)}
-                    onClick={() => this.onClickAddReview('all')}
-                  >
-                    Gửi tất cả
-                  </Button>
-                </div>
-              )
-            }
+            {search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED && (
+              <div className="d-flex">
+                <Button
+                  disabled={!size(data.filter((item) => item.isActive))}
+                  color="primary"
+                  icon="redo2"
+                  className="ml-2"
+                  loading={effects['listOfReviews/ADD_REVIEW']}
+                  permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_CHOGUI}${ACTION.SEND}`}
+                  onClick={() => this.onClickAddReview()}
+                >
+                  Gửi đánh giá đã chọn
+                </Button>
+                <Button
+                  color="success"
+                  icon="redo2"
+                  className="ml-2"
+                  loading={effects['listOfReviews/ADD_REVIEW']}
+                  disabled={!size(data)}
+                  permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_CHOGUI}${ACTION.SEND}`}
+                  onClick={() => this.onClickAddReview('all')}
+                >
+                  Gửi tất cả
+                </Button>
+              </div>
+            )}
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
@@ -610,7 +622,15 @@ class Index extends PureComponent {
                 )}
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...classes?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...classes?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả lớp', id: null }, ...classes]
+                    }
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
@@ -619,7 +639,15 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? [...assessmentPeriod?.filter(i => i?.id === head(user?.objectInfo?.classTeachers)?.classId)] : [{ name: 'Chọn tất cả kỳ đánh giá', id: null }, ...assessmentPeriod]}
+                    data={
+                      user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+                        ? [
+                            ...assessmentPeriod?.filter(
+                              (i) => i?.id === head(user?.objectInfo?.classTeachers)?.classId,
+                            ),
+                          ]
+                        : [{ name: 'Chọn tất cả kỳ đánh giá', id: null }, ...assessmentPeriod]
+                    }
                     name="assessmentPeriodId"
                     options={['id', 'name']}
                     onChange={(event) => this.onChangeSelect(event, 'assessmentPeriodId')}
@@ -637,20 +665,26 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
-              bordered={false}
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              rowSelection={search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED ? { ...rowSelection } : null}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
-            />
+            {!isEmpty(head(variablesModules.STATUS_TABS)?.id) && (
+              <Table
+                bordered={false}
+                columns={this.header(params)}
+                dataSource={data}
+                loading={loading}
+                rowSelection={
+                  search?.approvalStatus === variablesModules.STATUS.PENDING_APPROVED
+                    ? { ...rowSelection }
+                    : null
+                }
+                pagination={this.pagination(pagination)}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: '60vh' }}
+              />
+            )}
           </div>
         </div>
       </>

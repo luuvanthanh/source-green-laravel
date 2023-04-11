@@ -7,13 +7,14 @@ import { useHistory, useLocation } from 'umi';
 import { MenuOutlined } from '@ant-design/icons';
 import { debounce } from 'lodash';
 import { Form, Switch } from 'antd';
-
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Pane from '@/components/CommonComponent/Pane';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 
 import { variables, Helper } from '@/utils';
+import ability from '@/utils/ability';
 import styles from '@/assets/styles/Common/common.scss';
 import FormItem from '@/components/CommonComponent/FormItem';
 
@@ -23,7 +24,10 @@ const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', c
 const Index = memo(() => {
   const dispatch = useDispatch();
   const filterRef = useRef();
-  const [{ error }, loading] = useSelector(({ loading: { effects }, childDevelopSkill }) => [childDevelopSkill, effects]);
+  const [{ error }, loading] = useSelector(({ loading: { effects }, childDevelopSkill }) => [
+    childDevelopSkill,
+    effects,
+  ]);
 
   const { query } = useLocation();
 
@@ -129,6 +133,12 @@ const Index = memo(() => {
         >
           <Switch
             defaultChecked={use}
+            disabled={
+              !ability.can(
+                `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`,
+                `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`,
+              )
+            }
             onChange={() => {
               const payload = {
                 id: record?.id,
@@ -163,16 +173,21 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
+            permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`}
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record?.id}/chi-tiet`);
             }}
           />
-          <Button color="danger" icon="remove"
+          <Button
+            color="danger"
+            icon="remove"
+            permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.DELETE}`}
             onClick={(e) => {
               e.stopPropagation();
               onRemove(record.id);
-            }} />
+            }}
+          />
         </div>
       ),
     },
@@ -187,7 +202,7 @@ const Index = memo(() => {
         payload: {
           id: newData.map((item) => item.id).join(','),
         },
-        callback: () => { },
+        callback: () => {},
       });
     }
   };
@@ -209,7 +224,12 @@ const Index = memo(() => {
         <Pane className=" mb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Kỹ năng</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.CREATE}`}
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
               Thêm mới
             </Button>
           </div>

@@ -10,6 +10,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import PropTypes from 'prop-types';
 
 let isMounted = true;
@@ -150,7 +151,8 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['childDevelopChildProblemsAdd/ADD'] || effects['childDevelopChildProblemsAdd/UPDATE'];
+    const loadingSubmit =
+      effects['childDevelopChildProblemsAdd/ADD'] || effects['childDevelopChildProblemsAdd/UPDATE'];
     const loading = effects['childDevelopChildProblemsAdd/GET_DETAILS'];
     return (
       <>
@@ -173,10 +175,21 @@ class Index extends PureComponent {
                       </Heading>
                       <Pane className="row mt20">
                         <Pane className="col-lg-6">
-                          <FormItem label="Mã vấn đề" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                          <FormItem
+                            label="Mã vấn đề"
+                            name="code"
+                            type={variables.INPUT}
+                            placeholder={' '}
+                            disabled
+                          />
                         </Pane>
                         <Pane className="col-lg-6">
-                          <FormItem label="Tên vấn đề khó khăn" name="name" type={variables.INPUT} rules={[variables.RULES.EMPTY]} />
+                          <FormItem
+                            label="Tên vấn đề khó khăn"
+                            name="name"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
                         </Pane>
                       </Pane>
                     </Pane>
@@ -184,7 +197,6 @@ class Index extends PureComponent {
                       <p
                         className="btn-delete"
                         role="presentation"
-
                         onClick={() => history.goBack()}
                       >
                         Hủy
@@ -195,6 +207,11 @@ class Index extends PureComponent {
                         htmlType="submit"
                         size="large"
                         loading={loadingSubmit}
+                        permission={
+                          params?.id
+                            ? `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.EDIT}`
+                            : `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.CREATE}`
+                        }
                       >
                         Lưu
                       </Button>

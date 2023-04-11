@@ -2541,7 +2541,7 @@ export async function getLeftMenuChildDevelop() {
       title: 'Theo dõi sự phát triển của trẻ',
       key: 'monitor-childrens',
       icon: 'icon icon-home',
-      permission: [permissions?.SUPHATTRIENCUATRE],
+      permission: [`${FLATFORM.WEB}${permissions.SPTCT_THEODOISPT}${ACTION.VIEW}`],
       url: [
         '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre',
         '/su-phat-trien-cua-tre/theo-doi-su-phat-trien-cua-tre/:id/chi-tiet',
@@ -2551,7 +2551,7 @@ export async function getLeftMenuChildDevelop() {
       title: 'Danh mục',
       key: 'childsDevelop',
       icon: 'icon icon-list',
-      permission: [permissions?.SUPHATTRIENCUATRE],
+      permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC}${ACTION.VIEW}`],
       children: [
         {
           title: 'Kỹ năng',
@@ -2561,14 +2561,14 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/ky-nang/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/ky-nang/:id/chi-tiet',
           ],
-          permission: [permissions?.SUPHATTRIENCUATRE],
+          permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.VIEW}`],
           pro: true,
         },
         {
           title: 'Câu hỏi đánh giá của trẻ',
           key: 'review-question',
           url: ['/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre'],
-          permission: [permissions?.SUPHATTRIENCUATRE],
+            permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHOIDANHGIA}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -2579,7 +2579,7 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
           ],
-          permission: [permissions?.SUPHATTRIENCUATRE],
+            permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_VANDEKHOKHAN}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -2590,7 +2590,7 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/ten-ky-danh-gia/:id/chi-tiet',
           ],
-          permission: [permissions?.SUPHATTRIENCUATRE],
+            permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_TENKIDANHGIA}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -2601,7 +2601,7 @@ export async function getLeftMenuChildDevelop() {
             '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/tao-moi',
             '/su-phat-trien-cua-tre/danh-muc/cau-hinh-ki-danh-gia/:id/chi-tiet',
           ],
-          permission: [permissions?.SUPHATTRIENCUATRE],
+            permission: [`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.VIEW}`],
           pro: true,
         },
       ],
@@ -2610,14 +2610,14 @@ export async function getLeftMenuChildDevelop() {
       title: 'Đánh giá đã duyệt',
       key: 'list-of-reviews',
       icon: 'icon icon-list',
-      permission: [],
+      permission: [`${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET}${ACTION.VIEW}`],
       url: ['/su-phat-trien-cua-tre/danh-gia-da-duyet'],
     },
     {
       title: 'Cấu hình kịch bản đánh giá',
       key: '/childrens-problems',
       icon: 'icon icon-setting',
-      permission: [permissions?.SUPHATTRIENCUATRE],
+      permission: [`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.VIEW}`],
       url: [
         '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
         '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/tao-moi',
@@ -2628,7 +2628,7 @@ export async function getLeftMenuChildDevelop() {
       title: 'Cấu hình chèn logo',
       key: 'logo',
       icon: 'icon icon-setting',
-      permission: [permissions?.SUPHATTRIENCUATRE],
+      permission: [`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHCHENLOGO}${ACTION.VIEW}`],
       url: ['/su-phat-trien-cua-tre/cau-hinh-chen-logo'],
     },
   ];

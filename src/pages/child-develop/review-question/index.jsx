@@ -8,9 +8,10 @@ import Text from '@/components/CommonComponent/Text';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import styles from '@/assets/styles/Common/common.scss';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import { isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-
 
 const Index = memo(() => {
   const {
@@ -26,8 +27,8 @@ const Index = memo(() => {
 
   const [data, setData] = useState([
     {
-      id: "",
-      question: "",
+      id: '',
+      question: '',
     },
   ]);
   const loadingSubmit = effects[`childDevelopReviewQuestion/ADD`];
@@ -77,13 +78,14 @@ const Index = memo(() => {
     });
   }, [params.id]);
 
-
   const onChangeTitle = (e, record) => {
     setData((prev) =>
-      prev.map((item) => (
-        item.test === record.test && item.id === record.id ? { ...item, question: e.target.value } : { ...item }
+      prev.map((item) =>
+        item.test === record.test && item.id === record.id
+          ? { ...item, question: e.target.value }
+          : { ...item },
       ),
-      ));
+    );
   };
 
   const columns = [
@@ -109,13 +111,19 @@ const Index = memo(() => {
         <div className={styles['list-button']}>
           <Button
             onClick={() => {
-              setData(data.filter((val) => (val.key || val.id || val.test) !== (record.key || record.id || record.test)));
+              setData(
+                data.filter(
+                  (val) =>
+                    (val.key || val.id || val.test) !== (record.key || record.id || record.test),
+                ),
+              );
               setRemove([...remove, record.id]);
             }}
             type="button"
-            color="danger" icon="remove"
+            color="danger"
+            icon="remove"
+            permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHOIDANHGIA}${ACTION.EDIT}`}
           />
-
         </div>
       ),
     },
@@ -139,7 +147,7 @@ const Index = memo(() => {
                 <Text color="dark">Câu hỏi đánh giá cho phụ huynh</Text>
               </Pane>
               <Pane className="card">
-                <Pane >
+                <Pane>
                   <Pane className={classnames('vertical', styles['table-vertical'])}>
                     <TableCus
                       rowKey={(record) => record.id}
@@ -159,6 +167,7 @@ const Index = memo(() => {
                               },
                             ])
                           }
+                          permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHOIDANHGIA}${ACTION.EDIT}`}
                           color="transparent-success"
                           icon="plus"
                         >
@@ -174,15 +183,16 @@ const Index = memo(() => {
                   className="btn-delete mr10"
                   role="presentation"
                   loading={loadingSubmit}
-                  onClick={() => setData(data.filter((val) => (val.key || val.id)))}
+                  onClick={() => setData(data.filter((val) => val.key || val.id))}
                 >
                   Hủy thay đổi
                 </p>
                 <Button
                   className="px25"
-                  color="success" 
+                  color="success"
                   htmlType="submit"
                   size="large"
+                  permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHOIDANHGIA}${ACTION.EDIT}`}
                   loading={loadingSubmit}
                 >
                   Lưu
