@@ -49,7 +49,7 @@ class RecruitmentManagerUpdateRequest extends FormRequest
             'link' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
-                    $configureThank = RecruitmentManager::where('Link', $value)->where('Id', $this->id)->first();
+                    $configureThank = RecruitmentManager::where('Link', $value)->where('Id', '!=', $this->id)->first();
 
                     if (!is_null($configureThank)) {
                         return true;
