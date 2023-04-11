@@ -3,6 +3,7 @@
 namespace GGPHP\Recruitment\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Clover\Models\EmployeeAccount;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Recruitment\Models\QuestionCandidate;
 use GGPHP\Recruitment\Models\RecruitmentCandidateManagement;
@@ -131,7 +132,7 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         $str = Str::random(30);
         $data['domain'] = $url;
         $data['endPoint'] = $str;
-        
+
         return ["data" => ["type" => "Link", "attributes" => $data]];
     }
 
@@ -141,23 +142,46 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         if (!is_null($recruitmentManagement)) {
             $recruitmentConfiguration = RecruitmentConfiguration::findOrFail($recruitmentManagement->RecruitmentConfigurationId);
         }
-        
+
         return parent::parserResult($recruitmentConfiguration);;
     }
 
     public function createCandidate(array $attributes)
     {
-            $recruimentManager = RecruitmentManager::Where('Id', $attributes['recruitmentManagerId'])->first();
-            if (!is_null($recruimentManager)) {
-                $attributes['date'] = Carbon::now()->toDateString();
-                $attributes['status'] = RecruitmentCandidateManagement::STATUS['UNCONFIMRED'];
-                $attributes['DivisionId'] = $recruimentManager->DivisionId;
-                $attributes['RecruitmentLevelId'] = $recruimentManager->RecruitmentLevelId;
-                $attributes['RecruitmentManagerId'] = $recruimentManager->Id;
-            }
-            
-            $result = RecruitmentCandidateManagement::create($attributes);
+        $recruimentManager = RecruitmentManager::Where('Id', $attributes['recruitmentManagerId'])->first();
+        if (!is_null($recruimentManager)) {
+            $attributes['date'] = Carbon::now()->toDateString();
+            $attributes['status'] = RecruitmentCandidateManagement::STATUS['UNCONFIMRED'];
+            $attributes['DivisionId'] = $recruimentManager->DivisionId;
+            $attributes['RecruitmentLevelId'] = $recruimentManager->RecruitmentLevelId;
+            $attributes['RecruitmentManagerId'] = $recruimentManager->Id;
+        }
+
+        $result = RecruitmentCandidateManagement::create($attributes);
+        $this->sentNotification($result);
 
         return parent::parserResult($result);
+    }
+
+    public function sentNotification($model)
+    {
+        if (!empty($model)) {
+            $recruimentManager = RecruitmentManager::Where('Id', $model->RecruitmentManagerId)->first();
+            $arrayAppUserId = EmployeeAccount::get()->pluck('AppUserId')->toArray();
+            $arrayAppUserId = array_chunk($arrayAppUserId, 10);
+
+            foreach ($arrayAppUserId as $key => $appUserId) {
+                $dataNotifiCation = [
+                    'users' => $appUserId,
+                    'title' => $recruimentManager->Name,
+                    'imageURL' => '',
+                    'message' => 'Bạn có ứng viên mới dành cho ' . $recruimentManager->Name,
+                    'moduleType' => 32,
+                    'refId' => $recruimentManager->Id,
+                ];
+                
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+            }
+        }
     }
 }

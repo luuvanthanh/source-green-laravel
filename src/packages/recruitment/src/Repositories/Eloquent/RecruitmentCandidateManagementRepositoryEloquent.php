@@ -3,6 +3,7 @@
 namespace GGPHP\Recruitment\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Clover\Models\EmployeeAccount;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Recruitment\Models\QuestionCandidate;
 use GGPHP\Recruitment\Models\RecruitmentCandidateManagement;
@@ -91,6 +92,8 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
             }
             $result = RecruitmentCandidateManagement::create($attributes);
 
+            $this->sentNotification($result);
+
             $this->created($attributes, $result, $recruimentManager);
 
             \DB::commit();
@@ -128,5 +131,27 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
         }
 
         return parent::find($id);
+    }
+
+    public function sentNotification($model)
+    {
+        if (!empty($model)) {
+            $recruimentManager = RecruitmentManager::Where('Id', $model->RecruitmentManagerId)->first();
+            $arrayAppUserId = EmployeeAccount::get()->pluck('AppUserId')->toArray();
+            $arrayAppUserId = array_chunk($arrayAppUserId, 10);
+
+            foreach ($arrayAppUserId as $key => $appUserId) {
+                $dataNotifiCation = [
+                    'users' => $appUserId,
+                    'title' => $recruimentManager->Name,
+                    'imageURL' => '',
+                    'message' => 'Bạn có ứng viên mới dành cho ' . $recruimentManager->Name,
+                    'moduleType' => 32,
+                    'refId' => $recruimentManager->Id,
+                ];
+                
+                dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
+            }
+        }
     }
 }
