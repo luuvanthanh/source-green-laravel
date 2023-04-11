@@ -75,8 +75,10 @@ class InterviewListTransformer extends BaseTransformer
     }
 
     public function getAvgEvaluation($model)
-    {
+    {   
+        $data = [];
         $interviewConfigura = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId', $model->InterviewConfigurationId)->get()->pluck('EvaluationCriteriaId');
+        
         if (!empty($interviewConfigura)) {
             $sum = 0;
             foreach ($interviewConfigura as $key => $evaluationCriteriaId) {
@@ -92,7 +94,7 @@ class InterviewListTransformer extends BaseTransformer
                 }
             }
         }
-        
+
         return $data;
     }
 }

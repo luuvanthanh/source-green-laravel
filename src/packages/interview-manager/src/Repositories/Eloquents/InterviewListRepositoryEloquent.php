@@ -4,6 +4,7 @@ namespace GGPHP\InterviewManager\Repositories\Eloquents;
 
 use Carbon\Carbon;
 use Exception;
+use GGPHP\Clover\Models\EmployeeAccount;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\InterviewManager\Models\InterviewDetail;
 use GGPHP\InterviewManager\Models\Interviewer;
@@ -100,13 +101,13 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
                 $result->interviewListEmployee()->attach($attributes['employeeId']);
             }
 
-            $this->sentNotification($result);
-
             DB::commit();
         } catch (Throwable $th) {
             DB::rollBack();
             throw new Exception($th->getMessage(), $th->getCode());
         }
+
+        $this->sentNotification($result);
 
         return parent::parserResult($result);
     }
@@ -287,14 +288,16 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function sentNotification($model)
     {
-        $UserId = $model->interviewListEmployee()->get()->pluck('Id')->toArray();
         if (!empty($model)) {
+        $arrayUserId = $model->interviewListEmployee()->get()->pluck('Id')->toArray();
+        $UserId = EmployeeAccount::whereIn('EmployeeId', $arrayUserId)->get()->pluck('AppUserId')->toArray();
+
             $dataNotifiCation = [
                 'users' => $UserId,
                 'title' => $model->InterviewName,
                 'imageURL' => '',
-                'message' => '',
-                'moduleType' => 32,
+                'message' => 'Có lịch phỏng vấn vị trí'. $model->Location,
+                'moduleType' => 33,
                 'refId' => $model->Id,
             ];
 
