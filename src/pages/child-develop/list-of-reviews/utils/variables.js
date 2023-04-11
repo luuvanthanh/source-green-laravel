@@ -1,3 +1,6 @@
+import ability from '@/utils/ability';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 export const variables = {
   STATUS: {
     NEW: 'NEW',
@@ -21,14 +24,28 @@ export const variables = {
     CONFIRMED: 'Đã nhận',
   },
   STATUS_TABS: [
-    {
-      id: 'PENDING_APPROVED',
-      name: 'Chờ gửi',
-    },
-    {
-      id: 'APPROVED',
-      name: 'Đã gửi',
-    },
+    ...(ability.can(
+      `${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_CHOGUI}${ACTION.VIEW}`,
+      `${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_CHOGUI}${ACTION.VIEW}`,
+    )
+      ? [
+        {
+          id: 'PENDING_APPROVED',
+          name: 'Chờ gửi',
+        },
+        ]
+      : []),
+      ...(ability.can(
+        `${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_DAGUI}${ACTION.VIEW}`,
+        `${FLATFORM.WEB}${permissions.SPTCT_DANHGIADADUYET_DAGUI}${ACTION.VIEW}`,
+      )
+        ? [
+          {
+            id: 'APPROVED',
+            name: 'Đã gửi',
+          },
+          ]
+        : []),
   ],
   PARENT: 'PARENT',
   TEACHER: 'TEACHER',

@@ -10,6 +10,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import ability from '@/utils/ability';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import stylesModule from './styles.module.scss';
 
 let isMounted = true;
@@ -159,9 +162,9 @@ class Index extends PureComponent {
     });
 
   /**
- * Function remove items
- * @param {uid} id id of items
- */
+   * Function remove items
+   * @param {uid} id id of items
+   */
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
@@ -217,15 +220,21 @@ class Index extends PureComponent {
         key: 'date',
         width: 150,
         className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
+        render: (record) =>
+          `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`,
       },
       {
         title: 'Thời gian đánh giá',
         key: 'time',
         width: 250,
         className: 'min-width-250',
-        render: (record) => record?.schoolYear
-          ? `${Helper.getDate(record?.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
+        render: (record) =>
+          record?.schoolYear
+            ? `${Helper.getDate(
+                record?.startDate,
+                variables.DATE_FORMAT.DATE_VI,
+              )} - ${Helper.getDate(record?.endDate, variables.DATE_FORMAT.DATE_VI)}`
+            : '',
       },
       {
         title: 'Loại đánh giá',
@@ -234,10 +243,10 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (record) => (
           <div className={stylesModule['wrapper-tag']}>
-            {record?.periodic ? <Tag size="normal" >Đánh giá định kì</Tag> : ""}
-            {record?.introduction ? <Tag size="normal" >Đánh giá nhập môn</Tag> : ""}
+            {record?.periodic ? <Tag size="normal">Đánh giá định kì</Tag> : ''}
+            {record?.introduction ? <Tag size="normal">Đánh giá nhập môn</Tag> : ''}
           </div>
-        )
+        ),
       },
       {
         title: 'Sử dụng',
@@ -253,6 +262,12 @@ class Index extends PureComponent {
           >
             <Switch
               defaultChecked={use}
+              disabled={
+                !ability.can(
+                  `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHINHKIDANHGIA}${ACTION.EDIT}`,
+                  `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHINHKIDANHGIA}${ACTION.EDIT}`,
+                )
+              }
               onChange={() => {
                 const payload = {
                   id: record?.id,
@@ -283,8 +298,14 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHINHKIDANHGIA}${ACTION.EDIT}`}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHINHKIDANHGIA}${ACTION.DELETE}`}
+              color="danger"
+              icon="remove"
+              onClick={() => this.onRemove(record.id)}
+            />
           </div>
         ),
       },
@@ -306,10 +327,15 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Cấu hình kì đánh giá" />
-        <div className='pl20 pr20 pb20'>
+        <div className="pl20 pr20 pb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Cấu hình kì đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_CAUHINHKIDANHGIA}${ACTION.CREATE}`}
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
               Thêm mới
             </Button>
           </div>

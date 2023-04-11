@@ -10,9 +10,11 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import ability from '@/utils/ability';
 import stylesModule from './styles.module.scss';
-import variablesModules from './variables';
 
+import variablesModules from './variables';
 
 let isMounted = true;
 /**
@@ -53,7 +55,6 @@ class Index extends PureComponent {
         categorySkillId: query?.categorySkillId,
         age: query?.age,
         aplly: query?.aplly,
-
       },
     };
     setIsMounted(true);
@@ -175,9 +176,9 @@ class Index extends PureComponent {
     });
 
   /**
- * Function remove items
- * @param {uid} id id of items
- */
+   * Function remove items
+   * @param {uid} id id of items
+   */
   onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
@@ -198,11 +199,13 @@ class Index extends PureComponent {
     });
   };
 
-  covertChildEvaluateDetail = items => {
+  covertChildEvaluateDetail = (items) => {
     let array = [];
     items.forEach(({ id }) => {
-      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
-      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
+      const existAssessment = items.find((item) => item.inputAssessment && item.id === id);
+      const existPeriodicAssessment = items.find(
+        (item) => item.periodicAssessment && item.id === id,
+      );
       if (existAssessment && existPeriodicAssessment) {
         array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
       }
@@ -214,7 +217,7 @@ class Index extends PureComponent {
       }
     });
     return [...new Set(array)];
-  }
+  };
 
   /**
    * Function header table
@@ -243,29 +246,35 @@ class Index extends PureComponent {
         key: 'age',
         width: 150,
         className: 'min-width-150',
-        render: (record) => <Text size="normal">
-          {record.age === '0' ? '0 - 6 ' : ""}
-          {record.age === '1' ? '6 - 9 ' : ""}
-          {record.age === '2' ? '9 - 12 ' : ""}
-          {record.age === '3' ? '12 - 18 ' : ""}
-          {record.age === '4' ? '18 - 24 ' : ""}
-          {record.age === '5' ? '24 - 30 ' : ""}
-          {record.age === '6' ? '30 - 36 ' : ""}
-          {record.age === '7' ? '36 - 50 ' : ""}
-          {record.age === '8' ? '50- 60 ' : ""}
-          {record.age === '9' ? '61- 100 ' : ""}
-          Tháng</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {record.age === '0' ? '0 - 6 ' : ''}
+            {record.age === '1' ? '6 - 9 ' : ''}
+            {record.age === '2' ? '9 - 12 ' : ''}
+            {record.age === '3' ? '12 - 18 ' : ''}
+            {record.age === '4' ? '18 - 24 ' : ''}
+            {record.age === '5' ? '24 - 30 ' : ''}
+            {record.age === '6' ? '30 - 36 ' : ''}
+            {record.age === '7' ? '36 - 50 ' : ''}
+            {record.age === '8' ? '50- 60 ' : ''}
+            {record.age === '9' ? '61- 100 ' : ''}
+            Tháng
+          </Text>
+        ),
       },
       {
         title: 'Áp dụng',
         key: 'doen_aansoek',
         width: 150,
         className: 'min-width-150',
-        render: (record) => (this.covertChildEvaluateDetail(record?.childEvaluateDetail))?.map((item, index) => (
-          <div className={stylesModule['wrapper-tag']}>
-            <Tag size="normal" key={index}>{item}</Tag>
-          </div>
-        ))
+        render: (record) =>
+          this.covertChildEvaluateDetail(record?.childEvaluateDetail)?.map((item, index) => (
+            <div className={stylesModule['wrapper-tag']}>
+              <Tag size="normal" key={index}>
+                {item}
+              </Tag>
+            </div>
+          )),
       },
       {
         title: 'Sử dụng',
@@ -281,6 +290,12 @@ class Index extends PureComponent {
           >
             <Switch
               defaultChecked={use}
+              disabled={
+                !ability.can(
+                  `${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.EDIT}`,
+                  `${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.EDIT}`,
+                )
+              }
               onChange={() => {
                 const payload = {
                   id: record?.id,
@@ -308,9 +323,15 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.EDIT}`}
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              color="danger"
+              icon="remove"
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.DELETE}`}
+              onClick={() => this.onRemove(record.id)}
+            />
           </div>
         ),
       },
@@ -351,10 +372,15 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Cấu hình kịch bản đánh giá" />
-        <div className='pl20 pr20 pb20'>
+        <div className="pl20 pr20 pb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Cấu hình kịch bản đánh giá</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              permission={`${FLATFORM.WEB}${permissions.Ç}${ACTION.CREATE}`}
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+            >
               Thêm mới
             </Button>
           </div>
@@ -377,7 +403,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả kỹ năng' }, ...skill,]}
+                    data={[{ name: 'Chọn tất cả kỹ năng' }, ...skill]}
                     name="categorySkillId"
                     onChange={(event) => this.onChangeSelect(event, 'categorySkillId')}
                     type={variables.SELECT}
@@ -387,7 +413,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả độ tuổi' }, ...variablesModules.AGE_TABLE,]}
+                    data={[{ name: 'Chọn tất cả độ tuổi' }, ...variablesModules.AGE_TABLE]}
                     name="age"
                     onChange={(event) => this.onChangeSelect(event, 'age')}
                     type={variables.SELECT}
@@ -397,7 +423,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Chọn tất cả loại áp dụng' }, ...variablesModules.APPLY,]}
+                    data={[{ name: 'Chọn tất cả loại áp dụng' }, ...variablesModules.APPLY]}
                     name="aplly"
                     onChange={(event) => this.onChangeSelect(event, 'apply')}
                     type={variables.SELECT}

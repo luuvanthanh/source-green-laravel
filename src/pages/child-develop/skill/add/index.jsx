@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty,head } from 'lodash';
+import { isEmpty, head } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
@@ -11,6 +11,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 let isMounted = true;
 /**
@@ -128,15 +129,12 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['childDevelopSkillAdd/ADD'] || effects['childDevelopSkillAdd/UPDATE'];
-    const loading =
-      effects['childDevelopSkillAdd/GET_DETAILS'];
+    const loadingSubmit =
+      effects['childDevelopSkillAdd/ADD'] || effects['childDevelopSkillAdd/UPDATE'];
+    const loading = effects['childDevelopSkillAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'}
-          menu={menuData}
-        />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuData} />
         <Pane className="col-lg-6 offset-lg-3">
           <Form
             className={styles['layout-form']}
@@ -155,10 +153,21 @@ class Index extends PureComponent {
                       </Heading>
                       <Pane className="row mt20">
                         <Pane className="col-lg-6">
-                          <FormItem label="Mã kỹ năng" name="code" type={variables.INPUT} placeholder={" "} disabled />
+                          <FormItem
+                            label="Mã kỹ năng"
+                            name="code"
+                            type={variables.INPUT}
+                            placeholder={' '}
+                            disabled
+                          />
                         </Pane>
                         <Pane className="col-lg-12">
-                          <FormItem label="Tên kỹ năng" name="name" type={variables.INPUT}  rules={[variables.RULES.EMPTY]}/>
+                          <FormItem
+                            label="Tên kỹ năng"
+                            name="name"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY]}
+                          />
                         </Pane>
                         <Pane className="col-lg-6">
                           <FormItem
@@ -171,10 +180,26 @@ class Index extends PureComponent {
                       </Pane>
                     </Pane>
                     <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                      <p className="btn-delete" role="presentation" loading={loadingSubmit} onClick={() => history.goBack()}>
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        loading={loadingSubmit}
+                        onClick={() => history.goBack()}
+                      >
                         Hủy
                       </p>
-                      <Button className="ml-auto px25" color="success" htmlType="submit" size="large" loading={loadingSubmit}>
+                      <Button
+                        permission={
+                          params?.id
+                            ? `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`
+                            : `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.CREATE}`
+                        }
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        loading={loadingSubmit}
+                      >
                         Lưu
                       </Button>
                     </Pane>
@@ -193,7 +218,7 @@ Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-   dispatch: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
 };
@@ -202,7 +227,7 @@ Index.defaultProps = {
   match: {},
   menuData: [],
   loading: {},
-   dispatch: {},
+  dispatch: {},
   error: {},
   details: {},
 };

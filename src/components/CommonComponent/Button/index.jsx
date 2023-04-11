@@ -53,9 +53,9 @@ const ICON_BUTTON = {
   'arrow-left': <span className="icon-arrow-left" />,
   report: <span className="icon-report" />,
   'cloud-upload': <span className="icon-cloud-upload" />,
-  'redo2': <span className="icon-redo2" />,
+  redo2: <span className="icon-redo2" />,
   excel: <span className="icon-excel" />,
-  accept: <span className="icon-accept" />
+  accept: <span className="icon-accept" />,
 };
 export default function ButtonCustom({
   children,
@@ -123,7 +123,7 @@ ButtonCustom.propTypes = {
   action: PropTypes.string,
   subject: PropTypes.string,
   className: PropTypes.string,
-  permission: PropTypes.string,
+  permission: PropTypes.any,
   ghost: PropTypes.any,
 };
 

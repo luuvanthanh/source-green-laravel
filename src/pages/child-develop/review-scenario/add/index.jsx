@@ -12,6 +12,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import variablesModules from '../variables';
 import stylesModule from '../styles.module.scss';
 
@@ -37,52 +38,67 @@ const Index = memo(() => {
 
   const [removeId, setRemoveId] = useState([]);
 
-  const loadingSubmit = effects[`childDevelopReviewScenarioAdd/UPDATE`] || effects[`childDevelopReviewScenarioAdd/ADD`];
+  const loadingSubmit =
+    effects[`childDevelopReviewScenarioAdd/UPDATE`] || effects[`childDevelopReviewScenarioAdd/ADD`];
 
   const onFinish = () => {
     form.validateFields().then((values) => {
       dispatch({
-        type: params.id ? 'childDevelopReviewScenarioAdd/UPDATE' : 'childDevelopReviewScenarioAdd/ADD',
-        payload: params.id ? {
-          id: params.id,
-          categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
-          age: values.age ? Number(values.age) : Number(details.age),
-          use: values.use,
-          detail: values.data.map((i) => ({
-            nameCriteria: i?.nameCriteria,
-            inputAssessment: i?.inputAssessment ? i?.inputAssessment : false,
-            periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
-            use: true,
-            id: i?.id,
-            // detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
-            //   content: item.content, use: item.use ? item.use : false
-            // })) : [],
-            detailChildren: {
-              createRows: i?.childEvaluateDetailChildren.filter((i) => !i?.id).map(item => ({
-                content: item.content, use: true,
+        type: params.id
+          ? 'childDevelopReviewScenarioAdd/UPDATE'
+          : 'childDevelopReviewScenarioAdd/ADD',
+        payload: params.id
+          ? {
+              id: params.id,
+              categorySkillId: values.categorySkillId
+                ? values.categorySkillId
+                : details.categorySkillId,
+              age: values.age ? Number(values.age) : Number(details.age),
+              use: values.use,
+              detail: values.data.map((i) => ({
+                nameCriteria: i?.nameCriteria,
+                inputAssessment: i?.inputAssessment ? i?.inputAssessment : false,
+                periodicAssessment: i?.periodicAssessment ? i?.periodicAssessment : false,
+                use: true,
+                id: i?.id,
+                // detailChildren: i?.childEvaluateDetailChildren ? i?.childEvaluateDetailChildren?.map((item) => ({
+                //   content: item.content, use: item.use ? item.use : false
+                // })) : [],
+                detailChildren: {
+                  createRows: i?.childEvaluateDetailChildren
+                    .filter((i) => !i?.id)
+                    .map((item) => ({
+                      content: item.content,
+                      use: true,
+                    })),
+                  updateRows: i?.childEvaluateDetailChildren
+                    .filter((item) => item.id)
+                    .map((item) => ({
+                      content: item.content,
+                      use: true,
+                      id: item?.id,
+                    })),
+                  deleteRows: removeId,
+                },
               })),
-              updateRows: i?.childEvaluateDetailChildren.filter((item) => item.id).map(item => ({
-                content: item.content, use: true, id: item?.id
-              })),
-              deleteRows: removeId,
             }
-          }))
-        }
-          :
-          {
-            categorySkillId: values.categorySkillId ? values.categorySkillId : false,
-            age: values.age ? Number(values.age) : false,
-            use: values.use ? values.use : false,
-            detail: values.data.map((item) => ({
-              nameCriteria: item?.nameCriteria,
-              inputAssessment: item?.inputAssessment ? item?.inputAssessment : false,
-              periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment : false,
-              use: true,
-              detailChildren: item?.childEvaluateDetailChildren ? item?.childEvaluateDetailChildren?.map((item) => ({
-                content: item.content, use: true,
-              })) : [],
-            }))
-          },
+          : {
+              categorySkillId: values.categorySkillId ? values.categorySkillId : false,
+              age: values.age ? Number(values.age) : false,
+              use: values.use ? values.use : false,
+              detail: values.data.map((item) => ({
+                nameCriteria: item?.nameCriteria,
+                inputAssessment: item?.inputAssessment ? item?.inputAssessment : false,
+                periodicAssessment: item?.periodicAssessment ? item?.periodicAssessment : false,
+                use: true,
+                detailChildren: item?.childEvaluateDetailChildren
+                  ? item?.childEvaluateDetailChildren?.map((item) => ({
+                      content: item.content,
+                      use: true,
+                    }))
+                  : [],
+              })),
+            },
         callback: (response, error) => {
           if (response) {
             if (response) {
@@ -148,12 +164,15 @@ const Index = memo(() => {
       <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftChildDevelop} />
       <Helmet title="Cấu hình kịch bản đánh giá" />
       <Pane className="pl20 pr20">
-        <Pane >
-          <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
-            data: [
-              {},
-            ],
-          }}>
+        <Pane>
+          <Form
+            layout="vertical"
+            onFinish={onFinish}
+            form={form}
+            initialValues={{
+              data: [{}],
+            }}
+          >
             {/* <Loading
               loading={loading}
               isError={error.isError}
@@ -190,7 +209,7 @@ const Index = memo(() => {
                   <FormItem
                     valuePropName="checked"
                     label="Sử dụng"
-                    name='use'
+                    name="use"
                     type={variables.SWITCH}
                   />
                 </Pane>
@@ -203,9 +222,10 @@ const Index = memo(() => {
                     <>
                       {fields.map((field, index) => (
                         <>
-                          <Pane className="offset-lg-12 col-lg-12 border-bottom pt15" key={field.key}>
-
-
+                          <Pane
+                            className="offset-lg-12 col-lg-12 border-bottom pt15"
+                            key={field.key}
+                          >
                             <Heading type="form-title" className="mb15">
                               Thông tin tiêu chí {index + 1}
                             </Heading>
@@ -213,7 +233,12 @@ const Index = memo(() => {
                               <div className={styles['list-button']}>
                                 <button
                                   className={styles['button-circle']}
-                                  style={{ display: 'flex', position: 'absolute', top: 20, right: 50 }}
+                                  style={{
+                                    display: 'flex',
+                                    position: 'absolute',
+                                    top: 20,
+                                    right: 50,
+                                  }}
                                   onClick={() => {
                                     remove(index);
                                   }}
@@ -223,10 +248,14 @@ const Index = memo(() => {
                                 </button>
                               </div>
                             )}
-                            <Collapse defaultActiveKey={[index + 1]} ghost expandIconPosition='right'>
-                              <Panel key={index + 1} >
+                            <Collapse
+                              defaultActiveKey={[index + 1]}
+                              ghost
+                              expandIconPosition="right"
+                            >
+                              <Panel key={index + 1}>
                                 <Pane className="card">
-                                  <Pane >
+                                  <Pane>
                                     <>
                                       <Pane className="row">
                                         <Pane className="col-lg-6">
@@ -241,9 +270,16 @@ const Index = memo(() => {
                                         <Pane className="col-lg-3">
                                           <Pane className="row">
                                             <Pane className="col-lg-12">
-                                              <h3 className={stylesModule['wrapper-checkBox']}>Áp dụng</h3>
+                                              <h3 className={stylesModule['wrapper-checkBox']}>
+                                                Áp dụng
+                                              </h3>
                                             </Pane>
-                                            <Pane className={classnames('col-lg-6', stylesModule['checkBox-item'],)}>
+                                            <Pane
+                                              className={classnames(
+                                                'col-lg-6',
+                                                stylesModule['checkBox-item'],
+                                              )}
+                                            >
                                               <FormItem
                                                 className="checkbox-row checkbox-small"
                                                 label="Test đầu vào"
@@ -253,7 +289,12 @@ const Index = memo(() => {
                                                 valuePropName="checked"
                                               />
                                             </Pane>
-                                            <Pane className={classnames('col-lg-6', stylesModule['checkBox-item'],)}>
+                                            <Pane
+                                              className={classnames(
+                                                'col-lg-6',
+                                                stylesModule['checkBox-item'],
+                                              )}
+                                            >
                                               <FormItem
                                                 className="checkbox-row checkbox-small"
                                                 label="ĐG định kỳ"
@@ -275,7 +316,9 @@ const Index = memo(() => {
                                           />
                                         </Pane> */}
                                         <Pane className="col-lg-12">
-                                          <h4 className={stylesModule['wrapper-title']}>Hình thức tiếp cận</h4>
+                                          <h4 className={stylesModule['wrapper-title']}>
+                                            Hình thức tiếp cận
+                                          </h4>
                                           <div className={stylesModule['wrapper-table']}>
                                             <div className={stylesModule['card-heading']}>
                                               <div className={stylesModule.col}>
@@ -288,26 +331,46 @@ const Index = memo(() => {
                                                 <p className={stylesModule.norm} />
                                               </div>
                                             </div>
-                                            <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildren']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildren']}>
+                                            <Form.List
+                                              label="Hình thức tiếp cận"
+                                              name={[field.name, 'childEvaluateDetailChildren']}
+                                              fieldKey={[
+                                                field.fieldKey,
+                                                'childEvaluateDetailChildren',
+                                              ]}
+                                            >
                                               {(fieldss, { remove, add }) => (
                                                 <>
                                                   {fieldss.map((fieldItem, indexItem) => {
                                                     const data = form?.getFieldsValue();
-                                                    const itemData = data?.data[index]?.childEvaluateDetailChildren?.find((item, indexWater) => indexWater === indexItem);
+                                                    const itemData = data?.data[
+                                                      index
+                                                    ]?.childEvaluateDetailChildren?.find(
+                                                      (item, indexWater) =>
+                                                        indexWater === indexItem,
+                                                    );
                                                     return (
                                                       <>
-                                                        <Pane
-                                                          key={indexItem}
-                                                          className="d-flex"
-                                                        >
-                                                          <div className={stylesModule['card-item']}>
-                                                            <div className={classnames(stylesModule.col)}>
+                                                        <Pane key={indexItem} className="d-flex">
+                                                          <div
+                                                            className={stylesModule['card-item']}
+                                                          >
+                                                            <div
+                                                              className={classnames(
+                                                                stylesModule.col,
+                                                              )}
+                                                            >
                                                               <FormItem
                                                                 className={stylesModule.item}
-                                                                fieldKey={[fieldItem.fieldKey, 'content']}
+                                                                fieldKey={[
+                                                                  fieldItem.fieldKey,
+                                                                  'content',
+                                                                ]}
                                                                 name={[fieldItem.name, 'content']}
                                                                 type={variables.TEXTAREA}
-                                                                rules={[variables.RULES.EMPTY_INPUT]}
+                                                                rules={[
+                                                                  variables.RULES.EMPTY_INPUT,
+                                                                ]}
                                                               />
                                                             </div>
                                                             {/* <div className={classnames(stylesModule.col)}>
@@ -318,16 +381,27 @@ const Index = memo(() => {
                                                                 type={variables.SWITCH}
                                                               />
                                                             </div> */}
-                                                            <div className={classnames(stylesModule.cols)}>
+                                                            <div
+                                                              className={classnames(
+                                                                stylesModule.cols,
+                                                              )}
+                                                            >
                                                               {fieldss.length > 1 && (
-                                                                <div className={styles['list-button']}>
+                                                                <div
+                                                                  className={styles['list-button']}
+                                                                >
                                                                   <button
-                                                                    className={styles['button-circle']}
+                                                                    className={
+                                                                      styles['button-circle']
+                                                                    }
                                                                     onClick={() => {
                                                                       remove(indexItem);
-                                                                      setRemoveId([...removeId, itemData.id]);
+                                                                      setRemoveId([
+                                                                        ...removeId,
+                                                                        itemData.id,
+                                                                      ]);
                                                                     }}
-                                                                    // onClick={() => 
+                                                                    // onClick={() =>
                                                                     //   onClickDeleteItem( remove === remove(), indexItem, itemData)
                                                                     // }
                                                                     type="button"
@@ -340,10 +414,9 @@ const Index = memo(() => {
                                                           </div>
                                                         </Pane>
                                                       </>
-
                                                     );
                                                   })}
-                                                  <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
+                                                  <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer ">
                                                     <span
                                                       onClick={() => add()}
                                                       role="presentation"
@@ -385,12 +458,7 @@ const Index = memo(() => {
               </Pane>
             </Pane>
             <Pane className="d-flex justify-content-between align-items-center mb20">
-              <p
-                className="btn-delete"
-                role="presentation"
-
-                onClick={() => history.goBack()}
-              >
+              <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                 Hủy
               </p>
               <Button
@@ -398,12 +466,16 @@ const Index = memo(() => {
                 color="success"
                 htmlType="submit"
                 size="large"
+                permission={
+                  params?.id
+                    ? `${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.EDIT}`
+                    : `${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.CREATE}`
+                }
                 loading={loadingSubmit}
               >
                 Lưu
               </Button>
             </Pane>
-
           </Form>
         </Pane>
       </Pane>
