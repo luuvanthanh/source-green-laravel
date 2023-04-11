@@ -39,9 +39,9 @@ class InterviewerListCreateCompletedInterviewRequest extends FormRequest
                 }
             ],
             'interviewDetails' => 'required|array',
-            'interviewDetails.*evaluationCriteriaId' => 'required|exists:EvaluationCriteriass,Id',
-            'interviewDetails.*pointEvaluation' => 'required|integer',
-            'interviewDetails.*comment' => 'nullable|string'
+            'interviewDetails.*.evaluationCriteriaId' => 'required|exists:EvaluationCriteriass,Id',
+            'interviewDetails.*.pointEvaluation' => 'required|integer',
+            'interviewDetails.*.comment' => 'nullable|string'
         ];
     }
 }

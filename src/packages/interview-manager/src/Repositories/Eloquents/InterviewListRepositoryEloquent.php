@@ -230,10 +230,10 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             }
         }
         // lấy ra để mục đích đếm số nhân viên đã đánh giá.
-        $getEmployeeInterviewDetail = DB::table('InterviewDetails')->where('InterviewListId', $id)->distinct('EmployeeId')->get()->toArray();
+        $getEmployeeInterviewDetail = $interviewList->interviewDetail()->distinct('EmployeeId')->get()->toArray();
         // Lấy ra với mục đích đếm số người phỏng vấn.
-        $getEmployeeInterviewerListEmployee = DB::table('InterviewListEmployees')->select('EmployeeId')->get()->pluck('EmployeeId')->toArray();
-
+        $getEmployeeInterviewerListEmployee = $interviewList->interviewListEmployee()->distinct('EmployeeId')->get()->toArray();
+        
         if (!empty($getEmployeeInterviewDetail) && !empty($getEmployeeInterviewerListEmployee)) {
             $sumInterviewList = 0;
             $pointEvaluationId = '';

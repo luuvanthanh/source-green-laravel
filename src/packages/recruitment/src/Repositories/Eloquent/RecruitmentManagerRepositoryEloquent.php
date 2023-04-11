@@ -138,11 +138,8 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
     public function getFormRecruitment(array $attributes)
     {
         $recruitmentManagement = RecruitmentManager::where('Link', $attributes['endPoint'])->first();
-        if (!is_null($recruitmentManagement)) {
-            $recruitmentConfiguration = RecruitmentConfiguration::findOrFail($recruitmentManagement->RecruitmentConfigurationId);
-        }
         
-        return parent::parserResult($recruitmentConfiguration);;
+        return parent::parserResult($recruitmentManagement);
     }
 
     public function createCandidate(array $attributes)

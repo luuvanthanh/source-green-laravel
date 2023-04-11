@@ -42,7 +42,6 @@ class RecruitmentManagerTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            'recruitmentConfiguraForm' => $model->question,
             'domain' => env('LINK_RECRUITMENT_CANDIDATE')
         ];
     }
