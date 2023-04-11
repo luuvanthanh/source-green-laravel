@@ -19,6 +19,17 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            // get form tuyen dung
+            \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
+            // Thêm ứng viên
+            \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
+        });
     }
 
     /**
@@ -41,13 +52,9 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('recruitment-manager', 'RecruitmentManagerController');
                 // get link tuyen dung
                 \Route::get('get-link-recruitment', 'RecruitmentManagerController@getLink');
-                  // get form tuyen dung
-                  \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
-
                 // quản lý ứng viên 
                 \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController');
-                // Thêm ứng viên
-                \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
+                
             });
         });
     }
