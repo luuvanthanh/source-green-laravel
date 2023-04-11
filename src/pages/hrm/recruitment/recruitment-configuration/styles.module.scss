@@ -1,0 +1,117 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table-header {
+  :global(.ant-table-thead > tr > th) {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    background: #ffffff !important;
+  }
+}
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.wrapper-card {
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  .wrapper-header {
+    border-radius: 6px 6px 0 0;
+    background-color: #edffe8;
+    width: 100%;
+    padding: 20px;
+    .item-logo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .logo {
+        img {
+          width: 146px;
+          height: 60px;
+        }
+      }
+      .wrapper-item {
+        .icon {
+          display: flex;
+          img {
+            width: 14px;
+            height: 14px;
+          }
+          .text {
+            margin-left: 2px;
+            font-family: "Proxima Nova";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 11px;
+            line-height: 16px;
+            color: #36383a;
+            opacity: 0.7;
+          }
+        }
+        .textNumber {
+          font-family: "Proxima Nova";
+          font-style: normal;
+          font-weight: 600;
+          font-size: 13px;
+          line-height: 20px;
+          color: #18a81b;
+        }
+        &:last-child {
+          margin-left: 30px;
+        }
+      }
+    }
+    .item-text {
+      margin-top: 15px;
+      font-family: "Proxima Nova";
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 30px;
+      color: #36383a;
+    }
+  }
+  .wrapper-upload {
+    display: flex;
+    align-items: center;
+    .upload-btn {
+      width: auto;
+      height: 100%;
+      display: flex;
+      background-color: #eef0f4;
+      border-radius: 3px;
+      padding: 5px 14px;
+      align-items: center;
+      img {
+        width: 16px;
+        height: 16px;
+      }
+      .text {
+        margin-left: 6px;
+        font-family: "Proxima Nova";
+        font-style: normal;
+        font-weight: 600;
+        font-size: 13px;
+        line-height: 22px;
+        color: #3b5cad;
+      }
+    }
+    .textNote {
+      margin-left: 10px;
+      font-family: "Proxima Nova";
+      font-style: italic;
+      font-weight: 400;
+      font-size: 11px;
+      line-height: 16px;
+      color: #36383a;
+      opacity: 0.7;
+      width: calc(100% - 100px);
+    }
+  }
+}

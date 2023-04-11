@@ -1150,6 +1150,25 @@ export default class Helpers {
     });
   };
 
+  static confirmModal = ({ callback }, text, ok, cancel) => {
+    confirm({
+      icon: '',
+      centered: true,
+      okText: ok,
+      cancelText: cancel,
+      className: `${styles['wrapper-confirm-modal']}`,
+      content: (
+        <>
+          <div className={styles['modal-text']}>{text}</div>
+        </>
+      ),
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
   static confirmDeleteEnglish = ({ callback }, text) => {
     confirm({
       icon: '',
