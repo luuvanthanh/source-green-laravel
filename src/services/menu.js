@@ -836,7 +836,7 @@ export async function getLeftMenuChildren() {
       key: 'menu',
       url: ['/bep/thuc-don', '/bep/thuc-don/tao-moi', '/bep/thuc-don/:id/chi-tiet', '/bep/thuc-don/:id/chinh-sua'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.VIEW}`],
       pro: true,
     },
     {
@@ -844,7 +844,7 @@ export async function getLeftMenuChildren() {
       key: 'meals',
       url: ['/bep/thuc-don/bua-an', '/bep/thuc-don/bua-an/tao-moi', '/bep/thuc-don/bua-an/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.VIEW}`],
       pro: true,
     },
     {
@@ -852,7 +852,7 @@ export async function getLeftMenuChildren() {
       key: 'food-commons',
       url: ['/bep/thuc-don/mon-an', '/bep/thuc-don/mon-an/tao-moi', '/bep/thuc-don/mon-an/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.VIEW}`],
       pro: true,
     },
     {
@@ -860,7 +860,7 @@ export async function getLeftMenuChildren() {
       key: 'student-allergy',
       url: ['/bep/thuc-don/hoc-sinh-bi-di-ung'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_HOCSINHBIDIUNG}${ACTION.VIEW}`],
       pro: true,
     },
     {
@@ -868,15 +868,15 @@ export async function getLeftMenuChildren() {
       key: 'student-exchange-food',
       url: ['/bep/thuc-don/hoc-sinh-can-doi-mon'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_HOCSINHCANDOIMON}${ACTION.VIEW}`],
       pro: true,
     },
     {
       title: 'Cấu hình áp dụng',
       key: 'applicable-configuration',
-      url: ['/thuc-don/cau-hinh-ap-dung'],
+      url: ['/bep/thuc-don/cau-hinh-ap-dung'],
       icon: 'icon icon-list',
-      permission: [permissions.BEP],
+      permission: [`${FLATFORM.WEB}${permissions.BEP_CAUHINHAPDUNG}${ACTION.VIEW}`],
       pro: true,
     },
   ];

@@ -8,6 +8,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
@@ -121,6 +122,7 @@ const Index = memo(() => {
                     size="large"
                     htmlType="submit"
                     loading={effects['menuApplicableConfiguration/ADD']}
+                    permission={`${FLATFORM.WEB}${permissions.BEP_CAUHINHAPDUNG}${ACTION.EDIT}`}
                   >
                     Lưu
                   </Button>
@@ -128,7 +130,11 @@ const Index = memo(() => {
               </Pane>
             ) : (
               <Pane className="pt20 pb20 d-flex justify-content-end align-items-center border-top">
-                <Button color="success" onClick={() => setCheckEdit(true)}>
+                <Button
+                  permission={`${FLATFORM.WEB}${permissions.BEP_CAUHINHAPDUNG}${ACTION.EDIT}`}
+                  color="success"
+                  onClick={() => setCheckEdit(true)}
+                >
                   Sửa
                 </Button>
               </Pane>
@@ -139,9 +145,5 @@ const Index = memo(() => {
     </div>
   );
 });
-
-Index.propTypes = {};
-
-Index.defaultProps = {};
 
 export default Index;
