@@ -35,6 +35,8 @@ class RouteRegistrar extends CoreRegistrar
 
         \Route::get('login/egov', 'AuthController@egovLogin');
         \Route::get('callback/egov', 'AuthController@egovLoginCallback');
+
+        \Route::post('user-register', 'UserController@register');
     }
 
     /**

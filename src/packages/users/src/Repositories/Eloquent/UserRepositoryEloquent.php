@@ -244,4 +244,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
 
         return $user;
     }
+
+    public function register(array $attributes)
+    {
+        dd(1);
+    }
 }

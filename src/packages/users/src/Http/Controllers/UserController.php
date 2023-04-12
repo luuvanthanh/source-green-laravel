@@ -133,4 +133,11 @@ class UserController extends Controller
 
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function register(Request $request)
+    {
+        $user = $this->userRepository->register($request->all());
+
+        return $this->success($user, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }
