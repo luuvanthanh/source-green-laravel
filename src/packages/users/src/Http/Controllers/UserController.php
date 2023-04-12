@@ -4,6 +4,7 @@ namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Users\Http\Requests\UserCreateRequest;
+use GGPHP\Users\Http\Requests\UserRegisterRequest;
 use GGPHP\Users\Http\Requests\UserUpdatePermissionRequest;
 use GGPHP\Users\Http\Requests\UserUpdateProfileRequest;
 use GGPHP\Users\Http\Requests\UserUpdateRequest;
@@ -134,7 +135,7 @@ class UserController extends Controller
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
 
-    public function register(Request $request)
+    public function register(UserRegisterRequest $request)
     {
         $user = $this->userRepository->register($request->all());
 

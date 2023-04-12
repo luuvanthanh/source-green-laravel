@@ -3,16 +3,19 @@
 namespace GGPHP\Users\Repositories\Eloquent;
 
 use GGPHP\Category\Models\EventType;
+use GGPHP\Category\Models\Unit;
 use GGPHP\Notification\Models\Player;
 use GGPHP\RolePermission\Models\Role;
 use GGPHP\Users\Jobs\SendEmail;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Spatie\Permission\Models\Permission;
 
 /**
  * Class UserRepositoryEloquent.
@@ -112,7 +115,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function create(array $attributes)
     {
-        $password = Str::random(8);
+        $password = env('PASSWORD_DEFAULT');
+        // $password = Str::random(8);
         $attributes['password'] = Hash::make($password);
 
         $user = User::create($attributes);
@@ -133,17 +137,15 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->camera()->sync($attributes['camera_id']);
         }
 
-        
-       
         // send mail
-        $dataMail = [
-            'email' => $user->email,
-            'name' => $user->fullname,
-            'password' => $password,
-            'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
-        ];
+        // $dataMail = [
+        //     'email' => $user->email,
+        //     'name' => $user->fullname,
+        //     'password' => $password,
+        //     'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
+        // ];
 
-        dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
+        // dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
 
         return parent::find($user->id);
     }
@@ -247,6 +249,23 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
 
     public function register(array $attributes)
     {
-        dd(1);
+        if (!empty($attributes['password'])) {
+            $attributes['password'] = Hash::make($attributes['password']);
+        }
+
+        $userUnit = Unit::where('name', 'Người dùng')->first();
+        $attributes['unit_id'] = $userUnit->id;
+        $userRole = Role::where('name', 'Người dùng')->first();
+        $attributes['role_id'] = $userRole->id;
+        $permistion = DB::table('permissions')->where('name', 'VIEW_STATISTICSSURVEY')->first();
+        $attributes['permission_id'] = $permistion->id;
+
+        $user = User::create($attributes);
+
+        if (!empty($attributes['role_id'])) {
+            $user->roles()->sync($attributes['role_id']);
+        }
+
+        return parent::find($user->id);
     }
 }
