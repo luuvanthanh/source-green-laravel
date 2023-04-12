@@ -23,8 +23,10 @@ const Index = memo(() => {
   const {
     loading: { effects },
     data,
-  } = useSelector(({ loading, hrmRecruitmentWebForm }) => ({
+    details,
+  } = useSelector(({ loading, hrmRecruitmentThankConfiguration, hrmRecruitmentWebForm }) => ({
     loading,
+    details: hrmRecruitmentThankConfiguration.details,
     data: hrmRecruitmentWebForm.data,
     error: hrmRecruitmentWebForm.error,
   }));
@@ -41,6 +43,7 @@ const Index = memo(() => {
         location: values?.location,
         phone: values?.phone,
         endPoint: params?.id,
+        recruitmentManagerId: data?.id,
         file: !isEmpty(file) ? JSON.stringify(file) : undefined,
         data: values?.recruitmentConfiguraForm?.map((item) => ({
           answer: item?.answer,
@@ -65,6 +68,14 @@ const Index = memo(() => {
       },
     });
   };
+
+  useEffect(() => {
+    dispatch({
+      type: 'hrmRecruitmentThankConfiguration/GET_DETAILS',
+      payload: {},
+      callback: () => {},
+    });
+  }, []);
 
   useEffect(() => {
     if (params.id) {
@@ -106,10 +117,11 @@ const Index = memo(() => {
       return null;
     },
     customRequest({ file }) {
-      const { name } = file;
-      const allowTypes = ['pdf', 'docx', 'xlsx'];
-      if (!allowTypes.includes(last(name.split('.')))) {
-        message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
+      const { name, size } = file;
+      const allowTypes = ['pdf'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Chỉ hỗ trợ định dạng .pdf. Dung lượng không được quá 5mb');
         return;
       }
       onUpload(file);
@@ -138,7 +150,7 @@ const Index = memo(() => {
                     <img src="/images/hrm/iconDone.svg" alt="ImageUpload" />
                   </div>
                   <h3 className={stylesModule['text-lable']}>Gửi thành công</h3>
-                  <p className={stylesModule['text-content']}>Cảm ơn bạn đã tham gia ứng tuyển</p>
+                  <p className={stylesModule['text-content']}>{head(details)?.content}</p>
                 </Pane>
               ) : (
                 <Pane className={stylesModule['wrapper-card']}>

@@ -217,6 +217,11 @@ const Index = memo(() => {
     return <SortableItem index={index} {...restProps} />;
   };
 
+  const checkDraggab = ability.can(
+    `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`,
+    `${FLATFORM.WEB}${permissions.SPTCT_DANHMUC_KYNANG}${ACTION.EDIT}`,
+  );
+
   return (
     <>
       <Helmet title="Kỹ năng" />
@@ -264,15 +269,10 @@ const Index = memo(() => {
               scroll={{ x: '100%', y: '70vh' }}
               components={{
                 body: {
-                  wrapper: DraggableContainer,
-                  row: DraggableBodyRow,
+                  wrapper: checkDraggab ? DraggableContainer : null,
+                  row: checkDraggab ? DraggableBodyRow : null,
                 },
               }}
-              onRow={(record) => ({
-                onClick: () => {
-                  history.push(`${pathname}/${record?.id}/chi-tiet`);
-                },
-              })}
             />
           </Pane>
         </Pane>

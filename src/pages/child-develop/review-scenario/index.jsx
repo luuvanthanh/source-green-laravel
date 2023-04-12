@@ -378,7 +378,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              permission={`${FLATFORM.WEB}${permissions.Ç}${ACTION.CREATE}`}
+              permission={`${FLATFORM.WEB}${permissions.SPTCT_CAUHINHKICHBANDANHGIA}${ACTION.CREATE}`}
               onClick={() => history.push(`${pathname}/tao-moi`)}
             >
               Thêm mới

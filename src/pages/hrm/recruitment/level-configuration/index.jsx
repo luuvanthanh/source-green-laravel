@@ -6,6 +6,8 @@ import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
 import { debounce } from 'lodash';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import ability from '@/utils/ability';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -101,21 +103,24 @@ const Index = memo(() => {
 
   const onRemove = (id) => {
     const text = 'Bạn có chắc chắn muốn xóa level này không?';
-    Helper.confirmDelete({
-      callback: () => {
-        dispatch({
-          type: 'hrmRecruitmentLevelConfiguration/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) {
-              loadData();
-            }
-          },
-        });
+    Helper.confirmDelete(
+      {
+        callback: () => {
+          dispatch({
+            type: 'hrmRecruitmentLevelConfiguration/REMOVE',
+            payload: {
+              id,
+            },
+            callback: (response) => {
+              if (response) {
+                loadData();
+              }
+            },
+          });
+        },
       },
-    }, text);
+      text,
+    );
   };
 
   const header = () => [
@@ -153,6 +158,7 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
+            permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.EDIT}`}
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record.id}/chinh-sua`);
@@ -161,10 +167,12 @@ const Index = memo(() => {
           <Button
             color="danger"
             icon="remove"
+            permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.DELETE}`}
             onClick={(e) => {
               e.stopPropagation();
               onRemove(record.id);
-            }} />
+            }}
+          />
         </div>
       ),
     },
@@ -176,7 +184,12 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Cấu hình level</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button
+            permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.CREATE}`}
+            color="success"
+            icon="plus"
+            onClick={() => history.push(`${pathname}/tao-moi`)}
+          >
             Tạo mới
           </Button>
         </div>
@@ -187,8 +200,11 @@ const Index = memo(() => {
               ref={filterRef}
               className="pt20"
               initialValues={{
-                ...search, date: search.from_date &&
-                  search.to_date ? [moment(search.from_date), moment(search.to_date)] : ["", ""],
+                ...search,
+                date:
+                  search.from_date && search.to_date
+                    ? [moment(search.from_date), moment(search.to_date)]
+                    : ['', ''],
               }}
             >
               <Pane className="row">
@@ -202,7 +218,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
             </Form>
-            <div className={styles['wrapper-table-header']} >
+            <div className={styles['wrapper-table-header']}>
               <Table
                 columns={header()}
                 dataSource={data}
@@ -217,7 +233,14 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.DETAIL}`,
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

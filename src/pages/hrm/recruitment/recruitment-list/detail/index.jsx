@@ -10,6 +10,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import ButtonCustomers from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 
@@ -84,6 +86,7 @@ const Index = memo(() => {
     details?.startDate,
     variables.DATE_FORMAT.DATE,
   )} - ${Helper.getDate(details?.endDate, variables.DATE_FORMAT.DATE)}`;
+
   return (
     <>
       <Breadcrumbs last="Chi tiết" menu={menuLeftHRM} />
@@ -183,6 +186,7 @@ const Index = memo(() => {
                           `/quan-ly-nhan-su/tuyen-dung/danh-sach-tuyen-dung/${params?.id}/tao-moi-nhan-vien?recruitmentManagerId=${params?.id}`,
                         )
                       }
+                      permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.EDIT}`}
                     >
                       Thêm ứng viên
                     </ButtonCustomers>
@@ -193,6 +197,16 @@ const Index = memo(() => {
                   <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                     Đóng
                   </p>
+                  {isEmpty(details?.candidate) && (
+                    <ButtonCustomers
+                      color="success"
+                      size="large"
+                      onClick={() => history.push('chinh-sua')}
+                      permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.EDIT}`}
+                    >
+                      Chỉnh sửa
+                    </ButtonCustomers>
+                  )}
                 </Pane>
               </Loading>
             </Form>

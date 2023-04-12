@@ -8,6 +8,8 @@ import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -26,11 +28,15 @@ const Index = memo(() => {
     error: hrmRecruitmentLevelConfigurationAdd.error,
   }));
 
-  const loadingSubmit = effects[`hrmRecruitmentLevelConfigurationAdd/UPDATE`] || effects[`hrmRecruitmentLevelConfigurationAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmRecruitmentLevelConfigurationAdd/UPDATE`] ||
+    effects[`hrmRecruitmentLevelConfigurationAdd/ADD`];
 
   const onFinish = (values) => {
     dispatch({
-      type: params.id ? 'hrmRecruitmentLevelConfigurationAdd/UPDATE' : 'hrmRecruitmentLevelConfigurationAdd/ADD',
+      type: params.id
+        ? 'hrmRecruitmentLevelConfigurationAdd/UPDATE'
+        : 'hrmRecruitmentLevelConfigurationAdd/ADD',
       payload: {
         id: params.id,
         ...values,
@@ -82,7 +88,7 @@ const Index = memo(() => {
       <Breadcrumbs last={params.id ? 'Sửa' : 'Tạo mới'} menu={menuLeftHRM} />
       <div className="col-lg-6 offset-lg-3">
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
                 params={{ type: 'container' }}
@@ -115,7 +121,8 @@ const Index = memo(() => {
                       <FormItem
                         name="decription"
                         placeholder="Nhập"
-                        type={variables.INPUT}
+                        type={variables.TEXTAREA}
+                        rules={[variables.RULES.MAX_LENGTH_INPUT]}
                         label="Mô tả"
                       />
                     </Pane>
@@ -123,7 +130,8 @@ const Index = memo(() => {
                       <FormItem
                         name="note"
                         placeholder="Nhập"
-                        type={variables.INPUT}
+                        type={variables.TEXTAREA}
+                        rules={[variables.RULES.MAX_LENGTH_INPUT]}
                         label="Ghi chú"
                       />
                     </Pane>
@@ -139,6 +147,11 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission={
+                      params?.id
+                        ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.EDIT}`
+                        : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.CREATE}`
+                    }
                   >
                     Lưu
                   </Button>

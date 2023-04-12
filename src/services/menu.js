@@ -1845,7 +1845,7 @@ export async function getLeftMenuHRM() {
       title: 'Tuyển dụng',
       key: 'recruitment',
       icon: 'icon icon-list',
-      permission: [permissions.HRM],
+      permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG}${ACTION.VIEW}`],
       children: [
         {
           title: 'Danh sách tuyển dụng',
@@ -1858,7 +1858,7 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/tuyen-dung/danh-sach-tuyen-dung/:id/tao-moi-nhan-vien',
             '/quan-ly-nhan-su/tuyen-dung/danh-sach-tuyen-dung/:id/chi-tiet-nhan-vien',
           ],
-          permission: [permissions.HRM],
+          permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -1870,14 +1870,14 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/:id/chi-tiet',
             '/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/:id/chinh-sua',
           ],
-          permission: [permissions.HRM],
+          permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.VIEW}`],
           pro: true,
         },
         {
           title: 'Cấu hình lời cảm ơn',
           key: 'thank-configuration',
           url: ['/quan-ly-nhan-su/tuyen-dung/cau-hinh-loi-cam-on'],
-          permission: [permissions.HRM],
+          permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLOICAMON}${ACTION.VIEW}`],
           pro: true,
         },
         {
@@ -1889,14 +1889,15 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/tuyen-dung/cau-hinh-level/:id/chi-tiet',
             '/quan-ly-nhan-su/tuyen-dung/cau-hinh-level/:id/chinh-sua',
           ],
-          permission: [permissions.HRM],
+          permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.VIEW}`],
           pro: true,
         },
         {
           title: 'Lưu trữ',
           key: 'storage',
-          url: ['/quan-ly-nhan-su/tuyen-dung/danh-sach-luu-tru'],
-          permission: [permissions.HRM],
+          url: ['/quan-ly-nhan-su/tuyen-dung/danh-sach-luu-tru',
+          '/quan-ly-nhan-su/tuyen-dung/danh-sach-luu-tru/:id/chi-tiet',],
+          permission: [`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_LUUTRU}${ACTION.VIEW}`],
           pro: true,
         },
       ],

@@ -9,6 +9,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 
@@ -19,19 +21,25 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const {
     loading: { effects },
+    details,
     menuLeftHRM,
   } = useSelector(({ menu, loading, hrmRecruitmentLevelConfigurationAdd }) => ({
     loading,
+    details: hrmRecruitmentLevelConfigurationAdd.details,
     menuLeftHRM: menu.menuLeftHRM,
     error: hrmRecruitmentLevelConfigurationAdd.error,
   }));
 
-  const loadingSubmit = effects[`hrmRecruitmentLevelConfigurationAdd/UPDATE`] || effects[`hrmRecruitmentLevelConfigurationAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmRecruitmentLevelConfigurationAdd/UPDATE`] ||
+    effects[`hrmRecruitmentLevelConfigurationAdd/ADD`];
 
   const onFinish = () => {
     form.validateFields().then((values) => {
       dispatch({
-        type: params.id ? 'hrmRecruitmentLevelConfigurationAdd/UPDATE' : 'hrmRecruitmentLevelConfigurationAdd/ADD',
+        type: params.id
+          ? 'hrmRecruitmentLevelConfigurationAdd/UPDATE'
+          : 'hrmRecruitmentLevelConfigurationAdd/ADD',
         payload: {
           id: params.id,
           name: values?.name,
@@ -63,14 +71,7 @@ const Index = memo(() => {
       dispatch({
         type: 'hrmRecruitmentLevelConfigurationAdd/GET_DATA',
         payload: params,
-        callback: (response) => {
-          if (response) {
-            form.setFieldsValue({
-              name: response?.name,
-              description: response?.description,
-            });
-          }
-        },
+        callback: () => {},
       });
     }
   }, [params.id]);
@@ -86,7 +87,7 @@ const Index = memo(() => {
       <div className="col-lg-6 offset-lg-3">
         <Helmet title="Loại tài sản" />
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
                 params={{ type: 'container' }}
@@ -98,16 +99,24 @@ const Index = memo(() => {
                   </Heading>
                   <Pane className="row">
                     <Pane className="col-lg-6">
-                      <FormDetail name="LV0001" label="ID" type={variables.TYPE.TEXT} />
+                      <FormDetail name={details?.code} label="ID" type={variables.TYPE.TEXT} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormDetail name="1" label="Tên level" type={variables.TYPE.TEXT} />
+                      <FormDetail
+                        ame={details?.name}
+                        label="Tên level"
+                        type={variables.TYPE.TEXT}
+                      />
                     </Pane>
                     <Pane className="col-lg-12">
-                      <FormDetail name="Trình độ junior" label="Mô tả" type={variables.TYPE.TEXT} />
+                      <FormDetail
+                        name={details?.decription}
+                        label="Mô tả"
+                        type={variables.TYPE.TEXT}
+                      />
                     </Pane>
                     <Pane className="col-lg-12">
-                      <FormDetail name="123" label="Ghi chú" type={variables.TYPE.TEXT} />
+                      <FormDetail name={details?.note} label="Ghi chú" type={variables.TYPE.TEXT} />
                     </Pane>
                   </Pane>
                   <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
@@ -120,6 +129,7 @@ const Index = memo(() => {
                       size="large"
                       loading={loadingSubmit}
                       onClick={() => history.push(`chinh-sua`)}
+                      permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLEVEL}${ACTION.EDIT}`}
                     >
                       Sửa
                     </Button>

@@ -14,7 +14,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

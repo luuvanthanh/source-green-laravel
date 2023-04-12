@@ -3,7 +3,9 @@ import Table from '@/components/CommonComponent/Table';
 import { useSelector } from 'dva';
 import { history, useParams } from 'umi';
 import Text from '@/components/CommonComponent/Text';
+import ability from '@/utils/ability';
 import { Helper, variables } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import stylesModule from '../styles.module.scss';
 import HelperModules from '../../utils/Helper';
 
@@ -70,17 +72,24 @@ const Index = memo(() => {
         align: 'center',
         fixed: 'right',
         render: (record) => (
-          <p
-            className={stylesModule['text-table']}
-            role="presentation"
-            onClick={() =>
-              history.push(
-                `/quan-ly-nhan-su/tuyen-dung/danh-sach-tuyen-dung/${params?.id}/chi-tiet-nhan-vien?id=${record?.id}`,
-              )
-            }
-          >
-            chi tiết
-          </p>
+          <>
+            {ability.can(
+              `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.DETAIL}`,
+              `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.DETAIL}`,
+            ) && (
+              <p
+                className={stylesModule['text-table']}
+                role="presentation"
+                onClick={() =>
+                  history.push(
+                    `/quan-ly-nhan-su/tuyen-dung/danh-sach-tuyen-dung/${params?.id}/chi-tiet-nhan-vien?id=${record?.id}`,
+                  )
+                }
+              >
+                chi tiết
+              </p>
+            )}
+          </>
         ),
       },
     ];

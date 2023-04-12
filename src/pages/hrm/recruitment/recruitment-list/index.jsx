@@ -6,7 +6,9 @@ import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
 import { debounce, isEmpty } from 'lodash';
+import ability from '@/utils/ability';
 
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -191,10 +193,12 @@ const Index = memo(() => {
                   e.stopPropagation();
                   history.push(`${pathname}/${record.id}/chinh-sua`);
                 }}
+                permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.EDIT}`}
               />
               <Button
                 color="danger"
                 icon="remove"
+                permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.DELETE}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove(record.id);
@@ -213,7 +217,12 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Danh sách tuyển dụng</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button
+            permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.CREATE}`}
+            color="success"
+            icon="plus"
+            onClick={() => history.push(`${pathname}/tao-moi`)}
+          >
             Tạo mới
           </Button>
         </div>
@@ -257,7 +266,14 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.DETAIL}`,
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

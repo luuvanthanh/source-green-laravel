@@ -8,15 +8,14 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 
 const Index = memo(() => {
   const [form] = Form.useForm();
-  const [
-    effects
-  ] = useSelector(({ hrmRecruitmentThankConfiguration, loading, user, menu }) => [
+  const [effects] = useSelector(({ hrmRecruitmentThankConfiguration, loading, user, menu }) => [
     hrmRecruitmentThankConfiguration,
     loading,
     user,
@@ -31,7 +30,7 @@ const Index = memo(() => {
     dispatch({
       type: 'hrmRecruitmentThankConfiguration/ADD',
       payload: {
-        content: value?.content
+        content: value?.content,
       },
       callback: (response, error) => {
         if (response) {
@@ -89,43 +88,51 @@ const Index = memo(() => {
             <Heading type="form-title" className="pb20">
               Cấu hình lời cảm ơn
             </Heading>
-            <Loading loading={effects['hrmRecruitmentThankConfiguration/GET_DETAILS']} >
+            <Loading loading={effects['hrmRecruitmentThankConfiguration/GET_DETAILS']}>
               <div className="card p20">
                 <Pane className="row">
                   <Pane className="col-lg-12">
-                    {
-                      checkEdit ?
-                        <FormItem
-                          label="Nội dung"
-                          name="content"
-                          type={variables.TEXTAREA}
-                        />
-                        :
-                        <FormDetail name={detail?.content} label="Nội dung" type={variables.TYPE.TEXTAREA} />
-                    }
+                    {checkEdit ? (
+                      <FormItem label="Nội dung" name="content" type={variables.TEXTAREA} />
+                    ) : (
+                      <FormDetail
+                        name={detail?.content}
+                        label="Nội dung"
+                        type={variables.TYPE.TEXTAREA}
+                      />
+                    )}
                   </Pane>
                 </Pane>
               </div>
             </Loading>
-            {
-              checkEdit ?
-                <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
-                  <>
-                    <p className="btn-delete" role="presentation" onClick={() => setCheckEdit(false)}>
-                      Hủy
-                    </p>
-                    <Button color="success" size="large" htmlType="submit" loading={effects['hrmRecruitmentThankConfiguration/ADD']}>
-                      Lưu
-                    </Button>
-                  </>
-                </Pane>
-                :
-                <Pane className="pt20 pb20 d-flex justify-content-end align-items-center border-top">
-                  <Button color="success" onClick={() => setCheckEdit(true)}>
-                    Sửa
+            {checkEdit ? (
+              <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
+                <>
+                  <p className="btn-delete" role="presentation" onClick={() => setCheckEdit(false)}>
+                    Hủy
+                  </p>
+                  <Button
+                    permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLOICAMON}${ACTION.EDIT}`}
+                    color="success"
+                    size="large"
+                    htmlType="submit"
+                    loading={effects['hrmRecruitmentThankConfiguration/ADD']}
+                  >
+                    Lưu
                   </Button>
-                </Pane>
-            }
+                </>
+              </Pane>
+            ) : (
+              <Pane className="pt20 pb20 d-flex justify-content-end align-items-center border-top">
+                <Button
+                  permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHLOICAMON}${ACTION.EDIT}`}
+                  color="success"
+                  onClick={() => setCheckEdit(true)}
+                >
+                  Sửa
+                </Button>
+              </Pane>
+            )}
           </div>
         </div>
       </Form>
@@ -133,10 +140,8 @@ const Index = memo(() => {
   );
 });
 
-Index.propTypes = {
-};
+Index.propTypes = {};
 
-Index.defaultProps = {
-};
+Index.defaultProps = {};
 
 export default Index;

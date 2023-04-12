@@ -9,6 +9,7 @@ import { history, useLocation } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import stylesForm from '@/assets/styles/Common/common.scss';
 import Loading from '@/components/CommonComponent/Loading';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -85,10 +86,11 @@ const Index = memo(() => {
       return null;
     },
     customRequest({ file }) {
-      const { name } = file;
-      const allowTypes = ['pdf', 'docx', 'xlsx'];
-      if (!allowTypes.includes(last(name.split('.')))) {
-        message.error('Chỉ hỗ trợ định dạng .pdf, .docx, .xlsx. Dung lượng không được quá 5mb');
+      const { name, size } = file;
+      const allowTypes = ['pdf'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Chỉ hỗ trợ định dạng .pdf. Dung lượng không được quá 5mb');
         return;
       }
       onUpload(file);
@@ -150,31 +152,35 @@ const Index = memo(() => {
                         label="Số điện thoại liên lạc"
                       />
                     </Pane>
-                    <Pane className="col-lg-6">
-                      <label className="ant-col ant-form-item-label d-flex">
-                        <span className={stylesForm['thead-required']}>Tài liệu đính kèm</span>
+                    <div className={csx(stylesModule['container-upload'], 'col-lg-6 pb20')}>
+                      <label
+                        className={csx(
+                          stylesModule['wrapper-lable'],
+                          'ant-col ant-form-item-label d-flex',
+                        )}
+                      >
+                        <span className={stylesForm['thead-required']}>CV bản thân</span>
                       </label>
                       <Form.Item
                         name="file"
-                        style={{ marginBottom: 0 }}
+                        style={{ marginBottom: 0, border: 'none' }}
                         rules={[variables.RULES.EMPTY]}
                       >
-                        <Upload {...props}>
-                          <div className="d-flex">
-                            <ButtonComponent
-                              loading={effects[`upload/UPLOAD`]}
-                              color="transparent"
-                              icon="upload1"
-                            >
-                              Tải lên
-                            </ButtonComponent>
-                            <i className={stylesModule['text-upload']}>
-                              Chỉ hỗ trợ định dạng .pdf (dung lượng tối đa 5mb)
+                        <Upload {...props} className={stylesModule['upload-file']}>
+                          <div className={stylesModule['wrapper-upload']}>
+                            <div className={stylesModule['upload-btn']}>
+                              <ButtonComponent loading={effects[`upload/UPLOAD`]} color="white">
+                                <img src="/images/hrm/cloud-computing.svg" alt="ImageUpload" />
+                                <h4 className={stylesModule.text}>Tải lên</h4>
+                              </ButtonComponent>
+                            </div>
+                            <i className={stylesModule.textNote}>
+                              Chỉ hỗ trợ định dạng .pdf. Dung lượng không được quá 5mb
                             </i>
                           </div>
                         </Upload>
                       </Form.Item>
-                    </Pane>
+                    </div>
                     {!isEmpty(file) && (
                       <Pane className="col-lg-12 border-top border-bottom">
                         <div className={csx(stylesForm['files-container'], 'mt5')}>
@@ -207,6 +213,7 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.EDIT}`}
                   >
                     Lưu
                   </ButtonComponent>
