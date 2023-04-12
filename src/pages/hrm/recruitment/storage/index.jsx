@@ -8,6 +8,9 @@ import moment from 'moment';
 import { debounce } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import ability from '@/utils/ability';
+
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
@@ -157,7 +160,7 @@ const Index = memo(() => {
       title: 'Trạng thái',
       key: 'number',
       className: 'min-width-150',
-      width: 120,
+      width: 150,
       render: (record) => HelperModules.tagStatusRecruimentUser(record?.status),
     },
   ];
@@ -207,6 +210,20 @@ const Index = memo(() => {
                   header: header(),
                   type: 'table',
                 }}
+                onRow={(record) => ({
+                  onClick: () => {
+                    if (
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_LUUTRU}${ACTION.DETAIL}`,
+                        `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_LUUTRU}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(
+                        `${pathname}/${record.id}/chi-tiet?id=${record.id}&type=luu-tru`,
+                      );
+                    }
+                  },
+                })}
               />
             </div>
           </Pane>

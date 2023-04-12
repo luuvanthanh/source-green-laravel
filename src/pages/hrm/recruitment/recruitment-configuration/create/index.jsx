@@ -4,13 +4,15 @@ import { Form } from 'antd';
 import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
-import { useParams, history , useLocation} from 'umi';
+import { useParams, history, useLocation } from 'umi';
 import { v4 as uuidv4 } from 'uuid';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import FormItem from '@/components/CommonComponent/FormItem';
 import TableInput from '../component/table-input';
 
@@ -37,15 +39,19 @@ const Index = memo(() => {
   }));
 
   const [dataTable, setDataTable] = useState([]);
-  const loadingSubmit = effects[`hrmRecruitmentRecruitmentConfigurationAdd/UPDATE`] || effects[`hrmRecruitmentRecruitmentConfigurationAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmRecruitmentRecruitmentConfigurationAdd/UPDATE`] ||
+    effects[`hrmRecruitmentRecruitmentConfigurationAdd/ADD`];
 
   const onFinish = (values) => {
     dispatch({
-      type: params.id ? 'hrmRecruitmentRecruitmentConfigurationAdd/UPDATE' : 'hrmRecruitmentRecruitmentConfigurationAdd/ADD',
+      type: params.id
+        ? 'hrmRecruitmentRecruitmentConfigurationAdd/UPDATE'
+        : 'hrmRecruitmentRecruitmentConfigurationAdd/ADD',
       payload: {
         id: params.id,
         ...values,
-        data: dataTable?.map(i => ({ name: i?.name }))
+        data: dataTable?.map((i) => ({ name: i?.name })),
       },
       callback: (response, error) => {
         if (response) {
@@ -76,11 +82,11 @@ const Index = memo(() => {
       type: 'hrmRecruitmentRecruitmentConfigurationAdd/GET_DIVISIONS',
       payload: {},
     });
-    if(query?.type === 'detail' || query?.type === 'perviewDetails' || query?.type === 'new') {
+    if (query?.type === 'detail' || query?.type === 'perviewDetails' || query?.type === 'new') {
       form.setFieldsValue({
         ...dataPerview,
-       });
-       setDataTable(dataPerview?.question);
+      });
+      setDataTable(dataPerview?.question);
     }
   }, []);
 
@@ -94,7 +100,7 @@ const Index = memo(() => {
             form.setFieldsValue({
               ...response,
             });
-             setDataTable(response?.question);
+            setDataTable(response?.question);
           }
         },
       });
@@ -108,17 +114,19 @@ const Index = memo(() => {
 
   const onSendPerview = () => {
     form.validateFields().then((values) => {
-    const id =  uuidv4();
-    dispatch({
-      type: 'hrmRecruitmentRecruitmentConfigurationAdd/GET_SET_DATA_PERVIEW',
-      payload: {...values, id, question: dataTable} 
+      const id = uuidv4();
+      dispatch({
+        type: 'hrmRecruitmentRecruitmentConfigurationAdd/GET_SET_DATA_PERVIEW',
+        payload: { ...values, id, question: dataTable },
+      });
+      if (params?.id) {
+        history.push(
+          `/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/${params?.id}/chi-tiet?type=perviewDetails`,
+        );
+      } else {
+        history.push(`/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/${id}/chi-tiet?type=perview`);
+      }
     });
-    if(params?.id) {
-      history.push(`/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/${params?.id}/chi-tiet?type=perviewDetails`);
-    } else {
-      history.push(`/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung/${id}/chi-tiet?type=perview`);
-    }
-  });
   };
 
   return (
@@ -127,7 +135,7 @@ const Index = memo(() => {
       <Breadcrumbs last={params.id ? 'Sửa' : 'Tạo mới'} menu={menuLeftHRM} />
       <div>
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
                 params={{ type: 'container' }}
@@ -193,15 +201,24 @@ const Index = memo(() => {
                   <TableInput setDataTable={setDataTable} dataTable={dataTable} />
                 </Pane>
                 <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
-                  <p className="btn-delete" role="presentation" onClick={() => history.push('/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung')}>
+                  <p
+                    className="btn-delete"
+                    role="presentation"
+                    onClick={() => history.push('/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung')}
+                  >
                     Hủy
                   </p>
-                  <div className='d-flex'>
+                  <div className="d-flex">
                     <Button
                       className="ml-auto px25"
                       color="primary"
                       size="large"
                       onClick={() => onSendPerview()}
+                      permission={
+                        params?.id
+                          ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.EDIT}`
+                          : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.CREATE}`
+                      }
                     >
                       Xem trước
                     </Button>
@@ -211,6 +228,11 @@ const Index = memo(() => {
                       htmlType="submit"
                       size="large"
                       loading={loadingSubmit}
+                      permission={
+                        params?.id
+                          ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.EDIT}`
+                          : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.CREATE}`
+                      }
                     >
                       Lưu
                     </Button>

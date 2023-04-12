@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'dva';
 import { history, useLocation } from 'umi';
 import Loading from '@/components/CommonComponent/Loading';
 import Heading from '@/components/CommonComponent/Heading';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -180,6 +181,11 @@ const Index = memo(() => {
                           size="large"
                           loading={loadingSubmit}
                           onClick={() => onStatus('NOT_ACHIEVED')}
+                          permission={
+                            query?.type === 'luu-tru'
+                              ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_LUUTRU}${ACTION.APPROVE}`
+                              : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.APPROVE}`
+                          }
                         >
                           Không đạt
                         </Button>
@@ -189,6 +195,11 @@ const Index = memo(() => {
                           size="large"
                           loading={loadingSubmit}
                           onClick={() => onPass()}
+                          permission={
+                            query?.type === 'luu-tru'
+                              ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_LUUTRU}${ACTION.APPROVE}`
+                              : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.APPROVE}`
+                          }
                         >
                           Đạt
                         </Button>

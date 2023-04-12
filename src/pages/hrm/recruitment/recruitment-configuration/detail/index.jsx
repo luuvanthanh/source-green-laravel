@@ -9,6 +9,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import { variables } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
@@ -49,7 +50,7 @@ const Index = memo(() => {
     <>
       <Breadcrumbs last={query?.type === 'perview' ? 'Xem trước' : 'Chi tiết'} menu={menuLeftHRM} />
       <div className="col-lg-8 offset-lg-2">
-        <Helmet title="Loại tài sản" />
+        <Helmet title="Cấu hình tuyển dụng" />
         <Pane className="pl20 pr20 pb20">
           <Pane>
             <Form layout="vertical" form={form} initialValues={{}}>
@@ -113,7 +114,7 @@ const Index = memo(() => {
                               <h4 className={stylesModule.text}>Tải lên</h4>
                             </div>
                             <i className={stylesModule.textNote}>
-                              Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb
+                              Chỉ hỗ trợ định dạng .pdf Dung lượng không được quá 5mb
                             </i>
                           </div>
                         </div>
@@ -153,6 +154,7 @@ const Index = memo(() => {
                             : 'chinh-sua?type=perviewDetails',
                         )
                       }
+                      permission={`${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_CAUHINHTUYENDUNG}${ACTION.EDIT}`}
                     >
                       Sửa
                     </Button>

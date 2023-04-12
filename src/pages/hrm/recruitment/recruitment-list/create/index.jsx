@@ -10,6 +10,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import moment from 'moment';
 import { variables, Helper } from '@/utils';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import ButtonComponent from '@/components/CommonComponent/Button';
 import { CopyOutlined } from '@ant-design/icons';
@@ -283,6 +284,11 @@ const Index = memo(() => {
                         htmlType="submit"
                         size="large"
                         loading={loadingSubmit}
+                        permission={
+                          params?.id
+                            ? `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.EDIT}`
+                            : `${FLATFORM.WEB}${permissions.HRM_TUYENDUNG_DANHSACHTUYENDUNG}${ACTION.CREATE}`
+                        }
                       >
                         Lưu
                       </ButtonComponent>
