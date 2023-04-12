@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty } from 'lodash';
-
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -152,6 +152,11 @@ const Index = memo(() => {
                     loading['mealsCreate/ADD'] ||
                     loading['mealsCreate/UPDATE'] ||
                     loading['mealsCreate/GET_DATA']
+                  }
+                  permission={
+                    params?.id
+                      ? `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.CREATE}`
                   }
                 >
                   Lưu

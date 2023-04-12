@@ -7,12 +7,14 @@ import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
 import WebFormLayout from './web-form';
+import WebFormLayoutHrm from './web-form-hrm';
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
   webForm: WebFormLayout,
+  webFormHrm: WebFormLayoutHrm,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -47,6 +49,9 @@ class IndexLayout extends React.PureComponent {
       if (/^\/web-form(?=\/|$)/i.test(pathname) || /^\/switch-branches(?=\/|$)/i.test(pathname)) {
         return 'webForm';
       }
+      if (/^\/ung-vien(?=\/|$)/i.test(pathname) || /^\/switch-branches(?=\/|$)/i.test(pathname)) {
+        return 'webFormHrm';
+      }
       return 'main';
     };
 
@@ -56,6 +61,7 @@ class IndexLayout extends React.PureComponent {
     const isUserLoading = loading.models.user;
     const isLoginLayout = getLayout() === 'login';
     const isWebFormLayout = getLayout() === 'webForm';
+    const isWebFormLayoutHrm = getLayout() === 'webFormHrm';
     const isSwitchLayout = getLayout() === 'switch-branches';
 
     const BootstrappedLayout = () => {
@@ -64,7 +70,7 @@ class IndexLayout extends React.PureComponent {
         return <Loader />;
       }
       // redirect to login page if current is not login page and user not authorized
-      if (!isLoginLayout && !isUserAuthorized && !isWebFormLayout) {
+      if (!isLoginLayout && !isUserAuthorized && !isWebFormLayout && !isWebFormLayoutHrm) {
         return (
           <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
         );

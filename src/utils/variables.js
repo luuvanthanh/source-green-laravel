@@ -75,6 +75,7 @@ export const variables = {
     // TODO: Rename
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
+    MIN_NUMBER_PHONE: { min: 10, message: 'Trường này ít nhất 10 ký tự' },
     NUMBER: { pattern: /^\d+$/, message: 'Trường này là chỉ là số' },
     NUMBER_ENGLISH: { pattern: /^\d+$/, message: 'This field is just integer' },
     EMAIL: { type: 'email', message: 'Trường này là email' },
@@ -382,6 +383,10 @@ export const variables = {
     IMG: 'img',
     NO_LABLE: 'noLable',
     TEXTAREA: 'TextArea',
+    LABEL: 'label',
+    LINK: 'link',
+    TEXT_REQUIRED: 'text_required',
+    LABEL_REQUIRED: 'label_required',
   },
 };
 

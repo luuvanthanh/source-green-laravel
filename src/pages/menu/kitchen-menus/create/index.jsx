@@ -17,7 +17,9 @@ import { variables, Helper } from '@/utils';
 import Select from '@/components/CommonComponent/Select';
 import classnames from 'classnames';
 import Loading from '@/components/CommonComponent/Loading';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import styles from './style.module.scss';
+
 import variablesModules from '../../utils/variables';
 
 const Index = memo(() => {
@@ -26,12 +28,14 @@ const Index = memo(() => {
     loading,
     { branches, classTypes, foodCommons, meals, error },
     { user, defaultBranch },
-  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate, user }) => [
-    menuLeftChildren,
-    effects,
-    kitchenMenusCreate,
-    user,
-  ]);
+  ] = useSelector(
+    ({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate, user }) => [
+      menuLeftChildren,
+      effects,
+      kitchenMenusCreate,
+      user,
+    ],
+  );
   const dispatch = useDispatch();
   const params = useParams();
 
@@ -96,11 +100,16 @@ const Index = memo(() => {
       menuMeals: menuMeals.map((item) => ({
         ...omit(item, 'timeline', 'isAdd', 'originId'),
         menuMealDetails:
-          item?.menuMealDetails?.map((menuItem) => ({
-            ...(menuItem.isAdd
-              ? omit(menuItem, 'id', 'isAdd')
-              : { ...omit(menuItem, 'originId'), id: menuItem?.foodId ? menuItem.originId : undefined }),
-          }))?.filter(i => i?.foodId) || undefined,
+          item?.menuMealDetails
+            ?.map((menuItem) => ({
+              ...(menuItem.isAdd
+                ? omit(menuItem, 'id', 'isAdd')
+                : {
+                    ...omit(menuItem, 'originId'),
+                    id: menuItem?.foodId ? menuItem.originId : undefined,
+                  }),
+            }))
+            ?.filter((i) => i?.foodId) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
         id: item?.isAdd ? undefined : item.id || item.originId,
       })),
@@ -109,19 +118,17 @@ const Index = memo(() => {
       type: params.id ? 'kitchenMenusCreate/UPDATE' : 'kitchenMenusCreate/ADD',
       payload: params.id
         ? {
-          ...payload,
-          fromDate:
-            fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
-          toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
-          ...params,
-        }
+            ...payload,
+            fromDate: fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
+            toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
+            ...params,
+          }
         : {
-          ...payload,
-          fromDate:
-            fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
-          toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
-          ...params,
-        },
+            ...payload,
+            fromDate: fromDate === null ? null : moment(fromDate).format('YYYY-MM-DD'),
+            toDate: toDate === null ? null : moment(toDate).format('YYYY-MM-DD'),
+            ...params,
+          },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -264,9 +271,9 @@ const Index = memo(() => {
       }
       o[el.foodOrderIndex].week.push({
         dayOfWeek: el.dayOfWeek,
-        id: el.foodId === "00000000-0000-0000-0000-000000000000" ? null : el?.id || uuidv4(),
+        id: el.foodId === '00000000-0000-0000-0000-000000000000' ? null : el?.id || uuidv4(),
         originId: el.id,
-        foodId: el.foodId === "00000000-0000-0000-0000-000000000000" ? null : el.foodId,
+        foodId: el.foodId === '00000000-0000-0000-0000-000000000000' ? null : el.foodId,
       });
       return r;
     }, []);
@@ -513,7 +520,12 @@ const Index = memo(() => {
                               week: dataDay.map((itemWeekDetail) =>
                                 itemWeekDetail.dayOfWeek === itemDay.id
                                   ? { ...itemWeekDetail, foodId }
-                                  : { ...itemWeekDetail, ...itemMenuDetail.week.find(i => i?.dayOfWeek === itemWeekDetail.dayOfWeek) },
+                                  : {
+                                      ...itemWeekDetail,
+                                      ...itemMenuDetail.week.find(
+                                        (i) => i?.dayOfWeek === itemWeekDetail.dayOfWeek,
+                                      ),
+                                    },
                               ),
                             };
                           }
@@ -867,7 +879,12 @@ const Index = memo(() => {
       <Pane style={{ padding: 20, paddingBottom: 0 }} className={styles.wrapper}>
         <Pane className="row">
           <Pane className="col-lg-12">
-            <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{ branchId: defaultBranch?.id }}>
+            <Form
+              layout="vertical"
+              ref={formRef}
+              onFinish={onFinish}
+              initialValues={{ branchId: defaultBranch?.id }}
+            >
               <Loading
                 loading={
                   loading['kitchenMenusCreate/GET_DATA'] ||
@@ -877,7 +894,7 @@ const Index = memo(() => {
                   loading['kitchenMenusCreate/GET_MEALS']
                 }
                 isError={error.isError}
-                params={{ error, goBack: '/thuc-don' }}
+                params={{ error, goBack: '/bep/thuc-don' }}
               >
                 <Pane>
                   <Pane className="p20 pt20 card">
@@ -965,6 +982,7 @@ const Index = memo(() => {
                             onClick={onApply}
                             loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
                             disabled
+                            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.CREATE}`}
                           >
                             {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                           </Button>
@@ -973,12 +991,22 @@ const Index = memo(() => {
                             color="success"
                             onClick={onApply}
                             loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                            permission={
+                              params?.id
+                                ? `${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EDIT}`
+                                : `${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.CREATE}`
+                            }
                           >
                             {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                           </Button>
                         )}
                         {isEmpty(weeksKitchen) && (
-                          <Button color="primary" onClick={exportData} className="ml10">
+                          <Button
+                            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EXPORT}`}
+                            color="primary"
+                            onClick={exportData}
+                            className="ml10"
+                          >
                             Export
                           </Button>
                         )}
@@ -991,6 +1019,7 @@ const Index = memo(() => {
                                 loading['kitchenMenusCreate/GET_TIMETABLE_FEES'] ||
                                 loading['kitchenMenusCreate/IMPORT_EXCEL']
                               }
+                              permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.IMPORT}`}
                             >
                               Import excel
                             </Button>
@@ -1192,42 +1221,19 @@ const Index = memo(() => {
                       </div>
                     ))}
                   {/* {!params.id && user?.roleCode !== "sale" && ( */}
-                  {!params.id && (user?.roleCode !== "sale" || user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
-                    <Pane className="py20 d-flex justify-content-between align-items-center">
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                        onClick={() => history.goBack()}
-                      >
-                        Hủy
-                      </p>
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                        loading={
-                          loading['kitchenMenusCreate/ADD'] ||
-                          loading['kitchenMenusCreate/UPDATE'] ||
-                          loading['kitchenMenusCreate/GET_DATA']
-                        }
-                      >
-                        Lưu
-                      </Button>
-                    </Pane>
-                  )}
-                  {params.id && (user?.roleCode !== "sale" || user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
-                    <Pane className="py20 d-flex justify-content-between align-items-center">
-                      <p
-                        className="btn-delete"
-                        role="presentation"
-                        onClick={() => history.goBack()}
-                      >
-                        Hủy
-                      </p>
-                      <div className="d-flex">
+                  {!params.id &&
+                    (user?.roleCode !== 'sale' ||
+                      user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
+                      <Pane className="py20 d-flex justify-content-between align-items-center">
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          onClick={() => history.goBack()}
+                        >
+                          Hủy
+                        </p>
                         <Button
-                          className="ml-auto px25 ml10"
+                          className="ml-auto px25"
                           color="success"
                           htmlType="submit"
                           size="large"
@@ -1236,12 +1242,41 @@ const Index = memo(() => {
                             loading['kitchenMenusCreate/UPDATE'] ||
                             loading['kitchenMenusCreate/GET_DATA']
                           }
+                          permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.CREATE}`}
                         >
                           Lưu
                         </Button>
-                      </div>
-                    </Pane>
-                  )}
+                      </Pane>
+                    )}
+                  {params.id &&
+                    (user?.roleCode !== 'sale' ||
+                      user?.roleCode !== variables?.LIST_ROLE_CODE?.TEACHER) && (
+                      <Pane className="py20 d-flex justify-content-between align-items-center">
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          onClick={() => history.goBack()}
+                        >
+                          Hủy
+                        </p>
+                        <div className="d-flex">
+                          <Button
+                            className="ml-auto px25 ml10"
+                            color="success"
+                            htmlType="submit"
+                            size="large"
+                            loading={
+                              loading['kitchenMenusCreate/ADD'] ||
+                              loading['kitchenMenusCreate/UPDATE'] ||
+                              loading['kitchenMenusCreate/GET_DATA']
+                            }
+                            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EDIT}`}
+                          >
+                            Lưu
+                          </Button>
+                        </div>
+                      </Pane>
+                    )}
                 </Pane>
               </Loading>
             </Form>

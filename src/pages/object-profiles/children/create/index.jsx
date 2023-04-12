@@ -14,19 +14,11 @@ import ParentsForm from './forms/parents';
 import ShuttlersForm from './forms/shuttlers';
 import History from './forms/history';
 import OtherForm from './forms/other';
+import AllergicIngredients from './forms/allergic-ingredients';
 
 import { menu, defaultKey } from '../menu';
 
 const { Item: MenuItem } = Menu;
-
-const forms = {
-  general: <GeneralForm />,
-  curator: <CuratorForm />,
-  parents: <ParentsForm />,
-  shuttlers: <ShuttlersForm />,
-  other: <OtherForm />,
-  history: <History />,
-};
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem] = useState(defaultKey);
@@ -36,6 +28,16 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const { details } = useSelector(({ OPchildrenAdd }) => ({
     details: OPchildrenAdd.details,
   }));
+
+  const forms = {
+    general: <GeneralForm />,
+    curator: <CuratorForm />,
+    parents: <ParentsForm />,
+    shuttlers: <ShuttlersForm />,
+    other: <OtherForm />,
+    allergicIngredients: <AllergicIngredients />,
+    history: <History />,
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -50,9 +52,14 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     if (isEmpty(details?.student)) {
       return [];
     }
-    if (details?.student?.status === 'STORE'
-      || details?.student?.status === 'WITHDRAW_APPLICATION'
-      || details?.student?.status === 'STOP_STUDYING') {
+    if (details?.student?.status !== 'OFFICAL') {
+      return items.filter((item) => item.key !== 'allergicIngredients');
+    }
+    if (
+      details?.student?.status === 'STORE' ||
+      details?.student?.status === 'WITHDRAW_APPLICATION' ||
+      details?.student?.status === 'STOP_STUDYING'
+    ) {
       return items.filter((item) => item.key === 'general');
     }
     return items;

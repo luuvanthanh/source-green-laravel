@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -98,6 +99,7 @@ const Index = memo(() => {
             color="success"
             ghost
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+            permission={`${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`}
           >
             Chi tiết
           </Button>
@@ -156,12 +158,15 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách món ăn</Heading>
-          {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
+          {user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+            ''
+          ) : (
             <Button
               className="ml-auto"
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission={`${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`}
             >
               Tạo danh mục
             </Button>

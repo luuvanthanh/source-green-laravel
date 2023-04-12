@@ -16,6 +16,8 @@ export default {
     employees: [],
     branches: [],
     classes: [],
+    dataFoodMaterials: [],
+    dataAllergicIngredients: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -53,6 +55,14 @@ export default {
     SET_HISTORY: (state, { payload }) => ({
       ...state,
       history: payload,
+    }),
+    SET_FOOD_COMMONS_MATERIALS: (state, { payload }) => ({
+      ...state,
+      dataFoodMaterials: payload.parsePayload,
+    }),
+    SET_ALLERGIC_INGREDIENTS: (state, { payload }) => ({
+      ...state,
+      dataAllergicIngredients: payload.items,
     }),
     SET_YEARS: (state, { payload }) => ({
       ...state,
@@ -235,6 +245,45 @@ export default {
           payload: {
             parsePayload: response,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_MATERIALS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addMaterials, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_FOOD_COMMONS_MATERIALS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getFoodCommonsMaterials, payload);
+        yield saga.put({
+          type: 'SET_FOOD_COMMONS_MATERIALS',
+          payload: {
+            parsePayload: response,
+          },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_ALLERGIC_INGREDIENTS({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getAllergicIngredients, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_ALLERGIC_INGREDIENTS',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

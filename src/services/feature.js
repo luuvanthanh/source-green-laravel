@@ -87,8 +87,8 @@ export const feature = {
       title: 'Bếp',
       src: '/images/home/cooking.svg',
       animation: animationImage.kitchen,
-      url: '/thuc-don',
-      permission: [permissions.BEP],
+      url: '/bep',
+      permission: [`${FLATFORM.WEB}${permissions.BEP}${ACTION.VIEW}`],
     },
     {
       title: 'Biểu phí',

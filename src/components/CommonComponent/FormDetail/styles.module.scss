@@ -9,6 +9,25 @@
     color: #36383a;
     margin-bottom: 6px;
   }
+  .textRequired {
+    position: relative;
+    font-family: $proxima-nova__font-family;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    margin-bottom: 6px;
+    &::after {
+      color: $danger;
+      content: "*";
+      font-size: 13px;
+      line-height: 1;
+      position: absolute;
+      right: -10px;
+      top: 2px;
+    }
+  }
 }
 .general-detail {
   width: 100%;

@@ -22,6 +22,10 @@ export const menu = [
     label: 'Khác',
   },
   {
+    key: 'allergicIngredients',
+    label: 'Nguyên liệu dị ứng',
+  },
+  {
     key: 'history',
     label: 'Lịch sử lớp học',
   },

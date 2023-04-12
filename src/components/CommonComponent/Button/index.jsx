@@ -56,6 +56,7 @@ const ICON_BUTTON = {
   redo2: <span className="icon-redo2" />,
   excel: <span className="icon-excel" />,
   accept: <span className="icon-accept" />,
+  spinner9: <span className="icon-spinner9" />,
 };
 export default function ButtonCustom({
   children,

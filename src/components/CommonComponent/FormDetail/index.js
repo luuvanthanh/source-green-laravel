@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 
 class FormDetail extends Component {
   render() {
-    const { name, label, data, type } = this.props;
+    const { name, label, data, type,link } = this.props;
     if (type === 'table') {
       return (
         <div>
@@ -21,6 +21,15 @@ class FormDetail extends Component {
         <div>
           <div className={styles['wrapper-title']}>
             <label className={styles.text}>{label}</label>
+          </div>
+        </div>
+      );
+    }
+    if (type === 'label_required') {
+      return (
+        <div>
+          <div className={styles['wrapper-title']}>
+            <label className={styles.textRequired}>{label}</label>
           </div>
         </div>
       );
@@ -143,6 +152,30 @@ class FormDetail extends Component {
         </div>
       );
     }
+    if (type === 'link') {
+      return (
+        <div className="mb20">
+        <div className={styles['wrapper-title']}>
+          <label className={styles.text}>{label}</label>
+        </div>
+        <div size="normal" className={styles['general-detail']}>
+          <a href={`${API_UPLOAD}${link}`} style={{color: "#3B5CAD"}} className={styles.text}>{name}</a>
+        </div>
+      </div>
+      );
+    }
+    if (type === 'text_required') {
+      return (
+        <div className="mb20">
+        <div className={styles['wrapper-title']}>
+          <label className={styles.textRequired}>{label}</label>
+        </div>
+        <div size="normal" className={styles['general-detail']}>
+          <p className={styles.text}>{name}</p>
+        </div>
+      </div>
+      );
+    }
     return (
       <div className="mb20">
         <div className={styles['wrapper-title']}>
@@ -161,12 +194,14 @@ FormDetail.propTypes = {
   type: PropTypes.any,
   data: PropTypes.any,
   label: PropTypes.string,
+  link: PropTypes.any,
 };
 FormDetail.defaultProps = {
   name: '',
   label: '',
   data: [],
   type: '',
+  link: "",
 };
 
 export default FormDetail;

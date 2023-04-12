@@ -1,0 +1,31 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3b5cad !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.text-table {
+  font-family: "Proxima Nova";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  color: #27a600;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.text-upload {
+  font-family: "Proxima Nova";
+  font-style: italic;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 16px;
+  color: #36383a;
+  margin-left: 10px;
+  opacity: 0.7;
+}
