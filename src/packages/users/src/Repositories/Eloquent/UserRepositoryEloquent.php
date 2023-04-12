@@ -112,7 +112,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function create(array $attributes)
     {
-        $password = Str::random(8);
+        $password = env('PASSWORD_DEFAULT');
+        // $password = Str::random(8);
         $attributes['password'] = Hash::make($password);
 
         $user = User::create($attributes);
@@ -133,17 +134,15 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $user->camera()->sync($attributes['camera_id']);
         }
 
-        
-       
         // send mail
-        $dataMail = [
-            'email' => $user->email,
-            'name' => $user->fullname,
-            'password' => $password,
-            'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
-        ];
+        // $dataMail = [
+        //     'email' => $user->email,
+        //     'name' => $user->fullname,
+        //     'password' => $password,
+        //     'url_login' => env('LOGIN_URL', 'http://localhost:11005/login'),
+        // ];
 
-        dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
+        // dispatch(new SendEmail($dataMail, 'NOTI_PASSWORD'));
 
         return parent::find($user->id);
     }
