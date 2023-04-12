@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Spatie\Permission\Models\Permission;
+use GGPHP\RolePermission\Models\Permission;
 
 /**
  * Class UserRepositoryEloquent.
@@ -254,16 +254,30 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         }
 
         $userUnit = Unit::where('name', 'Người dùng')->first();
-        $attributes['unit_id'] = $userUnit->id;
+        if (!is_null($userUnit)) {
+            $attributes['unit_id'] = $userUnit->id;
+        }
+        
         $userRole = Role::where('name', 'Người dùng')->first();
-        $attributes['role_id'] = $userRole->id;
-        $permistion = DB::table('permissions')->where('name', 'VIEW_STATISTICSSURVEY')->first();
-        $attributes['permission_id'] = $permistion->id;
+        
+        if (!is_null($userRole)) {
+            $attributes['role_id'] = $userRole->id;
+        }
+
+        $permission = Permission::where('name', 'VIEW_STATISTICSSURVEY')->first();
+
+        if (!is_null($permission)) {
+            $attributes['permission_id'] = $permission->id;
+        }
 
         $user = User::create($attributes);
 
         if (!empty($attributes['role_id'])) {
             $user->roles()->sync($attributes['role_id']);
+        }
+
+        if (!is_null($userRole)) {
+            $userRole->permissions()->sync($attributes['permission_id']);
         }
 
         return parent::find($user->id);
