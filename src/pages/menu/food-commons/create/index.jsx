@@ -4,6 +4,7 @@ import { Form, Upload, message, Input } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty, last } from 'lodash';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -20,12 +21,14 @@ const Index = memo(() => {
     loading,
     { error, foodCommonsGroups },
     { user },
-  ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate, user }) => [
-    menuLeftChildren,
-    effects,
-    foodCommonsCreate,
-    user
-  ]);
+  ] = useSelector(
+    ({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate, user }) => [
+      menuLeftChildren,
+      effects,
+      foodCommonsCreate,
+      user,
+    ],
+  );
   const dispatch = useDispatch();
   const params = useParams();
 
@@ -190,7 +193,7 @@ const Index = memo(() => {
                     loading['foodCommonsCreate/GET_DATA']
                   }
                   isError={error.isError}
-                  params={{ error, goBack: '/thuc-don/mon-an' }}
+                  params={{ error, goBack: '/bep/thuc-don/mon-an' }}
                 >
                   <Heading type="form-title" className="mb20">
                     Thông tin chung
@@ -286,7 +289,10 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
-                {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
+                {user?.roleCode === 'sale' ||
+                user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+                  ''
+                ) : (
                   <Button
                     className="ml-auto px25"
                     color="success"
@@ -296,6 +302,11 @@ const Index = memo(() => {
                       loading['foodCommonsCreate/ADD'] ||
                       loading['foodCommonsCreate/UPDATE'] ||
                       loading['foodCommonsCreate/GET_DATA']
+                    }
+                    permission={
+                      params?.id
+                        ? `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`
+                        : `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.CREATE}`
                     }
                   >
                     Lưu

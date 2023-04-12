@@ -11,6 +11,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 
@@ -162,7 +163,9 @@ const Index = memo(() => {
             </Scrollbars>
           </Pane>
         </Pane>
-        {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
+        {user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+          ''
+        ) : (
           <Pane className="row justify-content-center">
             <Pane className="col-lg-6 ">
               <Pane className="d-flex justify-content-end align-items-center">
@@ -170,12 +173,14 @@ const Index = memo(() => {
                   color="success"
                   className="mr10"
                   onClick={() => history.push(pathname.replace('chi-tiet', 'chinh-sua'))}
+                  permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EDIT}`}
                 >
                   Sửa
                 </Button>
                 <Button
                   color="success"
-                  onClick={() => history.push(`/thuc-don/tao-moi?id=${params.id}`)}
+                  onClick={() => history.push(`/bep/thuc-don/tao-moi?id=${params.id}`)}
+                  permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.CREATE}`}
                 >
                   Thêm bản sao
                 </Button>

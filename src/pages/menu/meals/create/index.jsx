@@ -3,10 +3,12 @@ import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
+import csx from 'classnames';
 import { head, isEmpty } from 'lodash';
-
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import styles from '@/assets/styles/Common/common.scss';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -139,9 +141,14 @@ const Index = memo(() => {
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
                 {params.id && (
-                  <p className="btn-delete" role="presentation" onClick={remove}>
+                  <Button
+                    permission={`${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.DELETE}`}
+                    className={csx(styles['btn-delete-none-bg'], 'p0')}
+                    role="presentation"
+                    onClick={remove}
+                  >
                     Xóa
-                  </p>
+                  </Button>
                 )}
                 <Button
                   className="ml-auto px25"
@@ -152,6 +159,11 @@ const Index = memo(() => {
                     loading['mealsCreate/ADD'] ||
                     loading['mealsCreate/UPDATE'] ||
                     loading['mealsCreate/GET_DATA']
+                  }
+                  permission={
+                    params?.id
+                      ? `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.EDIT}`
+                      : `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.CREATE}`
                   }
                 >
                   Lưu

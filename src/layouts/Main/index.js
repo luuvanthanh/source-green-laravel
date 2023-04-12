@@ -191,7 +191,7 @@ class MainLayout extends React.PureComponent {
     if (/^\/diem-danh(?=\/|$)/i.test(pathname)) {
       key = 'ATTENDANCE';
     }
-    if (/^\/thuc-don(?=\/|$)/i.test(pathname)) {
+    if (/^\/bep(?=\/|$)/i.test(pathname)) {
       key = 'MENU';
     }
     if (/^\/chuong-trinh-hoc(?=\/|$)/i.test(pathname)) {

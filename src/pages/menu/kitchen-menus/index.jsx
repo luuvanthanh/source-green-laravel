@@ -10,6 +10,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
@@ -113,17 +114,29 @@ const Index = memo(() => {
     },
     {
       key: 'action',
-      width: `${user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? 80 : 125}`,
+      width: `${
+        user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER
+          ? 80
+          : 125
+      }`,
       fixed: 'right',
       render: (record) => (
         <div className="d-flex justify-content-end">
-          {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
-            <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
+          {user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+            ''
+          ) : (
+            <Button
+              permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.DELETE}`}
+              color="danger"
+              icon="remove"
+              onClick={() => onRemove(record.id)}
+            />
           )}
           <Button
             color="primary"
             icon="edit"
             className="ml10"
+            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EDIT}`}
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
           />
         </div>
@@ -160,13 +173,18 @@ const Index = memo(() => {
 
   const changeFilter = (e) => (value) => {
     if (e === 'schoolYearId') {
-      const data = years?.find(i => i.id === value);
-      filterRef.current.setFieldsValue({ date: data?.id === user?.schoolYear?.id ? moment() : moment(data?.startDate) });
+      const data = years?.find((i) => i.id === value);
+      filterRef.current.setFieldsValue({
+        date: data?.id === user?.schoolYear?.id ? moment() : moment(data?.startDate),
+      });
       setDataYear(data);
       setSearch((prevSearch) => ({
         ...prevSearch,
         [e]: value,
-        Month: data?.id === user?.schoolYear?.id ? moment().startOf('month').format('MM') : moment(data?.startDate).startOf('month').format('MM'),
+        Month:
+          data?.id === user?.schoolYear?.id
+            ? moment().startOf('month').format('MM')
+            : moment(data?.startDate).startOf('month').format('MM'),
         Year: Helper.getDate(moment(data?.startDate), variables.DATE_FORMAT.YEAR),
       }));
     } else {
@@ -232,12 +250,15 @@ const Index = memo(() => {
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Danh sách thực đơn</Heading>
-          {user?.roleCode === "sale" || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? "" : (
+          {user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+            ''
+          ) : (
             <Button
               className="ml-auto"
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.CREATE}`}
             >
               Tạo thực đơn
             </Button>
@@ -307,8 +328,7 @@ const Index = memo(() => {
                     disabledDate={(current) =>
                       (dataYear?.startDate &&
                         current < moment(dataYear?.startDate).startOf('day')) ||
-                      (dataYear?.endDate &&
-                        current >= moment(dataYear?.endDate).endOf('day'))
+                      (dataYear?.endDate && current >= moment(dataYear?.endDate).endOf('day'))
                     }
                   />
                 </Pane>
@@ -332,4 +352,3 @@ const Index = memo(() => {
 });
 
 export default Index;
-

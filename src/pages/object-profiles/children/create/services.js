@@ -80,3 +80,24 @@ export function getHistory(params = {}) {
     params,
   });
 }
+
+export function addMaterials(data = {}) {
+  return request(`/student-materials`, {
+    method: 'POST',
+    data,
+  });
+}
+
+export function getFoodCommonsMaterials(params = {}) {
+  return request(`/food-commons/material-items`, {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getAllergicIngredients(params = {}) {
+  return request(`/student-materials`, {
+    method: 'GET',
+    params,
+  });
+}

@@ -7,6 +7,26 @@
   text-decoration:underline !important;
 }
 
+.wrapper-modal {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.wrapper-modal-cancel {
+  font-family: Proxima Nova;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: #36383a;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
 .menu-horizontal-children {
   padding: 0 rem(20);
 }

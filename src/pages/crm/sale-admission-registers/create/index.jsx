@@ -16,6 +16,7 @@ import TestInputForm from './forms/testInput';
 import TuitionForm from './forms/tuition';
 import FileForm from './forms/file';
 import AddForm from './forms/add';
+
 import ChildEvaluationForm from './forms/child-evaluation';
 
 import { menu, defaultKey } from './menu';
@@ -31,14 +32,16 @@ const forms = {
   testInput: <TestInputForm />,
   tuition: <TuitionForm />,
   file: <FileForm />,
-  childEvaluation :<ChildEvaluationForm/>,
+  childEvaluation: <ChildEvaluationForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem] = useState(defaultKey);
   const dispatch = useDispatch();
-  const [{ menuLeftCRM }, details] = useSelector(({ menu , crmSaleAdmissionAdd}) => [menu, crmSaleAdmissionAdd.details]);
-
+  const [{ menuLeftCRM }, details] = useSelector(({ menu, crmSaleAdmissionAdd }) => [
+    menu,
+    crmSaleAdmissionAdd.details,
+  ]);
 
   useEffect(() => {
     if (params.id) {
@@ -51,7 +54,17 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   return (
     <div style={{ padding: 20 }}>
       <Helmet title="Chi tiết hồ sơ học sinh" />
-      <Breadcrumbs className="pb20 pt0 pl0" last={params.id ? <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>  : 'Thêm mới'} menu={menuLeftCRM} />
+      <Breadcrumbs
+        className="pb20 pt0 pl0"
+        last={
+          params.id ? (
+            <>Cập nhập thông tin đăng ký nhập học - {details?.studentInfo?.full_name}</>
+          ) : (
+            'Thêm mới'
+          )
+        }
+        menu={menuLeftCRM}
+      />
       {params.id ? (
         <div className="row">
           <div className="col-lg-3">
@@ -74,8 +87,8 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
         </div>
       ) : (
         <div className="row">
-           <div className="col-lg-10 offset-lg-1">
-              <AddForm />
+          <div className="col-lg-10 offset-lg-1">
+            <AddForm />
           </div>
         </div>
       )}
