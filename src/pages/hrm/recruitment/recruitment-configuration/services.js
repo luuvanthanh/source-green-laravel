@@ -7,6 +7,8 @@ export function get(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['division,level,question']),
+      orderBy: 'CreationTime',
+      sortedBy: 'asc',
     },
   });
 }
