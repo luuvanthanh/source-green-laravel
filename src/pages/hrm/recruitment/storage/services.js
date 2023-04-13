@@ -8,6 +8,8 @@ export function get(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['level,division,recruitmentManagement', 'questionCandidate.recruitmentQuestion']),
+      orderBy: 'CreationTime',
+      sortedBy: 'asc',
     },
   });
 }

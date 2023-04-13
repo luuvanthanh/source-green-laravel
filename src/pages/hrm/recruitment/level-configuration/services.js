@@ -5,6 +5,8 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      orderBy: 'CreationTime',
+      sortedBy: 'asc',
     },
   });
 }

@@ -7,6 +7,8 @@ export function get(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['recruitmentConfiguration,level,division,candidate']),
+      orderBy: 'CreationTime',
+      sortedBy: 'asc',
     },
   });
 }
