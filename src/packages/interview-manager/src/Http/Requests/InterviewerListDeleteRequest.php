@@ -2,11 +2,11 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
-use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
+use GGPHP\InterviewManager\Models\InterviewDetail;
 use GGPHP\InterviewManager\Models\InterviewList;
 use Illuminate\Foundation\Http\FormRequest;
 
-class InterviewConfigurationDeleteRequest extends FormRequest
+class InterviewerListDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,18 +26,16 @@ class InterviewConfigurationDeleteRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => [
+            "id" => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $interviewConfigura = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId' , $this->interview_configuration)->first();
-                    $interviewList = InterviewList::where('InterviewConfigurationId' , $this->interview_configuration)->first();
-
-                    if (!is_null($interviewConfigura) || !is_null($interviewList)) {
+                    $interviewerListDetail = InterviewDetail::where('InterviewListId', $value)->first();
+                    if (!is_null($interviewerListDetail)) {
 
                         return $fail('Dữ liệu đã được sử dụng');
                     }
-                },
-            ],
+                }
+            ]
         ];
     }
 }

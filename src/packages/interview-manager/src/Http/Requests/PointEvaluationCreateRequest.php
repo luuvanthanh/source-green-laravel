@@ -2,6 +2,8 @@
 
 namespace GGPHP\InterviewManager\Http\Requests;
 
+use GGPHP\InterviewManager\Models\InterviewDetail;
+use GGPHP\InterviewManager\Models\PointEvaluation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PointEvaluationCreateRequest extends FormRequest
@@ -24,10 +26,39 @@ class PointEvaluationCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'data' => 'array|nullable',
+            'data' => [
+                'array', 'nullable',
+                function ($attribute, $value, $fail) {
+                    for ($i = 1; $i < count($value); $i++) {
+                        $prevPointTo = $value[$i-1]["pointTo"];
+                        $currentPointFrom = $value[$i]["pointFrom"];
+                        
+                        if ($prevPointTo >= $currentPointFrom) {
+                            return $fail('Khoảng điểm từ của phần tử sau phải lớn hơn khoảng điểm đến của phần tử trước.');
+                        }
+
+                        $interViewDetail = InterviewDetail::distinct('PointEvaluationId')->get()->pluck('PointEvaluationId')->toArray();
+                        $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->get();
+                        if (!is_null($pointValue)) {
+                            return $fail('Dữ liệu đã được sử dụng');
+                        }
+                    }
+                },
+            ],
             'data.*.pointFrom' => 'required|numeric',
-            'data.*.pointTo' => 'required|numeric',
+            'data.*.pointTo' => 'required|numeric|gt:data.*.pointFrom',
             'data.*.classification' => 'required|string'
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all();
+        foreach ($data['data'] as $key => $value) {
+            $data['data'][$key]['pointFrom'] = number_format($data['data'][$key]['pointFrom'], 1);
+            $data['data'][$key]['pointTo'] = number_format($data['data'][$key]['pointTo'], 1);
+        }
+        
+        return $data;
     }
 }

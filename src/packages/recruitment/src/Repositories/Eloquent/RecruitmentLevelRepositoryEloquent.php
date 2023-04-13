@@ -84,19 +84,18 @@ class RecruitmentLevelRepositoryEloquent extends CoreRepositoryEloquent implemen
         if (is_null($code)) {
             $code = RecruitmentLevel::CODE . '0001';
         } else {
-            $stt = substr($code->Code, 4);
-            $stt += 1;
-
-            if (strlen($stt) == 1) {
-                $code = RecruitmentLevel::CODE . '000' . $stt;
-            } elseif (strlen($stt) == 2) {
-                $code = RecruitmentLevel::CODE . '00' . $stt;
-            } elseif (strlen($stt) == 3) {
-                $code = RecruitmentLevel::CODE . '0' . $stt;
-            } else {
-                $code = RecruitmentLevel::CODE . $stt;
+            $sttOneDigit = substr($code->Code, 2);
+            $sttOneDigit += 1;
+            
+            if (strlen($sttOneDigit) == 1) {
+                $code = RecruitmentLevel::CODE . '00' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 2)) {
+                $code = RecruitmentLevel::CODE . '0' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 3)) {
+                $code = RecruitmentLevel::CODE . $sttOneDigit;
             }
         }
+        
         $attributes['Code'] = $code;
 
         return $attributes;

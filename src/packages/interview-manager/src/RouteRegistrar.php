@@ -33,6 +33,14 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('interviewers', 'InterviewerController');
             \Route::resource('point-evaluations', 'PointEvaluationController');
             \Route::resource('interview-configurations', 'InterviewConfigurationController');
+            \Route::resource('interview-lists', 'InterviewListController');
+            // gửi đề xuất đã phỏng vấn
+            \Route::put('sendSuggestions/{id}', 'InterviewListController@sendSuggestions');
+            // gửi đê xuất không duyệt lương
+            \Route::put('sendSuggestion-do-not-approve/{id}', 'InterviewListController@sendSuggestionDoNotApprove');
+            \Route::put('complete-interview/{id}', 'InterviewListController@completeInterview');
+            // duyệt lương bởi CEO
+            \Route::put('salary-approval/{id}', 'InterviewListController@salaryApproval');
         });
     }
 }

@@ -92,7 +92,11 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
             }
             $result = RecruitmentCandidateManagement::create($attributes);
 
-            $this->sentNotification($result);
+            if ($result) {
+                $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
+                $recruimentManager->update($attributes);
+            }
+
 
             $this->created($attributes, $result, $recruimentManager);
 
@@ -128,6 +132,15 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
         $admissionRegister = RecruitmentCandidateManagement::findOrfail($id);
         if (!empty($attributes['status'])) {
             $admissionRegister->update($attributes);
+
+            if ($admissionRegister->Status == RecruitmentCandidateManagement::STATUS['PASS']) {
+                $recruimentManager = RecruitmentManager::findOrfail($admissionRegister->RecruitmentManagerId);
+
+                if ($recruimentManager) {
+                    $attributes['numberOfCandidatesPass'] = $recruimentManager->NumberOfCandidatesPass + 1;
+                    $recruimentManager->update($attributes);
+                }
+            }
         }
 
         return parent::find($id);

@@ -19,6 +19,19 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
+    }
+
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            // get form tuyen dung
+            \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
+            // Thêm ứng viên
+            \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
+            // get lời cảm ơn.
+            \Route::get('configure-thanks', 'RecruitmentConfigurationController@getConfigureThanks');
+        });
     }
 
     /**
@@ -35,19 +48,14 @@ class RouteRegistrar extends CoreRegistrar
                 // Cấu hình config
                 \Route::resource('recruitment-configurations', 'RecruitmentConfigurationController');
                 // Cấu hình lời cảm ơn
-                \Route::get('configure-thanks', 'RecruitmentConfigurationController@getConfigureThanks');
                 \Route::post('configure-thanks', 'RecruitmentConfigurationController@storeConfigureThanks');
                 // Quản lý tuyển dụng
                 \Route::resource('recruitment-manager', 'RecruitmentManagerController');
                 // get link tuyen dung
                 \Route::get('get-link-recruitment', 'RecruitmentManagerController@getLink');
-                  // get form tuyen dung
-                  \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
-
                 // quản lý ứng viên 
                 \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController');
-                // Thêm ứng viên
-                \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
+                
             });
         });
     }

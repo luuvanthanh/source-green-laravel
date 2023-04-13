@@ -56,6 +56,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forCronJob();
     });
 
+    \GGPHP\Recruitment\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
     Route::group(['middleware' => 'auth_sso'], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forUser();

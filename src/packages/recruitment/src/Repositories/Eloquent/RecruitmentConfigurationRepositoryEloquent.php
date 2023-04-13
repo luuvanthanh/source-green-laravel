@@ -105,15 +105,15 @@ class RecruitmentConfigurationRepositoryEloquent extends CoreRepositoryEloquent 
         if (is_null($code)) {
             $code = RecruitmentConfiguration::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
-            $stt += 1;
-
-            if (strlen($stt) == 1) {
-                $code = RecruitmentConfiguration::CODE . '00' . $stt;
-            } elseif (strlen($stt) == 2) {
-                $code = RecruitmentConfiguration::CODE . '0' . $stt;
-            } else {
-                $code = RecruitmentConfiguration::CODE . $stt;
+            $sttOneDigit = substr($code->Code, 2);
+            $sttOneDigit += 1;
+            
+            if (strlen($sttOneDigit) == 1) {
+                $code = RecruitmentConfiguration::CODE . '00' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 2)) {
+                $code = RecruitmentConfiguration::CODE . '0' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 3)) {
+                $code = RecruitmentConfiguration::CODE . $sttOneDigit;
             }
         }
         $attributes['Code'] = $code;

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
+class ChangeTypeColumnNameToRecruitmentQuestionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
      */
     public function up()
     {
-        Schema::table('"CandidateManagements"', function (Blueprint $table) {
-            $table->text('File')->change();
+        Schema::table('"RecruitmentQuestions"', function (Blueprint $table) {
+            $table->longText('Name')->change()->nullable();
         });
     }
 
@@ -25,6 +25,8 @@ class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
      */
     public function down()
     {
-        
+        Schema::table('RecruitmentQuestions', function (Blueprint $table) {
+            //
+        });
     }
 }

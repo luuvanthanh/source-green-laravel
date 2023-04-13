@@ -36,7 +36,7 @@ class RecruitmentManagerUpdateRequest extends FormRequest
                         return true;
                     }
                     
-                    return $fail('Dữ liệu đã được sử dụng');
+                    return $fail('Tuyển dụng đã có ứng viên tham gia');
                 },
             ],
             'name' => 'nullable|string',
@@ -49,9 +49,9 @@ class RecruitmentManagerUpdateRequest extends FormRequest
             'link' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
-                    $configureThank = RecruitmentManager::where('Link', $value)->where('Id', $this->id)->first();
+                    $configureThank = RecruitmentManager::where('Link', $value)->where('Id', '!=', $this->id)->first();
 
-                    if (!is_null($configureThank)) {
+                    if (is_null($configureThank)) {
                         return true;
                     }
                     

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
+class ChangeTypeFieldPointFromToPointEvalutionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
      */
     public function up()
     {
-        Schema::table('"CandidateManagements"', function (Blueprint $table) {
-            $table->text('File')->change();
+        Schema::table('hrm."PointEvaluations"', function (Blueprint $table) {
+            $table->string('PointFrom')->change();
+            $table->string('PointTo')->change();
         });
     }
 
@@ -25,6 +26,8 @@ class ChangeTypeFieldFileToCandidateManagementsTable extends Migration
      */
     public function down()
     {
-        
+        Schema::table('hrm."PointEvaluations"', function (Blueprint $table) {
+            //
+        });
     }
 }
