@@ -155,6 +155,11 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
             
             $result = RecruitmentCandidateManagement::create($attributes);
 
+            if ($result) {
+                $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
+                $recruimentManager->update($attributes);
+            }
+
         return parent::parserResult($result);
     }
 }
