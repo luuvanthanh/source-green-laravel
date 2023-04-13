@@ -88,10 +88,12 @@ class RecruitmentLevelRepositoryEloquent extends CoreRepositoryEloquent implemen
             $sttOneDigit += 1;
             
             if (strlen($sttOneDigit) == 1) {
-                $code = RecruitmentLevel::CODE . '00' . $sttOneDigit;
+                $code = RecruitmentLevel::CODE . '000' . $sttOneDigit;
             }elseif ((strlen($sttOneDigit) == 2)) {
-                $code = RecruitmentLevel::CODE . '0' . $sttOneDigit;
+                $code = RecruitmentLevel::CODE . '00' . $sttOneDigit;
             }elseif ((strlen($sttOneDigit) == 3)) {
+                $code = RecruitmentLevel::CODE . '0' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 4)) {
                 $code = RecruitmentLevel::CODE . $sttOneDigit;
             }
         }

@@ -99,19 +99,22 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         $code = RecruitmentManager::latest()->first();
 
         if (is_null($code)) {
-            $code = RecruitmentManager::CODE . '001';
+            $code = RecruitmentManager::CODE . '0001';
         } else {
             $sttOneDigit = substr($code->Code, 2);
             $sttOneDigit += 1;
             
             if (strlen($sttOneDigit) == 1) {
-                $code = RecruitmentManager::CODE . '00' . $sttOneDigit;
+                $code = RecruitmentManager::CODE . '000' . $sttOneDigit;
             }elseif ((strlen($sttOneDigit) == 2)) {
-                $code = RecruitmentManager::CODE . '0' . $sttOneDigit;
+                $code = RecruitmentManager::CODE . '00' . $sttOneDigit;
             }elseif ((strlen($sttOneDigit) == 3)) {
+                $code = RecruitmentManager::CODE . '0' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 4)) {
                 $code = RecruitmentManager::CODE . $sttOneDigit;
             }
         }
+
         $attributes['code'] = $code;
 
         return $attributes;
@@ -160,7 +163,8 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
 
             if ($result) {
                 $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
-                $recruimentManager->update($attributes);
+
+                $recruimentManager->update(['NumberOfCandidates' => $attributes['numberOfCandidates']]);
             }
 
         return parent::parserResult($result);
