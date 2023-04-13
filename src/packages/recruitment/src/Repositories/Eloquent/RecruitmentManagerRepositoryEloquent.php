@@ -13,6 +13,7 @@ use GGPHP\Recruitment\Repositories\Contracts\RecruitmentManagerRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 
 /**
  * Class LevelRepositoryEloquent.
@@ -99,15 +100,15 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         if (is_null($code)) {
             $code = RecruitmentManager::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
-            $stt += 1;
-
-            if (strlen($stt) == 1) {
-                $code = RecruitmentManager::CODE . '00' . $stt;
-            } elseif (strlen($stt) == 2) {
-                $code = RecruitmentManager::CODE . '0' . $stt;
-            } else {
-                $code = RecruitmentManager::CODE . $stt;
+            $sttOneDigit = substr($code->Code, 2);
+            $sttOneDigit += 1;
+            
+            if (strlen($sttOneDigit) == 1) {
+                $code = RecruitmentManager::CODE . '00' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 2)) {
+                $code = RecruitmentManager::CODE . '0' . $sttOneDigit;
+            }elseif ((strlen($sttOneDigit) == 3)) {
+                $code = RecruitmentManager::CODE . $sttOneDigit;
             }
         }
         $attributes['code'] = $code;
@@ -154,6 +155,11 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
             }
             
             $result = RecruitmentCandidateManagement::create($attributes);
+
+            if ($result) {
+                $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
+                $recruimentManager->update($attributes);
+            }
 
         return parent::parserResult($result);
     }
