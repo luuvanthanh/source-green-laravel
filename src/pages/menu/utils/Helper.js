@@ -1,11 +1,53 @@
 import Tag from '@/components/CommonComponent/Tag';
+import moment from 'moment';
 import { variables } from './variables';
 
 export default class Helpers {
-  static tagStatus = (type) => {
-    if (type === variables.STATUS.CONFIRMING) {
-      return <Tag color="yellow">{variables.STATUS_NAME.CONFIRMING}</Tag>;
+  static tagStatusConfirm = (type) => {
+    if (type === variables.STATUS_CONFIRMED.CONFIRMING) {
+      return <Tag color="yellow">{variables.STATUS_CONFIRMED_NAME.CONFIRMING}</Tag>;
     }
-    return <Tag color="success">{variables.STATUS_NAME.CONFIRMED}</Tag>;
+    return <Tag color="success">{variables.STATUS_CONFIRMED_NAME.CONFIRMED}</Tag>;
+  };
+
+  static tagStatus = (type) => {
+    if (type === variables.STATUS.PENDING) {
+      return <Tag color="primary">{variables.STATUS_NAME.PENDING}</Tag>;
+    }
+    return <Tag color="success">{variables.STATUS_NAME.PROCESSED}</Tag>;
+  };
+
+  static getStartDate = (date, choose) => {
+    if (date) {
+      return moment(date);
+    }
+    return moment().startOf(choose || 'isoWeek');
+  };
+
+  static getEndDate = (date, choose) => {
+    if (date) {
+      return moment(date);
+    }
+    return moment().endOf(choose || 'isoWeek');
+  };
+
+  static getDayOfWeek = (date = 'Mon') => {
+    const currentDate = date.toUpperCase();
+    switch (currentDate) {
+      case 'MON':
+        return 'T2';
+      case 'TUE':
+        return 'T3';
+      case 'WED':
+        return 'T4';
+      case 'THU':
+        return 'T5';
+      case 'FRI':
+        return 'T6';
+      case 'SAT':
+        return 'T7';
+      default:
+        return 'CN';
+    }
   };
 }

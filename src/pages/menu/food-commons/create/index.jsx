@@ -105,6 +105,17 @@ const Index = memo(() => {
       type: 'foodCommonsCreate/GET_FOOD_COMMONS_GROUPS',
       payload: {},
     });
+    dispatch({
+      type: 'menuApplicableConfiguration/GET_DETAILS',
+      payload: {},
+      callback: (response) => {
+        if (response) {
+          formRef.current.setFieldsValue({
+            itemGroupId: response?.id,
+          });
+        }
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -264,6 +275,7 @@ const Index = memo(() => {
                       <FormItem
                         data={foodCommonsGroups}
                         label="Nhóm hàng"
+                        disabled
                         name="itemGroupId"
                         type={variables.SELECT}
                         rules={[variables.RULES.EMPTY]}
