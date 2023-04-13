@@ -95,6 +95,7 @@ class RecruitmentLevelRepositoryEloquent extends CoreRepositoryEloquent implemen
                 $code = RecruitmentLevel::CODE . $sttOneDigit;
             }
         }
+        
         $attributes['Code'] = $code;
 
         return $attributes;
