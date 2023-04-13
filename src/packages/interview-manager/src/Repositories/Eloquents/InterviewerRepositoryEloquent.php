@@ -84,8 +84,8 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
 
             $result = Interviewer::create($attributes);
 
-            if (!is_null($result) && !empty($attributes['data'])) {
-                $result->interviewerEmployee()->attach($attributes['data']);
+            if (!is_null($result) && !empty($attributes['employeeId'])) {
+                $result->interviewerEmployee()->attach($attributes['employeeId']);
             }
 
             DB::commit();
@@ -130,7 +130,7 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
 
             if (!empty($attributes['data'])) {
                 $interviewer->interviewerEmployee()->detach();
-                $interviewer->interviewerEmployee()->attach($attributes['data']);
+                $interviewer->interviewerEmployee()->attach($attributes['employeeId']);
             }
 
             DB::commit();

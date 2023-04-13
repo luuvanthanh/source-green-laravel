@@ -27,8 +27,8 @@ class InterviewConfigurationCreateRequest extends FormRequest
             'divisionId' => 'required|exists:Divisions,Id',
             'name' => 'required|string|unique:InterviewConfigurations,Name',
             'note' => 'required|string',
-            'data' => 'nullable|array',
-            'data.*' => 'required|exists:EvaluationCriterias,Id'
+            'evaluationCriteriaId' => 'nullable|array',
+            'evaluationCriteriaId.*' => 'required|exists:EvaluationCriteriass,Id'
         ];
     }
 }

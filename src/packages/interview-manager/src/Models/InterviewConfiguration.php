@@ -35,4 +35,9 @@ class InterviewConfiguration extends UuidModel
     {
         return $this->belongsTo(Division::class, 'DivisionId');
     }
+
+    public function interviewer()
+    {
+        return $this->belongsTo(Interviewer::class, 'DivisionId', 'DivisionId');
+    }
 }
