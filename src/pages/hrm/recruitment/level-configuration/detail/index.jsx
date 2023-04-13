@@ -103,7 +103,7 @@ const Index = memo(() => {
                     </Pane>
                     <Pane className="col-lg-6">
                       <FormDetail
-                        ame={details?.name}
+                        name={details?.name}
                         label="Tên level"
                         type={variables.TYPE.TEXT}
                       />

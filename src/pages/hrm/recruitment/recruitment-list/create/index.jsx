@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Input, Tooltip, Button } from 'antd';
-import { isEmpty, get, head, last } from 'lodash';
+import { isEmpty, get, head, last, size } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
@@ -73,12 +73,13 @@ const Index = memo(() => {
           history.goBack();
         }
         if (error) {
-          if (!isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              form.setFields([
+          const { data } = error;
+          if (data?.status === 400 && !!size(data?.errors)) {
+            data?.errors.forEach((item) => {
+              form?.setFields([
                 {
-                  name: get(item, 'member').toLowerCase(),
-                  errors: [get(item, 'message')],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
             });

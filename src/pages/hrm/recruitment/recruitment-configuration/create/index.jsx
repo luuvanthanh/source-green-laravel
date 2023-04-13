@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { size, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
 import { useParams, history, useLocation } from 'umi';
@@ -58,9 +58,10 @@ const Index = memo(() => {
           history.push('/quan-ly-nhan-su/tuyen-dung/cau-hinh-tuyen-dung');
         }
         if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              form.setFields([
+          const { data } = error;
+          if (data?.status === 400 && !!size(data?.errors)) {
+            data?.errors.forEach((item) => {
+              form?.setFields([
                 {
                   name: get(item, 'source.pointer'),
                   errors: [get(item, 'detail')],

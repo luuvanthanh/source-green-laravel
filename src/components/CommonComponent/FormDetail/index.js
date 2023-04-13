@@ -159,7 +159,7 @@ class FormDetail extends Component {
           <label className={styles.text}>{label}</label>
         </div>
         <div size="normal" className={styles['general-detail']}>
-          <a href={`${API_UPLOAD}${link}`} style={{color: "#3B5CAD"}} className={styles.text}>{name}</a>
+          <a onClick={() => window.open(`${API_UPLOAD}${link}`).focus()} href="" style={{color: "#3B5CAD"}} className={styles.text}>{name}</a>
         </div>
       </div>
       );
