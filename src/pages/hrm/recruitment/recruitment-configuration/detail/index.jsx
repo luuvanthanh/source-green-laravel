@@ -114,7 +114,7 @@ const Index = memo(() => {
                               <h4 className={stylesModule.text}>Tải lên</h4>
                             </div>
                             <i className={stylesModule.textNote}>
-                              Chỉ hỗ trợ định dạng .pdf Dung lượng không được quá 5mb
+                              Chỉ hỗ trợ định dạng .pdf. Dung lượng không được quá 5mb
                             </i>
                           </div>
                         </div>

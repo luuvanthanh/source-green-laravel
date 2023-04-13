@@ -151,6 +151,13 @@ const Index = memo(() => {
                   </div>
                   <h3 className={stylesModule['text-lable']}>Gửi thành công</h3>
                   <p className={stylesModule['text-content']}>{head(details)?.content}</p>
+                  <div
+                    className={stylesModule['wrapper-btn']}
+                    onClick={() => window.close()}
+                    role="presentation"
+                  >
+                    <p className={stylesModule.btn}>Đóng trang web</p>
+                  </div>
                 </Pane>
               ) : (
                 <Pane className={stylesModule['wrapper-card']}>
@@ -236,7 +243,7 @@ const Index = memo(() => {
                                 </Button>
                               </div>
                               <i className={stylesModule.textNote}>
-                                Chỉ hỗ trợ định dạng .xlsx. Dung lượng không được quá 5mb
+                                Chỉ hỗ trợ định dạng .pdf. Dung lượng không được quá 5mb
                               </i>
                             </div>
                           </Upload>
