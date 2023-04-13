@@ -159,13 +159,17 @@ const Index = memo(() => {
                           style={{
                             width: 'calc(100% - 85px)',
                           }}
-                          value={`${details?.domain}${details?.link}`}
+                          value={
+                            !isEmpty(details?.link) ? `${details?.domain}${details?.link}` : ''
+                          }
                         />
                         <Tooltip title="copy link">
                           <Button
                             icon={<CopyOutlined />}
                             onClick={() => {
-                              navigator.clipboard.writeText(`${details?.domain}${details?.link}`);
+                              navigator.clipboard.writeText(
+                                !isEmpty(details?.link) ? `${details?.domain}${details?.link}` : '',
+                              );
                             }}
                           />
                         </Tooltip>
