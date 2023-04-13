@@ -105,7 +105,7 @@ class RecruitmentConfigurationRepositoryEloquent extends CoreRepositoryEloquent 
         if (is_null($code)) {
             $code = RecruitmentConfiguration::CODE . '001';
         } else {
-            $sttOneDigit = substr($code->Code, 2);
+            $sttOneDigit = substr($code->Code, 4);
             $sttOneDigit += 1;
             
             if (strlen($sttOneDigit) == 1) {

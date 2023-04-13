@@ -94,7 +94,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
 
             if ($result) {
                 $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
-                $recruimentManager->update($attributes);
+                $recruimentManager->update(['NumberOfCandidates' => $attributes['numberOfCandidates']]);
             }
 
 
@@ -138,7 +138,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
 
                 if ($recruimentManager) {
                     $attributes['numberOfCandidatesPass'] = $recruimentManager->NumberOfCandidatesPass + 1;
-                    $recruimentManager->update($attributes);
+                    $recruimentManager->update(['NumberOfCandidatesPass' => $attributes['numberOfCandidatesPass']]);
                 }
             }
         }

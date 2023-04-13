@@ -31,7 +31,7 @@ class RecruitmentCandidateManagerCreateRequest extends FormRequest
             'location' => 'required|string',
             'phone' => 'required|min:10',
             'file' => 'required|string',
-            'endPoint'=> 'required|string|unique:RecruitmentManagers,Link',
+            'endPoint'=> 'required|string|exists:RecruitmentManagers,Link',
             'data' => 'array|nullable',
             'data.*.answer' => 'required|string'
         ];
