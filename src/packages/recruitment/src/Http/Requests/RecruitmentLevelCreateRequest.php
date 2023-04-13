@@ -26,7 +26,7 @@ class RecruitmentLevelCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:RecruitmentLevels,Name',
-            'decription' => 'required|string',
+            'decription' => 'nullable|string',
         ];
     }
 }
