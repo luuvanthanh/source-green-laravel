@@ -116,7 +116,7 @@ export const feature = {
       src: '/images/home/hrm.svg',
       animation: animationImage.administration,
       url: '/quan-ly-nhan-su',
-      permission: [permissions.HRM],
+      permission: [`${FLATFORM.WEB}${permissions.HRM}${ACTION.VIEW}`],
     },
     {
       title: 'Chính sách phí',

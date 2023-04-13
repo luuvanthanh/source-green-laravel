@@ -3,7 +3,7 @@ export const variables = {
     CONFIRMED: 'CONFIRMED',
     CONFIRMING: 'CONFIRMING',
   },
-  STATUS_NAME_CONFIRMED: {
+  STATUS_CONFIRMED_NAME: {
     CONFIRMED: 'Đã đổi',
     CONFIRMING: 'Chưa đổi',
   },

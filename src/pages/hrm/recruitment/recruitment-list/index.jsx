@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import ability from '@/utils/ability';
 
 import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
@@ -184,7 +184,7 @@ const Index = memo(() => {
       width: 100,
       render: (record) => (
         <>
-          {(record?.numberOfCandidates <= 0 || isEmpty(record?.numberOfCandidates)) && (
+          {!record?.numberOfCandidates && (
             <div className={styles['list-button']}>
               <Button
                 color="primary"

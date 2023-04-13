@@ -67,11 +67,11 @@ const Index = memo(() => {
   };
 
   const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
+    setSearch({
+      ...search,
       page,
       limit,
-    }));
+    });
   };
 
   const paginationFunction = (pagination) =>
@@ -94,11 +94,10 @@ const Index = memo(() => {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
   };
-  // console.log('search', search);
+
   useEffect(() => {
     loadData();
   }, [search]);
@@ -108,7 +107,7 @@ const Index = memo(() => {
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
         if (res) {
-          if (query?.classId || defaultBranch?.defaultBranch?.id) {
+          if (query?.branchId || defaultBranch?.defaultBranch?.id) {
             fetchClasses(query?.branchId);
           }
           setCategory((prev) => ({

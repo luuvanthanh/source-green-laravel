@@ -10,7 +10,7 @@ import { Helper, variables } from '@/utils';
 import { head, isEmpty } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 
-const Index = memo(({ setCheckModal, checkModal, dataModal }) => {
+const Index = memo(({ setCheckModal, checkModal, dataModal, loadData }) => {
   const mounted = useRef(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -55,6 +55,7 @@ const Index = memo(({ setCheckModal, checkModal, dataModal }) => {
       callback: (res, error) => {
         if (res) {
           setCheckModal(false);
+          loadData();
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
@@ -148,6 +149,7 @@ const Index = memo(({ setCheckModal, checkModal, dataModal }) => {
 Index.propTypes = {
   checkModal: PropTypes.any,
   setCheckModal: PropTypes.any,
+  loadData: PropTypes.any,
   dataModal: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -155,6 +157,7 @@ Index.defaultProps = {
   checkModal: false,
   setCheckModal: false,
   dataModal: {},
+  loadData: () => {},
 };
 
 export default Index;
