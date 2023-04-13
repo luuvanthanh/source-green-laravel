@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -57,14 +57,15 @@ const Index = memo(() => {
     schoolYearId: query?.schoolYearId || defaultBranch?.schoolYear?.id,
     branchId: query?.branchId || defaultBranch?.defaultBranch?.id,
     classId: query?.classId,
+    month: query?.month ? Helper.getDate(query.month, variables.DATE_FORMAT.DATE_AFTER) : null,
   });
 
   const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
+    setSearch({
+      ...search,
       page,
       limit,
-    }));
+    });
   };
 
   const paginationFunction = (pagination) =>
@@ -93,7 +94,7 @@ const Index = memo(() => {
     });
   };
 
-  const loadData = useCallback(() => {
+  const loadData = () => {
     dispatch({
       type: 'menuStudentExchangeFood/GET_DATA',
       payload: {
@@ -104,14 +105,14 @@ const Index = memo(() => {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
+        // month: search.month && Helper.getDate(search.month, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
-  }, [search]);
+  };
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -223,7 +224,7 @@ const Index = memo(() => {
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
         if (res) {
-          if (query?.classId || defaultBranch?.defaultBranch?.id) {
+          if (query?.branchId || defaultBranch?.defaultBranch?.id) {
             fetchClasses(query?.branchId);
           }
           setCategory((prev) => ({
@@ -254,7 +255,12 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Học sinh cần đổi món" />
-      <Modal setCheckModal={setCheckModal} checkModal={checkModal} dataModal={dataModal} />
+      <Modal
+        setCheckModal={setCheckModal}
+        checkModal={checkModal}
+        dataModal={dataModal}
+        loadData={loadData}
+      />
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Học sinh cần đổi món</Text>
@@ -267,6 +273,7 @@ const Index = memo(() => {
               className="pt20"
               initialValues={{
                 ...search,
+                month: search?.month && moment(search?.month),
               }}
             >
               <Pane className="row">
