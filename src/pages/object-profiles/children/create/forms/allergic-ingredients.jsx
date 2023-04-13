@@ -67,9 +67,13 @@ const Index = memo(() => {
         className: 'min-width-120',
         render: (record) => (
           <Select
+            showSearch
             className="w-100"
             defaultValue={record.materialName}
             onChange={(e) => onChange(e, record, 'materialId')}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {dataFoodMaterials?.map((item) => (
               <Option key={item.id}>{item?.name || ''}</Option>
