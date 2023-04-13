@@ -254,7 +254,9 @@ const Index = memo(() => {
                               width: 'calc(100% - 85px)',
                             }}
                             value={
-                              dataLink ? `${head(dataLink)?.domain}${head(dataLink)?.endPoint}` : ''
+                              dataLink?.endPoint
+                                ? `${head(dataLink)?.domain}${head(dataLink)?.endPoint}`
+                                : ''
                             }
                           />
                           {!loadingAddLink && !isEmpty(dataLink) && (

@@ -159,7 +159,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
+            const weeks = response?.timetableFeeGroupByWeeks?.map((item) => ({
               weekIndex: item.week,
               menuMeals: meals.map((itemMeal) => ({
                 weekIndex: item.week,
@@ -1061,7 +1061,7 @@ const Index = memo(() => {
                               </div>
                               <div className={classnames(styles.col, 'min-width-150')}>Mốc</div>
                               <div className={classnames(styles.col, styles['col-group'])}>
-                                {variablesModules.DAYS.map((item) => (
+                                {variablesModules?.DAYS.map((item) => (
                                   <div
                                     className={classnames(styles.col, 'min-width-200')}
                                     key={item.id}

@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { isEmpty, get, head } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -35,9 +35,9 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setDetail(head(response?.parsePayload));
+          setDetail(response);
           form.setFieldsValue({
-            content: head(response?.parsePayload)?.content,
+            value: response?.id,
           });
         }
       },
@@ -102,7 +102,7 @@ const Index = memo(() => {
                       />
                     ) : (
                       <FormDetail
-                        name={detail?.value}
+                        name={detail?.name}
                         label="Nhóm hàng áp dụng"
                         type={variables.TYPE.TEXT}
                       />

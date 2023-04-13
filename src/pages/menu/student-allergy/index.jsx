@@ -212,6 +212,7 @@ const Index = memo(() => {
                       data={[{ name: 'Chọn tất cả cơ sở', id: null }, ...category?.branches]}
                       onChange={(event) => onChangeSelect(event, 'branchId')}
                       allowClear={false}
+                      placeholder="Chọn cơ sở"
                     />
                   )}
                   {defaultBranch?.objectInfo?.id && (

@@ -196,7 +196,7 @@ const Index = memo(() => {
       key: 'status',
       className: 'min-width-150',
       width: 150,
-      render: (record) => HelperModules.tagStatus(record.status),
+      render: (record) => HelperModules.tagStatusConfirm(record.status),
     },
     {
       title: 'Món đã đổi',
