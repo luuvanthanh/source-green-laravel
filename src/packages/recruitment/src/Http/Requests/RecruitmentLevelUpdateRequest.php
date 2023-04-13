@@ -3,7 +3,9 @@
 namespace GGPHP\Recruitment\Http\Requests;
 
 use GGPHP\Recruitment\Models\Level;
+use GGPHP\Recruitment\Models\RecruitmentConfiguration;
 use GGPHP\Recruitment\Models\RecruitmentLevel;
+use GGPHP\Recruitment\Models\RecruitmentManager;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RecruitmentLevelUpdateRequest extends FormRequest
@@ -26,12 +28,22 @@ class RecruitmentLevelUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required',
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $recruitmentConfiguration = RecruitmentConfiguration::where('RecruitmentLevelId', $value)->first();
+                    $recruitmentManager = RecruitmentManager::where('RecruitmentLevelId', $value)->first();
+
+                    if (!is_null($recruitmentConfiguration) || !is_null($recruitmentManager)) {
+                        return $fail('Dữ liệu đang được sử dụng!');
+                    }
+                },
+            ],
             'name' => [
                 'nullable', 'string',
                 function ($attribute, $value, $fail) {
                     $level = RecruitmentLevel::where('Name', $value)->where('Id', '!=', $this->id)->first();
-
+                    
                     if (is_null($level)) {
                         return true;
                     }

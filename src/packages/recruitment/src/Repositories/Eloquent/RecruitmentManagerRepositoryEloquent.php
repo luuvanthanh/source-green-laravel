@@ -82,6 +82,9 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
         try {
             $attributes = $this->creating($attributes);
 
+            $attributes['numberOfCandidates'] = 0;
+            $attributes['numberOfCandidatesPass'] = 0;
+            
             $result = RecruitmentManager::create($attributes);
 
             \DB::commit();
