@@ -21,10 +21,10 @@ export const menu = [
     key: 'other',
     label: 'Khác',
   },
-  {
-    key: 'allergicIngredients',
-    label: 'Nguyên liệu dị ứng',
-  },
+  // {
+  //   key: 'allergicIngredients',
+  //   label: 'Nguyên liệu dị ứng',
+  // },
   {
     key: 'history',
     label: 'Lịch sử lớp học',
