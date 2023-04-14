@@ -871,14 +871,14 @@ export async function getLeftMenuChildren() {
     //   permission: [`${FLATFORM.WEB}${permissions.BEP_HOCSINHCANDOIMON}${ACTION.VIEW}`],
     //   pro: true,
     // },
-    {
-      title: 'Cấu hình áp dụng',
-      key: 'applicable-configuration',
-      url: ['/bep/thuc-don/cau-hinh-ap-dung'],
-      icon: 'icon icon-list',
-      permission: [`${FLATFORM.WEB}${permissions.BEP_CAUHINHAPDUNG}${ACTION.VIEW}`],
-      pro: true,
-    },
+    // {
+    //   title: 'Cấu hình áp dụng',
+    //   key: 'applicable-configuration',
+    //   url: ['/bep/thuc-don/cau-hinh-ap-dung'],
+    //   icon: 'icon icon-list',
+    //   permission: [`${FLATFORM.WEB}${permissions.BEP_CAUHINHAPDUNG}${ACTION.VIEW}`],
+    //   pro: true,
+    // },
   ];
 }
 export async function getLeftMenuAllocation() {
