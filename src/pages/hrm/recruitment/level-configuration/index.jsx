@@ -1,10 +1,9 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
-import moment from 'moment';
 import { debounce } from 'lodash';
 import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import ability from '@/utils/ability';
@@ -18,41 +17,35 @@ import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
 
 const Index = memo(() => {
-  const [
-    loadingReducer,
-    paginationReducer,
-    data,
-  ] = useSelector(({ loading, hrmRecruitmentLevelConfiguration = {} }) => [
-    loading,
-    hrmRecruitmentLevelConfiguration?.paginationReducer,
-    hrmRecruitmentLevelConfiguration?.data,
-  ]);
+  const { loadingReducer, paginationReducer, data } = useSelector(
+    ({ loading, hrmRecruitmentLevelConfiguration }) => ({
+      loading,
+      paginationReducer: hrmRecruitmentLevelConfiguration?.paginationReducer,
+      data: hrmRecruitmentLevelConfiguration?.data,
+    }),
+  );
   const loading = loadingReducer?.effects['hrmRecruitmentLevelConfiguration/GET_DATA'];
-
-  const history = useHistory();
   const { query, pathname } = useLocation();
   const dispatch = useDispatch();
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
 
+  const history = useHistory();
   const filterRef = useRef();
 
   const [search, setSearch] = useState({
-    id: query?.id,
-    from_date: query?.from_date ? query?.from_date : null,
-    to_date: query?.to_date ? query?.to_date : null,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     key: query?.key,
   });
 
   const changePagination = ({ page, limit }) => {
-    setSearch((prev) => ({
-      ...prev.search,
+    setSearch({
+      ...search,
       page,
       limit,
-    }));
+    });
   };
 
   const paginationFunction = (pagination) =>
@@ -63,7 +56,7 @@ const Index = memo(() => {
       },
     });
 
-  const loadData = useCallback(() => {
+  const loadData = () => {
     dispatch({
       type: 'hrmRecruitmentLevelConfiguration/GET_DATA',
       payload: {
@@ -74,14 +67,13 @@ const Index = memo(() => {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
-  }, [search]);
+  };
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -201,10 +193,6 @@ const Index = memo(() => {
               className="pt20"
               initialValues={{
                 ...search,
-                date:
-                  search.from_date && search.to_date
-                    ? [moment(search.from_date), moment(search.to_date)]
-                    : ['', ''],
               }}
             >
               <Pane className="row">

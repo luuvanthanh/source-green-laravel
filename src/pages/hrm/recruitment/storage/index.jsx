@@ -1,10 +1,9 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
-import moment from 'moment';
 import { debounce } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -63,7 +62,7 @@ const Index = memo(() => {
       },
     });
 
-  const loadData = useCallback(() => {
+  const loadData = () => {
     dispatch({
       type: 'hrmRecruitmentStorage/GET_DATA',
       payload: {
@@ -74,14 +73,13 @@ const Index = memo(() => {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
-  }, [search]);
+  };
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -180,10 +178,6 @@ const Index = memo(() => {
               className="pt20"
               initialValues={{
                 ...search,
-                date:
-                  search.from_date && search.to_date
-                    ? [moment(search.from_date), moment(search.to_date)]
-                    : ['', ''],
               }}
             >
               <Pane className="row">

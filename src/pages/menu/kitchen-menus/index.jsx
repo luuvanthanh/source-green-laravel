@@ -122,22 +122,18 @@ const Index = memo(() => {
       fixed: 'right',
       render: (record) => (
         <div className="d-flex justify-content-end">
-          {user?.roleCode === 'sale' || user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
-            ''
-          ) : (
-            <Button
-              permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.DELETE}`}
-              color="danger"
-              icon="remove"
-              onClick={() => onRemove(record.id)}
-            />
-          )}
           <Button
             color="primary"
             icon="edit"
-            className="ml10"
-            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.EDIT}`}
+            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.DETAIL}`}
             onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+          />
+          <Button
+            permission={`${FLATFORM.WEB}${permissions.BEP_DANHSACHTHUCDON}${ACTION.DELETE}`}
+            color="danger"
+            className="ml10"
+            icon="remove"
+            onClick={() => onRemove(record.id)}
           />
         </div>
       ),

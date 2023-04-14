@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'dva';
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import { MenuOutlined } from '@ant-design/icons';
+import ability from '@/utils/ability';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -36,6 +37,11 @@ const Index = memo(() => {
   });
 
   const [dataSource, setDataSource] = useState([]);
+
+  const checkDraggab = ability.can(
+    `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.EDIT}`,
+    `${FLATFORM.WEB}${permissions.BEP_DANHMUCBUAAN}${ACTION.EDIT}`,
+  );
 
   const onChangeSwitch = (isUsed, record) => {
     dispatch({
@@ -96,7 +102,11 @@ const Index = memo(() => {
       className: 'min-width-100',
       width: 100,
       render: (record) => (
-        <Switch checked={record.isUsed} onChange={(e) => onChangeSwitch(e, record)} />
+        <Switch
+          disabled={!checkDraggab}
+          checked={record.isUsed}
+          onChange={(e) => onChangeSwitch(e, record)}
+        />
       ),
     },
     {
@@ -175,8 +185,8 @@ const Index = memo(() => {
           scroll={{ x: '100%' }}
           components={{
             body: {
-              wrapper: DraggableContainer,
-              row: DraggableBodyRow,
+              wrapper: checkDraggab ? DraggableContainer : null,
+              row: checkDraggab ? DraggableBodyRow : null,
             },
           }}
         />
