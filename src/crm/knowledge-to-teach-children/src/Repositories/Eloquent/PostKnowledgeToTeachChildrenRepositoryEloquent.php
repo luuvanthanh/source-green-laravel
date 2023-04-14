@@ -118,26 +118,26 @@ class PostKnowledgeToTeachChildrenRepositoryEloquent extends BaseRepository impl
             $criteriaStandard = json_decode($criteriaStandardsBmi['Value'], true);
 
             if ($result >= $criteriaStandard['MedianSmallerFirstSD'] && $result <= $criteriaStandard['MedianLargerFirstSD']) {
-                $message = 'Trạng thái sức khỏe tốt';
+                $message = 'Trẻ đang có trạng thái sức khỏe tốt.';
             }
 
             if ($result >= $criteriaStandard['MedianSmallerThirdSD'] && $result < $criteriaStandard['MedianSmallerFirstSD']) {
-                $message = 'Thiếu cân';
+                $message = 'Trẻ đang thiếu cân.';
             }
 
             if ($result < $criteriaStandard['MedianSmallerThirdSD']) {
-                $message = 'Thiếu cân';
+                $message = 'Trẻ đang thiếu cân.';
             }
 
             if ($result > $criteriaStandard['MedianLargerFirstSD'] && $result <= $criteriaStandard['MedianLargerSecondSD']) {
-                $message = 'Nguy cơ thừa cân';
+                $message = 'Trẻ đang có nguy cơ thừa cân.';
             }
 
             if ($result > $criteriaStandard['MedianLargerSecondSD']) {
-                $message = 'Thừa cân';
+                $message = 'Trẻ đang thừa cân.';
             }
         } else {
-            $message = 'Giá trị Bmi không được tìm thấy';
+            $message = 'Giá trị Bmi không được tìm thấy.';
         }
 
         $admissionRegister['result_bmi'] = $result;
