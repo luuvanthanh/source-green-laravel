@@ -104,7 +104,7 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
         if (is_null($code)) {
             $code = Interviewer::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
+            $stt = substr($code->Code, 3);
             $stt += 1;
 
             if (strlen($stt) == 1) {

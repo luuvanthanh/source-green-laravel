@@ -119,7 +119,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
         if (is_null($code)) {
             $code = InterviewList::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
+            $stt = substr($code->Code, 2);
             $stt += 1;
 
             if (strlen($stt) == 1) {
