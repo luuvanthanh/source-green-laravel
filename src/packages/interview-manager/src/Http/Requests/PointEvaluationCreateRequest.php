@@ -38,7 +38,7 @@ class PointEvaluationCreateRequest extends FormRequest
                         }
 
                         $interViewDetail = InterviewDetail::distinct('PointEvaluationId')->get()->pluck('PointEvaluationId')->toArray();
-                        $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->get();
+                        $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->first();
                         if (!is_null($pointValue)) {
                             return $fail('Dữ liệu đã được sử dụng');
                         }

@@ -28,6 +28,9 @@ class PointEvaluationTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        return [
+            'PointFrom' => (float) $model->PointFrom,
+            'PointTo' => (float) $model->PointTo
+        ];
     }
 }
