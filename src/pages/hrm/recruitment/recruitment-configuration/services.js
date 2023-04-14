@@ -8,7 +8,7 @@ export function get(params = {}) {
       ...params,
       include: Helper.convertIncludes(['division,level,question']),
       orderBy: 'CreationTime',
-      sortedBy: 'asc',
+      sortedBy: 'desc',
     },
   });
 }

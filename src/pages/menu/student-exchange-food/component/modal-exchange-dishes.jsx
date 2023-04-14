@@ -15,11 +15,15 @@ const Index = memo(({ setCheckModal, checkModal, dataModal, loadData }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
-  const [dataFood] = useSelector(({ loading, menuStudentExchangeFood = {} }) => [
-    menuStudentExchangeFood?.dataFood,
+  const {
+    loading: { effects },
+    dataFood,
+  } = useSelector(({ loading, menuStudentExchangeFood = {} }) => ({
     loading,
-  ]);
+    dataFood: menuStudentExchangeFood?.dataFood,
+  }));
 
+  const loadingSubmit = effects[`menuStudentExchangeFood/ADD`];
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
@@ -56,6 +60,9 @@ const Index = memo(({ setCheckModal, checkModal, dataModal, loadData }) => {
         if (res) {
           setCheckModal(false);
           loadData();
+          form.setFieldsValue({
+            newFoodId: null,
+          });
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
@@ -90,13 +97,19 @@ const Index = memo(({ setCheckModal, checkModal, dataModal, loadData }) => {
           >
             Hủy
           </p>
-          <Button htmlType="submit" color="success" type="primary" onClick={() => form.submit()}>
+          <Button
+            loading={loadingSubmit}
+            htmlType="submit"
+            color="success"
+            type="primary"
+            onClick={() => form.submit()}
+          >
             Lưu
           </Button>
         </>,
       ]}
     >
-      <Form layout="vertical" form={form} onFinish={() => handleOk()}>
+      <Form layout="vertical" form={form} onFinish={() => handleOk()} initialValues={{}}>
         <Pane className="row">
           <Pane className="col-lg-6">
             <FormDetail name={dataModal?.studentName} label="Học sinh" type={variables.TYPE.TEXT} />

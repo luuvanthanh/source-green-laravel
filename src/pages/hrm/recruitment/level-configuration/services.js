@@ -6,7 +6,7 @@ export function get(params = {}) {
     params: {
       ...params,
       orderBy: 'CreationTime',
-      sortedBy: 'asc',
+      sortedBy: 'desc',
     },
   });
 }

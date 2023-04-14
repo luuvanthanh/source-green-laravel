@@ -15,18 +15,20 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 const Index = memo(() => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch();
-  const params = useParams();
-  const mounted = useRef(false);
   const {
     loading: { effects },
     menuLeftHRM,
+    error,
   } = useSelector(({ menu, loading, hrmRecruitmentLevelConfigurationAdd }) => ({
     loading,
     menuLeftHRM: menu.menuLeftHRM,
     error: hrmRecruitmentLevelConfigurationAdd.error,
   }));
+
+  const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const params = useParams();
+  const mounted = useRef(false);
 
   const loadingSubmit =
     effects[`hrmRecruitmentLevelConfigurationAdd/UPDATE`] ||
@@ -76,7 +78,7 @@ const Index = memo(() => {
         },
       });
     }
-  }, [params.id]);
+  }, [params]);
 
   useEffect(() => {
     mounted.current = true;
@@ -92,6 +94,7 @@ const Index = memo(() => {
           <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
+                isError={error.isError}
                 params={{ type: 'container' }}
                 loading={effects['hrmRecruitmentLevelConfigurationAdd/GET_DATA']}
               >

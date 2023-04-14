@@ -166,7 +166,7 @@ const Index = memo(() => {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission={`${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`}
+              permission={`${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.CREATE}`}
             >
               Tạo danh mục
             </Button>
