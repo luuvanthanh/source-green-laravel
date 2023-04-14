@@ -183,9 +183,9 @@ class RecruitmentManagerRepositoryEloquent extends CoreRepositoryEloquent implem
             foreach ($arrayAppUserId as $key => $appUserId) {
                 $dataNotifiCation = [
                     'users' => $appUserId,
-                    'title' => $recruimentManager->Name,
+                    'title' => 'Tuyển dụng',
                     'imageURL' => '',
-                    'message' => 'Bạn có ứng viên mới dành cho ' . $recruimentManager->Name,
+                    'message' => 'Bạn có ứng viên mới dành cho tuyển dụng ' . $recruimentManager->Name,
                     'moduleType' => 32,
                     'refId' => $recruimentManager->Id,
                 ];
