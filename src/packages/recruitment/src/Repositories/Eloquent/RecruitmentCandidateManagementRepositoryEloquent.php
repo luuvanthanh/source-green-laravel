@@ -95,6 +95,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
             if ($result) {
                 $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
                 $recruimentManager->update(['NumberOfCandidates' => $attributes['numberOfCandidates']]);
+                $this->sentNotification($result);
             }
 
 
@@ -120,7 +121,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
                     $dataQuestion['CandidateManagementId'] = $model->Id;
                     $dataQuestion['RecruitmentQuestionId'] = $value['Id'];
                     $dataQuestion['Answer'] = $atributes['data'][$key]['answer'];
-                    
+
                     QuestionCandidate::create($dataQuestion);
                 }
             }
