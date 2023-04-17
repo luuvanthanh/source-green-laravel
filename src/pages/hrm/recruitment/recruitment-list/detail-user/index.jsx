@@ -108,9 +108,9 @@ const Index = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last="Chi tiết" menu={menuLeftHRM} />
+      <Breadcrumbs last="Chi tiết ứng viên" menu={menuLeftHRM} />
       <div className="col-lg-6 offset-lg-3">
-        <Helmet title="Loại tài sản" />
+        <Helmet title="Chi tiết ứng viên" />
         <Pane className="pl20 pr20 pb20">
           <Pane>
             <Form layout="vertical" form={form} initialValues={{}}>
