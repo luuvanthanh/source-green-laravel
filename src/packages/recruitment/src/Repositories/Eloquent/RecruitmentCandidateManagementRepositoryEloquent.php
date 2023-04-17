@@ -57,8 +57,6 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
 
     public function getCandidate(array $attributes)
     {
-        $a = QuestionCandidate::where('CandidateManagementId', 'f88e90fe-6ac5-41e8-bf44-c7b283119b8d')->get();
-        dd($a);
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
                 $query->orWhereLike('Name', $attributes['key']);
