@@ -43,7 +43,6 @@ const Index = memo(() => {
         location: values?.location,
         phone: values?.phone,
         endPoint: params?.id,
-        recruitmentManagerId: data?.id,
         file: !isEmpty(file) ? JSON.stringify(file) : undefined,
         data: values?.recruitmentConfiguraForm?.map((item) => ({
           answer: item?.answer,

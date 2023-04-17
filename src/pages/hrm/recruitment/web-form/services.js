@@ -3,7 +3,7 @@ import {  Helper } from '@/utils';
 
 
 export function add(data={}) {
-  return request('/v1/create-candidate', {
+  return request('/v1/recruitment-candidate', {
     method: 'POST',
     data: {
       ...data,
