@@ -95,6 +95,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
             if ($result) {
                 $attributes['numberOfCandidates'] = $recruimentManager->NumberOfCandidates + 1;
                 $recruimentManager->update(['NumberOfCandidates' => $attributes['numberOfCandidates']]);
+                $this->sentNotification($result);
             }
 
 
