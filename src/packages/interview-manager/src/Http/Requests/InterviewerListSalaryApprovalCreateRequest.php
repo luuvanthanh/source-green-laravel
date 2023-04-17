@@ -28,7 +28,8 @@ class InterviewerListSalaryApprovalCreateRequest extends FormRequest
 
         return [
             'status' => 'required|in:'.$status,
-            'flag' => 'required|in:'.$status
+            'flag' => 'required|in:'.$status,
+            'messages' => 'nullable|string'
         ];
     }
 
