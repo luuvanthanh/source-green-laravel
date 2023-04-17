@@ -31,9 +31,14 @@ class InterviewListTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         $data = $this->getAvgEvaluation($model);
+        $messages = '';
+        if (empty($model->PointEvaluationId)) {
+            $messages = 'Điểm đánh giá của nhân sự không nằm trong điểm đánh giá của cấu hình vui lòng thêm vào cấu hình điểm đánh giá.';
+        }
         return [
             'Status' => array_search($model->Status, InterviewList::STATUS),
-            'evaluationCriteria' => $data
+            'evaluationCriteria' => $data,
+            'messagePonitEvalute' => $messages
         ];
     }
 
