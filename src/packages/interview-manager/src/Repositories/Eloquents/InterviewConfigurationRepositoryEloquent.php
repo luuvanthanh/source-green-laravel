@@ -103,7 +103,7 @@ class InterviewConfigurationRepositoryEloquent extends CoreRepositoryEloquent im
         if (is_null($code)) {
             $code = InterviewConfiguration::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
+            $stt = substr($code->Code, 2);
             $stt += 1;
 
             if (strlen($stt) == 1) {

@@ -32,7 +32,7 @@ class InterviewerListCreateRequest extends FormRequest
             'interviewConfigurationId' => 'required|exists:InterviewConfigurations,Id',
             'employeeId' => 'required|array',
             'employeeId.*' => 'required|exists:Employees,Id',
-            'date' => 'required|date|date_format:d-m-Y',
+            'date' => 'required|date|date_format:Y-m-d',
             'time' => 'required|string',
             'address' => 'required|string'
         ];

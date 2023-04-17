@@ -44,7 +44,7 @@ class InterviewerListUpdateRequest extends FormRequest
             'interviewConfigurationId' => 'nullable|exists:InterviewConfigurations,Id',
             'employeeId' => 'nullable|array',
             'employeeId.*' => 'nullable|exists:Employees,Id',
-            'date' => 'nullable|date|date_format:d-m-Y',
+            'date' => 'nullable|date|date_format:Y-m-d',
             'time' => 'nullable',
             'address' => 'nullable|string',
             'status' => 'required|in:'.$status

@@ -119,7 +119,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
         if (is_null($code)) {
             $code = InterviewList::CODE . '001';
         } else {
-            $stt = substr($code->Code, 4);
+            $stt = substr($code->Code, 2);
             $stt += 1;
 
             if (strlen($stt) == 1) {
@@ -141,6 +141,9 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
     {
         DB::beginTransaction();
         try {
+            $date = Carbon::createFromFormat('d-m-Y', $attributes['date'])->toDateString();
+            
+            $attributes['date'] = $date;
             $interviewer = InterviewList::findOrfail($id);
 
             $interviewer->update($attributes);
@@ -240,7 +243,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             if (count($getEmployeeInterviewDetail) == count($getEmployeeInterviewerListEmployee)) {
                 // lấy tổng điểm tất cả nhân viên đã đánh giá.
                 foreach ($getEmployeeInterviewDetail as $key => $value) {
-                    $sumInterviewList = $sumInterviewList + $value->AverageScoreAsAssessedByStaff;
+                    $sumInterviewList = $sumInterviewList + $value['AverageScoreAsAssessedByStaff'];
                 }
                 $attributes['mediumScore'] = number_format($sumInterviewList / count($getEmployeeInterviewDetail), 2);
 
@@ -267,6 +270,11 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
     // duyệt lương bới ceo
     public function salaryApproval(array $attributes, $id)
     {
+        $messages = [];
+        if (!empty($attributes['messages'])) {
+            $messages['messages'] = $attributes['messages'];
+        }
+
         if ($attributes['flag'] == InterviewList::STATUS['APPROVED']) {
             $attributes['status'] = InterviewList::STATUS['APPROVED'];
         }
@@ -283,6 +291,10 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         $interviewerList->update($attributes);
 
+        if (!empty($messages)) {
+            return array_merge(parent::find($id), $messages);
+        }
+
         return parent::find($id);
     }
 
@@ -296,7 +308,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
                 'users' => $UserId,
                 'title' => $model->InterviewName,
                 'imageURL' => '',
-                'message' => 'Có lịch phỏng vấn vị trí'. $model->Location,
+                'message' => 'Có lịch phỏng vấn vị trí '. $model->Location,
                 'moduleType' => 33,
                 'refId' => $model->Id,
             ];
