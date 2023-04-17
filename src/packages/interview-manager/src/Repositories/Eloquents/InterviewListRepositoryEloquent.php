@@ -308,7 +308,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
                 'users' => $UserId,
                 'title' => $model->InterviewName,
                 'imageURL' => '',
-                'message' => 'Có lịch phỏng vấn vị trí'. $model->Location,
+                'message' => 'Có lịch phỏng vấn vị trí '. $model->Location,
                 'moduleType' => 33,
                 'refId' => $model->Id,
             ];
