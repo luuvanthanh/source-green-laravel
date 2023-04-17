@@ -237,7 +237,7 @@ const Index = memo(() => {
                     <Pane className="col-lg-3">
                       <div className="ant-col ant-form-item-label">
                         <label>
-                          <span>Nội dung</span>
+                          <span>Link liên kết</span>
                         </label>
                       </div>
                       <div className="w100">
