@@ -120,7 +120,7 @@ class RecruitmentCandidateManagementRepositoryEloquent extends CoreRepositoryElo
                     $dataQuestion['CandidateManagementId'] = $model->Id;
                     $dataQuestion['RecruitmentQuestionId'] = $value['Id'];
                     $dataQuestion['Answer'] = $atributes['data'][$key]['answer'];
-                    
+
                     QuestionCandidate::create($dataQuestion);
                 }
             }

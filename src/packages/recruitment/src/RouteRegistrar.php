@@ -29,6 +29,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::get('get-form-recruitment', 'RecruitmentManagerController@getFormRecruitment');
             // Thêm ứng viên
             \Route::post('create-candidate', 'RecruitmentManagerController@createCandidate');
+            \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController')->only('store');
             // get lời cảm ơn.
             \Route::get('configure-thanks', 'RecruitmentConfigurationController@getConfigureThanks');
         });
@@ -54,7 +55,7 @@ class RouteRegistrar extends CoreRegistrar
                 // get link tuyen dung
                 \Route::get('get-link-recruitment', 'RecruitmentManagerController@getLink');
                 // quản lý ứng viên 
-                \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController');
+                \Route::resource('recruitment-candidate', 'RecruitmentCandidateManagementController')->except('store');
                 
             });
         });
