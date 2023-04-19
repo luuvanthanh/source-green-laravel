@@ -1,22 +1,44 @@
 import { memo, useEffect, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Pane from '@/components/CommonComponent/Pane';
+import { debounce } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
+import csx from 'classnames';
+
 import Heading from '@/components/CommonComponent/Heading';
+import PropTypes from 'prop-types';
 
 import Table from '@/components/CommonComponent/Table';
 import { variables } from '@/utils/variables';
+import stylesModule from '../styles.module.scss';
 
+const Index = memo(({ dataEvaluationCriteria, setDataEvaluationCriteria }) => {
+  const debouncedSearch = debounce((e, record, key) => {
+    setDataEvaluationCriteria((prev) =>
+      prev.map((item) =>
+        item.id === record.id ? { ...item, [key]: e.target.value } : { ...item },
+      ),
+    );
+  }, 300);
 
-const Index = memo(() => {
+  const onChange = (e, record, key) => {
+    if (key === 'pointEvaluation') {
+      setDataEvaluationCriteria((prev) =>
+        prev.map((item) => (item.id === record.id ? { ...item, [key]: e } : { ...item })),
+      );
+    } else {
+      debouncedSearch(e, record, key);
+    }
+  };
 
-  const data = [{
-    config_profile_info_id: undefined,
-    status: true,
-    file_image: undefined,
-    id: uuidv4(),
-  }];
+  const dataPoint = (n) => {
+    const allTime = [];
+    for (let i = 1; i <= n; i += 1) {
+      allTime.push({ name: `${i}` });
+    }
+
+    return allTime.map((i, id) => ({ id: id + 1, ...i }));
+  };
 
   const mounted = useRef(false);
 
@@ -29,33 +51,36 @@ const Index = memo(() => {
     const columns = [
       {
         title: 'Tiêu chí đánh giá',
-        key: 'number',
+        key: 'name',
         className: 'min-width-150',
         render: (record) => record?.name,
       },
       {
         title: 'Điểm đánh giá',
-        key: 'a',
-        className: 'min-width-120',
-        render: () =>
+        key: 'pointEvaluation',
+        className: 'labelRequired',
+        render: (record) => (
           <FormItem
-            className={styles.item}
-            name="a"
-            type={variables.INPUT}
-            rules={[variables.RULES.EMPTY_INPUT]}
-          />,
+            name={[record?.id, 'pointEvaluation']}
+            data={dataPoint(10)}
+            type={variables.SELECT}
+            onChange={(e) => onChange(e, record, 'pointEvaluation')}
+            rules={[variables.RULES.EMPTY]}
+          />
+        ),
       },
       {
         title: 'Nhận xét',
-        key: 'a',
-        className: 'min-width-400',
-        render: () =>
+        key: 'comment',
+        className: `${csx('min-width-400', 'labelRequired')}`,
+        render: (record) => (
           <FormItem
-            className={styles.item}
-            name="a"
+            name={[record?.id, 'comment']}
             type={variables.INPUT}
-            rules={[variables.RULES.EMPTY_INPUT]}
-          />,
+            onChange={(e) => onChange(e, record, 'comment')}
+            rules={[variables.RULES.EMPTY]}
+          />
+        ),
       },
     ];
     return columns;
@@ -64,12 +89,12 @@ const Index = memo(() => {
   return (
     <Pane className="card p20">
       <Heading type="form-title" className="mb15">
-        Thông tin chung
+        Chi tiết phỏng vấn
       </Heading>
-      <div className={styles['table-header-blue']}>
+      <div className={csx(styles['table-header-blue'], stylesModule['wrapper-table'])}>
         <Table
           columns={header()}
-          dataSource={data}
+          dataSource={dataEvaluationCriteria}
           pagination={false}
           className="table-edit"
           isEmpty
@@ -85,5 +110,15 @@ const Index = memo(() => {
     </Pane>
   );
 });
+
+Index.propTypes = {
+  dataEvaluationCriteria: PropTypes.PropTypes.any,
+  setDataEvaluationCriteria: PropTypes.PropTypes.any,
+};
+
+Index.defaultProps = {
+  dataEvaluationCriteria: [],
+  setDataEvaluationCriteria: () => {},
+};
 
 export default Index;

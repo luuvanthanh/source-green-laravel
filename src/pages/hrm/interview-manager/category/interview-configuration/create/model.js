@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -5,6 +6,7 @@ export default {
   state: {
     details: {},
     skill: [],
+    divisions: [],
     error: {
       isError: false,
       data: {},
@@ -14,7 +16,11 @@ export default {
     INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
+    }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -47,7 +53,7 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+       callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
@@ -55,7 +61,21 @@ export default {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+       callback(null, error);
+      }
+    },
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

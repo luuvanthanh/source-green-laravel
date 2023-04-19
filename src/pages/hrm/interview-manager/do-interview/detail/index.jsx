@@ -1,16 +1,16 @@
 import { memo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useParams, history } from 'umi';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
 import DetailInfo from '../component/detail-info';
+import VariablesModules from '../../utils/variables';
 import InterviewResult from '../component/interview-result';
-
-
 
 const Index = memo(() => {
   const [form] = Form.useForm();
@@ -20,55 +20,20 @@ const Index = memo(() => {
   const {
     loading: { effects },
     menuLeftHRM,
+    details,
   } = useSelector(({ menu, loading, hrmRecruitmentDoInterviewAdd }) => ({
     loading,
     menuLeftHRM: menu.menuLeftHRM,
+    details: hrmRecruitmentDoInterviewAdd.details,
     error: hrmRecruitmentDoInterviewAdd.error,
   }));
-
-  const onFinish = () => {
-    form.validateFields().then((values) => {
-      dispatch({
-        type: params.id ? 'hrmRecruitmentDoInterviewAdd/UPDATE' : 'hrmRecruitmentDoInterviewAdd/ADD',
-        payload: {
-          id: params.id,
-          name: values?.name,
-          description: values?.description,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (!isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                form.setFields([
-                  {
-                    name: get(item, 'member').toLowerCase(),
-                    errors: [get(item, 'message')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
 
   useEffect(() => {
     if (params.id) {
       dispatch({
         type: 'hrmRecruitmentDoInterviewAdd/GET_DATA',
         payload: params,
-        callback: (response) => {
-          if (response) {
-            form.setFieldsValue({
-              name: response?.name,
-              description: response?.description,
-            });
-          }
-        },
+        callback: () => {},
       });
     }
   }, [params.id]);
@@ -81,21 +46,34 @@ const Index = memo(() => {
   return (
     <>
       <Breadcrumbs last={params.id ? 'Sửa' : 'Thêm mới'} menu={menuLeftHRM} />
-      <div >
-        <Helmet title="Loại tài sản" />
+      <div>
+        <Helmet title="Phỏng vấn" />
         <Pane className="pl20 pr20 pb20">
-          <Pane >
-            <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
+          <Pane>
+            <Form layout="vertical" form={form} initialValues={{}}>
               <Loading
                 params={{ type: 'container' }}
                 loading={effects['hrmRecruitmentDoInterviewAdd/GET_DATA']}
               >
-                <DetailInfo />
-                <InterviewResult />
+                <DetailInfo details={details} />
+                {details?.status !== VariablesModules.STATUS.NOT_INTERVIEWED_YET && (
+                  <InterviewResult details={details} />
+                )}
                 <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
                   <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
-                    Hủy
+                    Đóng
                   </p>
+                  {details?.status === VariablesModules.STATUS.NOT_INTERVIEWED_YET && (
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      size="large"
+                      onClick={() => history.push(`phong-van`)}
+                      permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_LAMPHONGVAN}${ACTION.CREATE}`}
+                    >
+                      Làm phỏng vấn
+                    </Button>
+                  )}
                 </Pane>
               </Loading>
             </Form>

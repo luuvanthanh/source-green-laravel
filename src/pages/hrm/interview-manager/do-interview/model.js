@@ -3,11 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'hrmRecruitmentDoInterview',
   state: {
-    data: [
-      {
-        id: '123',
-      },
-    ],
+    data: [],
     paginationReducer: {
       total: 0,
     },
@@ -20,7 +16,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      // data: payload.parsePayload,
+      data: payload.parsePayload,
       paginationReducer: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -48,14 +44,6 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
-      }
-    },
-    *REMOVE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
-        callback(payload);
-      } catch (error) {
-        callback(null, error);
       }
     },
   },

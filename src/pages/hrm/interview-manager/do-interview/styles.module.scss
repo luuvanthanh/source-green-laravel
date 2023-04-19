@@ -1,0 +1,29 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-table {
+  :global(th.labelRequired) {
+    position: relative;
+    width: auto;
+    font-weight: normal;
+    &::after {
+      color: red;
+      content: "*";
+      font-size: 13px;
+      line-height: 1;
+      margin-left: 10px;
+      z-index: 100;
+      right: -10px;
+      top: 2px;
+    }
+  }
+}
+
+.wrapper-upload {
+  display: flex;
+  margin-top: -20px;
+  margin-left: 15px;
+  :global(.upload-container) {
+    width: 105px !important;
+    height: 105px !important;
+  }
+}

@@ -8,6 +8,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
 import { variables } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import FormDetail from '@/components/CommonComponent/FormDetail';
@@ -20,18 +21,25 @@ const Index = memo(() => {
   const {
     loading: { effects },
     menuLeftHRM,
+    error,
+    details,
   } = useSelector(({ menu, loading, hrmInterviewManagerCategoryEvaluationCriteriaAdd }) => ({
     loading,
     menuLeftHRM: menu.menuLeftHRM,
+    details: hrmInterviewManagerCategoryEvaluationCriteriaAdd.details,
     error: hrmInterviewManagerCategoryEvaluationCriteriaAdd.error,
   }));
 
-  const loadingSubmit = effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE`] || effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE`] ||
+    effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD`];
 
   const onFinish = () => {
     form.validateFields().then((values) => {
       dispatch({
-        type: params.id ? 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE' : 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD',
+        type: params.id
+          ? 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE'
+          : 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD',
         payload: {
           id: params.id,
           name: values?.name,
@@ -63,14 +71,7 @@ const Index = memo(() => {
       dispatch({
         type: 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/GET_DATA',
         payload: params,
-        callback: (response) => {
-          if (response) {
-            form.setFieldsValue({
-              name: response?.name,
-              description: response?.description,
-            });
-          }
-        },
+        callback: () => {},
       });
     }
   }, [params.id]);
@@ -82,13 +83,14 @@ const Index = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last='Chi tiết' menu={menuLeftHRM} />
+      <Breadcrumbs last="Chi tiết" menu={menuLeftHRM} />
       <div className="col-lg-6 offset-lg-3">
         <Helmet title="Tiêu chí đánh giá" />
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
+                isError={error.isError}
                 params={{ type: 'container' }}
                 loading={effects['hrmInterviewManagerCategoryEvaluationCriteriaAdd/GET_DATA']}
               >
@@ -98,13 +100,21 @@ const Index = memo(() => {
                   </Heading>
                   <Pane className="row">
                     <Pane className="col-lg-6">
-                      <FormDetail name="LV0001" label="ID" type={variables.TYPE.TEXT} />
+                      <FormDetail name={details?.code} label="ID" type={variables.TYPE.TEXT} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormDetail name="1" label="Tên tiêu chí" type={variables.TYPE.TEXT} />
+                      <FormDetail
+                        name={details?.name}
+                        label="Tên tiêu chí"
+                        type={variables.TYPE.TEXT}
+                      />
                     </Pane>
                     <Pane className="col-lg-12">
-                      <FormDetail name="Trình độ junior" label="Ghi chú" type={variables.TYPE.TEXTAREA} />
+                      <FormDetail
+                        name={details?.note}
+                        label="Ghi chú"
+                        type={variables.TYPE.TEXTAREA}
+                      />
                     </Pane>
                   </Pane>
                   <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
@@ -117,6 +127,7 @@ const Index = memo(() => {
                       size="large"
                       loading={loadingSubmit}
                       onClick={() => history.push(`chinh-sua`)}
+                      permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.EDIT}`}
                     >
                       Sửa
                     </Button>

@@ -1899,3 +1899,41 @@
     }
   }
 }
+
+.wrapper-upload {
+  display: flex;
+  align-items: center;
+  .upload-btn {
+      width: auto;
+      height: 100%;
+      display: flex;
+      background-color: #ffffff;
+      border-radius: 3px;
+      cursor: pointer;
+      align-items: center;
+      img {
+          width: 16px;
+          height: 16px;
+      }
+      .text {
+          margin-left: 6px;
+          font-family: "Proxima Nova";
+          font-style: normal;
+          font-weight: 600;
+          font-size: 13px;
+          line-height: 22px;
+          color: #3b5cad;
+      }
+  }
+  .textNote {
+      margin-left: 10px;
+      font-family: "Proxima Nova";
+      font-style: italic;
+      font-weight: 400;
+      font-size: 11px;
+      line-height: 16px;
+      color: #36383a;
+      opacity: 0.7;
+      width: calc(100% - 102px);
+  }
+}
