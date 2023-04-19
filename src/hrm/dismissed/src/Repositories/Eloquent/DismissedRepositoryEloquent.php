@@ -82,7 +82,6 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
             DismissedDetailServices::add($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

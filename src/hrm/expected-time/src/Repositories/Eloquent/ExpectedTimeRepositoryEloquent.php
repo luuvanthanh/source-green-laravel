@@ -2,6 +2,7 @@
 
 namespace GGPHP\ExpectedTime\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\ExpectedTime\Models\ExpectedTime;
@@ -150,5 +151,54 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
         }
 
         return parent::parserResult($data);
+    }
+
+    public function exportExcelTeacherProfile($attributes)
+    {
+        $teacherProfiles = $this->getAll($attributes);
+
+        $params['[number]'] = [];
+        $params['[code]'] = [];
+        $params['[fullName]'] = [];
+        $params['[dateOfBirth]'] = [];
+        $params['[gender]'] = [];
+        $params['[phone]'] = [];
+        $params['[email]'] = [];
+        $params['[taxCode]'] = [];
+        $params['[address]'] = [];
+        $params['[categoryId]'] = [];
+        $params['[typeTeacherId]'] = [];
+        $stt = 0;
+
+        if (!empty($teacherProfiles)) {
+            foreach ($teacherProfiles['data'] as $teacherProfile) {
+                $stt += 1;
+                $params['[number]'][] = $stt;
+                $params['[code]'][] =  $teacherProfile['attributes']['code'];
+                $params['[fullName]'][] = $teacherProfile['attributes']['fullName'];
+                $params['[dateOfBirth]'][] = Carbon::parse($teacherProfile['attributes']['dateOfBirth'])->format('d/m/Y');
+                $params['[gender]'][] = $teacherProfile['attributes']['gender'] == 'FEMALE' ? 'Nữ' : 'Nam';
+                $params['[phone]'][] = $teacherProfile['attributes']['phoneNumber'];
+                $params['[email]'][] = $teacherProfile['attributes']['email'];
+                $params['[taxCode]'][] = $teacherProfile['attributes']['taxCode'];
+                $params['[address]'][] = $teacherProfile['attributes']['address'];
+                $params['[categoryId]'][] = $teacherProfile['attributes']['category'] == 'TEACHER' ? 'Giáo viên' : 'Nhân viên';
+                
+                if (!is_null($teacherProfile['attributes']['typeTeacherId'])) {
+                    foreach ($teacherProfile['attributes']['employeeTeacherPivot'] as $key => $value) {
+                        $arrId[] = $value->Id;
+                        $arrName[$value->Id] = $value->Name;
+                    }
+
+                    if (in_array($teacherProfile['attributes']['typeTeacherId'], array_unique($arrId))) {
+                        $params['[typeTeacherId]'][] = array_unique($arrName)[$teacherProfile['attributes']['typeTeacherId']];
+                    }
+                } else {
+                    $params['[typeTeacherId]'][] = '';
+                }
+            }
+        }
+
+        return $this->excelExporterServices->export('teacher_profile', $params);
     }
 }

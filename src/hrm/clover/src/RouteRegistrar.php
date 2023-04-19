@@ -36,6 +36,12 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'students.index',
             ]);
 
+            //module
+            \Route::get('project-by-id-module', [
+                'uses' => 'ClassProjectController@index',
+                'as' => 'modules.index',
+            ]);
+
             \Route::post('import-student', 'StudentController@importStudent')->name('import');
         });
     }

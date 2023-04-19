@@ -33,7 +33,11 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forKiosk();
     });
 
-    Route::group(['middleware' => ['auth_sso']], function () {
+    \GGPHP\Category\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
+    Route::group(['middleware' => []], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forUser();
         });

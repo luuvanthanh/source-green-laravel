@@ -151,12 +151,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function create(array $attributes)
     {
-
+       
         \DB::beginTransaction();
         try {
             $probationaryContract = ProbationaryContract::create($attributes);
-
-            resolve(LabourContractRepository::class)->created($probationaryContract, $attributes);
+            // resolve(LabourContractRepository::class)->created($probationaryContract, $attributes);
             $totalAllowance = 0;
             $basicSalary = 0;
 
@@ -223,7 +222,6 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function update(array $attributes, $id)
     {
-
         $probationaryContract = ProbationaryContract::findOrFail($id);
         \DB::beginTransaction();
         try {

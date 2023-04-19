@@ -126,4 +126,15 @@ class ExpectedTimeController extends Controller
 
         return $this->success(['data' =>  'Import thành công'], trans('lang::messages.common.createSuccess'));
     }
+
+    public function exportExcelTeacherProfile(Request $request)
+    {
+        $result = $this->expectedTimeRepository->exportExcelTeacherProfile($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }
