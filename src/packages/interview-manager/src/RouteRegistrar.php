@@ -29,7 +29,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('evaluation-criterias', 'EvaluationCriteriaController');
+            \Route::resource('evaluation-criterias-interview', 'EvaluationCriteriaController');
             \Route::resource('interviewers', 'InterviewerController');
             \Route::resource('point-evaluations', 'PointEvaluationController');
             \Route::resource('interview-configurations', 'InterviewConfigurationController');
