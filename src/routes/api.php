@@ -33,6 +33,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forKiosk();
     });
 
+    \GGPHP\Category\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
+
     Route::group(['middleware' => []], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forUser();

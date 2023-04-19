@@ -157,8 +157,7 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
     {
         $attributes['isExport'] = true;
         $teacherProfiles = $this->getAll($attributes);
-
-        dd($teacherProfiles['data'][0]['attributes']);
+        // dd($teacherProfiles['data']);
 
         $params['[number]'] = [];
         $params['[code]'] = [];
@@ -172,26 +171,32 @@ class ExpectedTimeRepositoryEloquent extends CoreRepositoryEloquent implements E
         $params['[categoryId]'] = [];
         $params['[typeTeacherId]'] = [];
         $stt = 0;
-        $typeTeacher = '';
+
         if (!empty($teacherProfiles)) {
-            foreach ($teacherProfiles as $key => $teacherProfile) {
-                // if (is_null($teacherProfile->TypeTeacherId)) {
-                //     $typeTeacher = $teacherProfile['employeeTeacherPivot'][]
-                // }
-                // $stt += 1;
-                // $params['[number]'][] = $stt;
-                // $params['[code]'][] =  $teacherProfile->Code;
-                // $params['[fullName]'][] = $teacherProfile->FullName;
-                // $params['[dateOfBirth]'][] = Carbon::parse($teacherProfile->DateOfBirth)->format('d/m/Y');
-                // $params['[gender]'][] = $teacherProfile->Gender;
-                // $params['[phone]'][] = $teacherProfile->PhoneNumber;
-                // $params['[email]'][] = $teacherProfile->Email;
-                // $params['[taxCode]'][] = $teacherProfile->TaxCode;
-                // $params['[address]'][] = $teacherProfile->Address;
-                // $params['[categoryId]'][] = array_search($teacherProfile->Category, User::CATEGORY);
-                // foreach ($teacherProfile->typeTeacher as $key => $value) {
-                //     $params['[typeTeacherId]'][] = !is_null($teacherProfile->TypeTeacherId) ? $value['Name'] : '';
-                // }
+            foreach ($teacherProfiles['data'] as $teacherProfile) {
+                // dd($teacherProfiles);
+                $stt += 1;
+                $params['[number]'][] = $stt;
+                $params['[code]'][] =  $teacherProfile['attributes']['code'];
+                $params['[fullName]'][] = $teacherProfile['attributes']['fullName'];
+                $params['[dateOfBirth]'][] = Carbon::parse($teacherProfile['attributes']['dateOfBirth'])->format('d/m/Y');
+                $params['[gender]'][] = $teacherProfile['attributes']['gender'] == 'FEMALE' ? 'Nữ' : 'Nam';
+                $params['[phone]'][] = $teacherProfile['attributes']['phoneNumber'];
+                $params['[email]'][] = $teacherProfile['attributes']['email'];
+                $params['[taxCode]'][] = $teacherProfile['attributes']['taxCode'];
+                $params['[address]'][] = $teacherProfile['attributes']['address'];
+                $params['[categoryId]'][] = $teacherProfile['attributes']['category'] == 'TEACHER' ? 'Giáo viên' : 'Nhân viên';
+                if (!empty($teacherProfile['attributes']['typeTeacherId'])) {
+                    foreach ($teacherProfile['attributes']['employeeTeacherPivot'] as $key => $value) {
+                        $arr[] = $value->Id;
+                        // if ($teacherProfile['attributes']['typeTeacherId'] == $value->Id) {
+                        //     $params['[typeTeacherId]'][] = $value->Name;
+                        // }
+                    }
+                    dd($arr);
+                } else {
+                    $params['[typeTeacherId]'][] = '';
+                }
             }
         }
 

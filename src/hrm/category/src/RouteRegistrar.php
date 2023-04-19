@@ -19,8 +19,15 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forGuest();
     }
 
+    public function forGuest()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('branches', 'BranchController')->only('index');
+        });
+    }
     /**
      * Register the routes needed for managing clients.
      *
@@ -41,7 +48,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('parameter-taxs', 'ParameterTaxController');
                 \Route::resource('parameter-tax-logs', 'ParameterTaxLogController');
                 \Route::resource('type-of-contracts', 'TypeOfContractController');
-                \Route::resource('branches', 'BranchController');
+                \Route::resource('branches', 'BranchController')->except('index');
                 \Route::resource('divisions', 'DivisionController');
                 \Route::resource('positions', 'PositionController');
                 \Route::resource('holidays', 'HolidayController');
