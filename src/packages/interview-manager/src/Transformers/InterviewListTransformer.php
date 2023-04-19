@@ -4,6 +4,7 @@ namespace GGPHP\InterviewManager\Transformers;
 
 use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\InterviewManager\Models\EvaluationCriteria;
 use GGPHP\InterviewManager\Models\InterviewConfiguration;
 use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
 use GGPHP\InterviewManager\Models\InterviewDetail;
@@ -87,6 +88,8 @@ class InterviewListTransformer extends BaseTransformer
         if (!empty($interviewConfigura)) {
             $sum = 0;
             foreach ($interviewConfigura as $key => $evaluationCriteriaId) {
+                $evaluateName = EvaluationCriteria::where('Id', $evaluationCriteriaId)->get()->pluck('Name');
+
                 $interviewListDetail = InterviewDetail::where('EvaluationCriteriaId', $evaluationCriteriaId)->get()->toArray();
                 if (!empty($interviewListDetail)) {
                     foreach ($interviewListDetail as $key => $interviewListDetailEvaluationCriteriaId) {
@@ -94,6 +97,7 @@ class InterviewListTransformer extends BaseTransformer
                     }
                     $evaluation['evaluationCriteriaId'] = $evaluationCriteriaId;
                     $evaluation['average'] = number_format($sum / count($interviewListDetail), 2);
+                    $evaluation['nameEvaluationCriteria'] = $evaluateName[0];
                     $sum = 0;
                     $data[] = $evaluation;
                 }
