@@ -259,7 +259,12 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
                         }
                     }
                 }
-                $attributes['pointEvaluationId'] = $pointEvaluationId;
+                if (!empty($poinEvaluetionId)) {
+                    $attributes['pointEvaluationId'] = $pointEvaluationId;
+                } else {
+                    $attributes['pointEvaluationId'] = null;
+                }
+
                 $attributes['status'] = InterviewList::STATUS['INTERVIEWED'];
                 $interviewList->update($attributes);
             }
