@@ -3,11 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'hrmInterviewManagerCategoryEvaluationCriteria',
   state: {
-    data: [
-      {
-        id: '123',
-      },
-    ],
+    data: [ ],
     paginationReducer: {
       total: 0,
     },
@@ -20,7 +16,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      // data: payload.parsePayload,
+      data: payload.parsePayload,
       paginationReducer: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -34,15 +30,14 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload ,callback}, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        callback(response?.parsePayload);
+       yield saga.put({
+        type: 'SET_DATA',
+        payload: response,
+      });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

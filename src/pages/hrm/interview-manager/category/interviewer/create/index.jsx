@@ -1,15 +1,17 @@
 import { memo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { size, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import { variables } from '@/utils';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
+import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 const Index = memo(() => {
@@ -20,34 +22,44 @@ const Index = memo(() => {
   const {
     loading: { effects },
     menuLeftHRM,
-  } = useSelector(({ menu, loading, hrmInterviewManagerCategoryInterviewAdd }) => ({
+    divisions,
+    employees,
+    error,
+  } = useSelector(({ menu, loading, hrmInterviewManagerCategoryInterviewAdd, categories }) => ({
     loading,
     menuLeftHRM: menu.menuLeftHRM,
+    employees: categories.employees,
+    divisions: categories.divisions,
     error: hrmInterviewManagerCategoryInterviewAdd.error,
   }));
 
-  const loadingSubmit = effects[`hrmInterviewManagerCategoryInterviewAdd/UPDATE`] || effects[`hrmInterviewManagerCategoryInterviewAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmInterviewManagerCategoryInterviewAdd/UPDATE`] ||
+    effects[`hrmInterviewManagerCategoryInterviewAdd/ADD`];
 
   const onFinish = () => {
     form.validateFields().then((values) => {
       dispatch({
-        type: params.id ? 'hrmInterviewManagerCategoryInterviewAdd/UPDATE' : 'hrmInterviewManagerCategoryInterviewAdd/ADD',
+        type: params.id
+          ? 'hrmInterviewManagerCategoryInterviewAdd/UPDATE'
+          : 'hrmInterviewManagerCategoryInterviewAdd/ADD',
         payload: {
           id: params.id,
-          name: values?.name,
-          description: values?.description,
+          divisionId: values?.divisionId,
+          employeeId: values?.employeeId,
         },
         callback: (response, error) => {
           if (response) {
             history.goBack();
           }
           if (error) {
-            if (!isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                form.setFields([
+            const { data } = error;
+            if (data?.status === 400 && !!size(data?.errors)) {
+              data?.errors.forEach((item) => {
+                form?.setFields([
                   {
-                    name: get(item, 'member').toLowerCase(),
-                    errors: [get(item, 'message')],
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
                   },
                 ]);
               });
@@ -66,14 +78,25 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             form.setFieldsValue({
-              name: response?.name,
-              description: response?.description,
+              ...response,
+              employeeId: response?.interviewerEmployee?.map((item) => item?.id),
             });
           }
         },
       });
     }
   }, [params.id]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'categories/GET_DIVISIONS',
+      payload: {},
+    });
+    dispatch({
+      type: 'categories/GET_EMPLOYEES',
+      payload: {},
+    });
+  }, []);
 
   useEffect(() => {
     mounted.current = true;
@@ -83,15 +106,19 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Người phỏng vấn" />
-      <Breadcrumbs last={params.id ? 'Sửa' : 'Tạo mới'} menu={menuLeftHRM} />
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa' : 'Tạo mới'} menu={menuLeftHRM} />
       <div className="col-lg-6 offset-lg-3">
         <Helmet title="Người phỏng vấn" />
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
+                isError={error.isError}
                 params={{ type: 'container' }}
-                loading={effects['hrmInterviewManagerCategoryInterviewAdd/GET_DATA']}
+                loading={
+                  effects['hrmInterviewManagerCategoryInterviewAdd/GET_DATA'] ||
+                  (params?.id && effects['categories/GET_EMPLOYEES'])
+                }
               >
                 <Pane className="card p20">
                   <Heading type="form-title" className="mb15">
@@ -109,21 +136,23 @@ const Index = memo(() => {
                     </Pane>
                     <Pane className="col-lg-6">
                       <FormItem
-                        name="name"
-                        placeholder="Nhập"
+                        name="divisionId"
+                        placeholder="Chọn bộ phận"
                         type={variables.SELECT}
-                        data={[]}
+                        data={divisions}
                         rules={[variables.RULES.EMPTY_INPUT]}
                         label="Bộ phận"
                       />
                     </Pane>
                     <Pane className="col-lg-12">
                       <FormItem
-                        name="note"
-                        placeholder="Nhập"
+                        name="employeeId"
+                        options={['id', 'fullName']}
+                        placeholder="Chọn người phụ trách"
                         type={variables.SELECT_MUTILPLE}
-                        data={[]}
-                        rules={[variables.RULES.EMPTY_INPUT]}
+                        data={employees}
+                        rules={[variables.RULES.EMPTY]}
+                        loading={effects['categories/GET_EMPLOYEES']}
                         label="Người phụ trách phỏng vấn"
                       />
                     </Pane>
@@ -139,6 +168,11 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission={
+                      params?.id
+                        ? `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_NGUOIPHONGVAN}${ACTION.EDIT}`
+                        : `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_NGUOIPHONGVAN}${ACTION.CREATE}`
+                    }
                   >
                     Lưu
                   </Button>

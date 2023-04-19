@@ -74,8 +74,8 @@ class FormDetail extends Component {
             <label className={styles.text}>{label}</label>
           </div>
           <div size="normal" className={styles['general-detail']}>
-            {name?.map((i) => (
-              <Tag className={styles.tag}>{i?.name}</Tag>
+            {name?.map((i,index) => (
+              <Tag className={styles.tag} key={index}>{i?.name ?? i?.fullName}</Tag>
             ))}
           </div>
         </div>

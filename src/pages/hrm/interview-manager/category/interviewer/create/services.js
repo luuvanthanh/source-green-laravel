@@ -1,14 +1,15 @@
-import request from '@/utils/requestCrm';
+import request from '@/utils/requestLavarel';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/v1/test', {
+  return request('/v1/interviewers', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/v1/test/${data.id}`, {
+  return request(`/v1/interviewers/${data.id}`, {
     method: 'PUT',
     data: {
       ...data,
@@ -17,10 +18,11 @@ export function update(data = {}) {
 }
 
 export function getData(params = {}) {
-  return request(`/v1/test/${params.id}`, {
+  return request(`/v1/interviewers/${params.id}`, {
     method: 'GET',
     params: {
       ...params,
+      include: Helper.convertIncludes(['division,interviewerEmployee']),
     },
   });
 }

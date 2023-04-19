@@ -1,12 +1,14 @@
 import { memo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { size, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
 import { useParams, history } from 'umi';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -20,41 +22,45 @@ const Index = memo(() => {
   const {
     loading: { effects },
     menuLeftHRM,
+    error,
   } = useSelector(({ menu, loading, hrmInterviewManagerCategoryEvaluationCriteriaAdd }) => ({
     loading,
     menuLeftHRM: menu.menuLeftHRM,
     error: hrmInterviewManagerCategoryEvaluationCriteriaAdd.error,
   }));
 
-  const loadingSubmit = effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE`] || effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD`];
+  const loadingSubmit =
+    effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE`] ||
+    effects[`hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD`];
 
-  const onFinish = () => {
-    form.validateFields().then((values) => {
-      dispatch({
-        type: params.id ? 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE' : 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD',
-        payload: {
-          id: params.id,
-          name: values?.name,
-          description: values?.description,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+  const onFinish = (values) => {
+    dispatch({
+      type: params.id
+        ? 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/UPDATE'
+        : 'hrmInterviewManagerCategoryEvaluationCriteriaAdd/ADD',
+      payload: {
+        id: params.id,
+        name: values?.name,
+        note: values?.note,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          const { data } = error;
+          if (data?.status === 400 && !!size(data?.errors)) {
+            data?.errors.forEach((item) => {
+              form?.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (!isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                form.setFields([
-                  {
-                    name: get(item, 'member').toLowerCase(),
-                    errors: [get(item, 'message')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
+        }
+      },
     });
   };
 
@@ -66,8 +72,7 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             form.setFieldsValue({
-              name: response?.name,
-              description: response?.description,
+              ...response,
             });
           }
         },
@@ -87,9 +92,10 @@ const Index = memo(() => {
       <div className="col-lg-6 offset-lg-3">
         <Helmet title="Tiêu chí đánh giá" />
         <Pane className="pl20 pr20 pb20">
-          <Pane >
+          <Pane>
             <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{}}>
               <Loading
+                isError={error.isError}
                 params={{ type: 'container' }}
                 loading={effects['hrmInterviewManagerCategoryEvaluationCriteriaAdd/GET_DATA']}
               >
@@ -120,7 +126,8 @@ const Index = memo(() => {
                       <FormItem
                         name="note"
                         placeholder="Nhập"
-                        type={variables.INPUT}
+                        type={variables.TEXTAREA}
+                        rules={[variables.RULES.MAX_LENGTH_INPUT]}
                         label="Ghi chú"
                       />
                     </Pane>
@@ -136,6 +143,11 @@ const Index = memo(() => {
                     htmlType="submit"
                     size="large"
                     loading={loadingSubmit}
+                    permission={
+                      params?.id
+                        ? `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.EDIT}`
+                        : `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.CREATE}`
+                    }
                   >
                     Lưu
                   </Button>

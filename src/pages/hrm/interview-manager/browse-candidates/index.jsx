@@ -6,6 +6,8 @@ import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
 import { debounce } from 'lodash';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import ability from '@/utils/ability';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -14,6 +16,8 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
+import HelperModules from '../utils/Helper';
+import VariablesModules from '../utils/variables';
 
 const Index = memo(() => {
   const [
@@ -103,68 +107,77 @@ const Index = memo(() => {
     {
       title: 'ID',
       key: 'code',
-      className: 'min-width-150',
+      width: 80,
       render: (record) => <Text size="normal">{record.code}</Text>,
     },
     {
-      title: 'Thời gian',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.name}</Text>,
-    },
-    {
       title: 'Phỏng vấn',
-      key: 'description',
-      className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      key: 'interviewName',
+      width: 200,
+      render: (record) => <Text size="normal">{record?.interviewName}</Text>,
     },
     {
-      title: 'Tên ứng viên',
-      key: 'description',
-      className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
-    },
-    {
-      title: 'Vị trí ứng tuyển',
-      key: 'description',
-      className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      title: 'Thời gian',
+      key: 'date',
+      width: 170,
+      render: (record) => (
+        <div className="d-flex">
+          <Text size="normal">{record?.date}</Text>
+          <>,</>
+          <Text size="normal" className="pl5">
+            {record?.time}
+          </Text>
+        </div>
+      ),
     },
     {
       title: 'Tên cấu hình',
-      key: 'description',
-      className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      key: 'interviewConfiguration',
+      width: 200,
+      render: (record) => <Text size="normal">{record?.interviewConfiguration?.name}</Text>,
     },
     {
       title: 'Điểm trung bình',
-      key: 'description',
-      className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      key: 'pointEvaluation',
+      width: 150,
+      render: (record) => <Text size="normal">{record?.mediumScore}</Text>,
     },
     {
       title: 'Kết quả',
       key: 'description',
-      className: 'min-width-100',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      width: 150,
+      render: (record) => <Text size="normal">{record?.description}</Text>,
+    },
+    {
+      title: 'Mức lương đề xuất',
+      key: 'suggestedSalary',
+      width: 170,
+      render: (record) => <Text size="normal">{record?.suggestedSalary}</Text>,
     },
     {
       title: 'Trạng thái',
-      key: 'description',
-      className: 'min-width-100',
+      key: 'status',
+      width: 150,
+      render: (record) => HelperModules.tagStatus(record?.status),
     },
     {
       key: 'action',
-      className: 'min-width-100',
-      width: 100,
+      width: 120,
+      fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
-          <Button color="success" onClick={(e) => {
-            e.stopPropagation();
-            history.push(`${pathname}/${record?.id}/chi-tiet`);
-          }}>
-            Xử lý
-          </Button>
+          {record?.status === VariablesModules.STATUS.PENDING && (
+            <Button
+              color="success"
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`${pathname}/${record?.id}/chi-tiet`);
+              }}
+              permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DUYETUNGVIEN}${ACTION.CREATE}`}
+            >
+              Xử lý
+            </Button>
+          )}
         </div>
       ),
     },
@@ -184,8 +197,11 @@ const Index = memo(() => {
               ref={filterRef}
               className="pt20"
               initialValues={{
-                ...search, date: search.from_date &&
-                  search.to_date ? [moment(search.from_date), moment(search.to_date)] : ["", ""],
+                ...search,
+                date:
+                  search.from_date && search.to_date
+                    ? [moment(search.from_date), moment(search.to_date)]
+                    : ['', ''],
               }}
             >
               <Pane className="row">
@@ -199,7 +215,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
             </Form>
-            <div className={styles['wrapper-table-header']} >
+            <div className={styles['wrapper-table-header']}>
               <Table
                 columns={header()}
                 dataSource={data}
@@ -214,7 +230,18 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DUYETUNGVIEN}${ACTION.DETAIL}`,
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DUYETUNGVIEN}${ACTION.DETAIL}`,
+                      ) ||
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DUYETUNGVIEN}${ACTION.CREATE}`,
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DUYETUNGVIEN}${ACTION.CREATE}`,
+                      )
+                    ) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

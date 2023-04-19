@@ -4,9 +4,22 @@ export default {
   namespace: 'categories',
   state: {
     boGroups: [],
+    divisions: [],
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload?.map(i=> ({
+        ...i,
+        name: i?.fullName
+      })),
+    }),
     SET_BUSINESS_OBJECT_GROUP: (state, { payload }) => ({
       ...state,
       boGroups: payload.boGroups.items,
@@ -43,6 +56,34 @@ export default {
         callback(response);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

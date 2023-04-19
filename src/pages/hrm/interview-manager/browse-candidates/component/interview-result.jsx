@@ -1,30 +1,13 @@
-import { memo, useEffect, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { memo } from 'react';
 import Pane from '@/components/CommonComponent/Pane';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import styles from '@/assets/styles/Common/common.scss';
 import Heading from '@/components/CommonComponent/Heading';
-
+import PropTypes from 'prop-types';
 import Table from '@/components/CommonComponent/Table';
 import { variables } from '@/utils/variables';
 
-
-const Index = memo(() => {
-
-  const data = [{
-    config_profile_info_id: undefined,
-    status: true,
-    file_image: undefined,
-    id: uuidv4(),
-  }];
-
-  const mounted = useRef(false);
-
-  useEffect(() => {
-    mounted.current = true;
-    return mounted.current;
-  }, []);
-
+const Index = memo(({ details }) => {
   const header = () => {
     const columns = [
       {
@@ -35,15 +18,15 @@ const Index = memo(() => {
       },
       {
         title: 'Điểm đánh giá',
-        key: 'number',
+        key: 'pointEvaluation',
         className: 'min-width-150',
-        render: (record) => record?.name,
+        render: (record) => record?.pointEvaluation,
       },
       {
         title: 'Nhận xét',
-        key: 'number',
+        key: 'comment',
         className: 'min-width-400',
-        render: (record) => record?.name,
+        render: (record) => record?.comment,
       },
     ];
     return columns;
@@ -56,10 +39,14 @@ const Index = memo(() => {
       </Heading>
       <Pane className="row border-bottom">
         <Pane className="col-lg-3">
-          <FormDetail name="6.7" label="Điểm trung bình" type={variables.TYPE.TEXT} />
+          <FormDetail
+            name={details?.mediumScore}
+            label="Điểm trung bình"
+            type={variables.TYPE.TEXT}
+          />
         </Pane>
         <Pane className="col-lg-3">
-          <FormDetail name=" " label="Kết quả" type={variables.TYPE.TEXT} />
+          <FormDetail name={details?.description} label="Kết quả" type={variables.TYPE.TEXT} />
         </Pane>
       </Pane>
       <Pane className="row  pt20">
@@ -70,7 +57,7 @@ const Index = memo(() => {
           <div className={styles['table-header-blue']}>
             <Table
               columns={header()}
-              dataSource={data}
+              dataSource={details?.evaluationCriteria}
               pagination={false}
               className="table-edit"
               isEmpty
@@ -88,5 +75,13 @@ const Index = memo(() => {
     </Pane>
   );
 });
+
+Index.propTypes = {
+  details: PropTypes.PropTypes.any,
+};
+
+Index.defaultProps = {
+  details: {},
+};
 
 export default Index;

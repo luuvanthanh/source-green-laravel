@@ -14,7 +14,14 @@ export default {
     INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: {
+        ...payload.parsePayload,
+        interviewerEmployee:  payload.parsePayload?.interviewerEmployee?.map(i=> ({
+          ...i,
+          ...i,
+          name: i?.fullName,
+        }))
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -47,7 +54,7 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
@@ -55,7 +62,7 @@ export default {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
   },

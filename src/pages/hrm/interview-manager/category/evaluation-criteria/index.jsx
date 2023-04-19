@@ -1,11 +1,12 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
-import moment from 'moment';
 import { debounce } from 'lodash';
+import { permissions, FLATFORM, ACTION } from '@/../config/permissions';
+import ability from '@/utils/ability';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -37,9 +38,6 @@ const Index = memo(() => {
   const filterRef = useRef();
 
   const [search, setSearch] = useState({
-    id: query?.id,
-    from_date: query?.from_date ? query?.from_date : null,
-    to_date: query?.to_date ? query?.to_date : null,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     key: query?.key,
@@ -61,25 +59,25 @@ const Index = memo(() => {
       },
     });
 
-  const loadData = useCallback(() => {
+  const loadData = () => {
     dispatch({
       type: 'hrmInterviewManagerCategoryEvaluationCriteria/GET_DATA',
       payload: {
         ...search,
       },
+      callback: () => {},
     });
     history.push({
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
-  }, [search]);
+  };
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -101,21 +99,24 @@ const Index = memo(() => {
 
   const onRemove = (id) => {
     const text = 'Bạn có chắc chắn muốn xóa tiêu chí đánh giá này không?';
-    Helper.confirmDelete({
-      callback: () => {
-        dispatch({
-          type: 'hrmInterviewManagerCategoryEvaluationCriteria/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) {
-              loadData();
-            }
-          },
-        });
+    Helper.confirmDelete(
+      {
+        callback: () => {
+          dispatch({
+            type: 'hrmInterviewManagerCategoryEvaluationCriteria/REMOVE',
+            payload: {
+              id,
+            },
+            callback: (response) => {
+              if (response) {
+                loadData();
+              }
+            },
+          });
+        },
       },
-    }, text);
+      text,
+    );
   };
 
   const header = () => [
@@ -133,9 +134,9 @@ const Index = memo(() => {
     },
     {
       title: 'Ghi chú',
-      key: 'description',
+      key: 'note',
       className: 'min-width-150',
-      render: (record) => <Text size="normal">{record.description}</Text>,
+      render: (record) => <Text size="normal">{record.note}</Text>,
     },
     {
       key: 'action',
@@ -146,6 +147,7 @@ const Index = memo(() => {
           <Button
             color="primary"
             icon="edit"
+            permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.EDIT}`}
             onClick={(e) => {
               e.stopPropagation();
               history.push(`${pathname}/${record.id}/chinh-sua`);
@@ -154,10 +156,12 @@ const Index = memo(() => {
           <Button
             color="danger"
             icon="remove"
+            permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.DELETE}`}
             onClick={(e) => {
               e.stopPropagation();
               onRemove(record.id);
-            }} />
+            }}
+          />
         </div>
       ),
     },
@@ -169,7 +173,12 @@ const Index = memo(() => {
       <Pane className={csx(styles['content-form'], styles['content-form-children'])}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <Text color="dark">Tiêu chí đánh giá</Text>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+          <Button
+            permission={`${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.CREATE}`}
+            color="success"
+            icon="plus"
+            onClick={() => history.push(`${pathname}/tao-moi`)}
+          >
             Tạo mới
           </Button>
         </div>
@@ -180,8 +189,7 @@ const Index = memo(() => {
               ref={filterRef}
               className="pt20"
               initialValues={{
-                ...search, date: search.from_date &&
-                  search.to_date ? [moment(search.from_date), moment(search.to_date)] : ["", ""],
+                ...search,
               }}
             >
               <Pane className="row">
@@ -195,7 +203,7 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
             </Form>
-            <div className={styles['wrapper-table-header']} >
+            <div className={styles['wrapper-table-header']}>
               <Table
                 columns={header()}
                 dataSource={data}
@@ -210,7 +218,14 @@ const Index = memo(() => {
                 }}
                 onRow={(record) => ({
                   onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                    if (
+                      ability.can(
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.DETAIL}`,
+                        `${FLATFORM.WEB}${permissions.HRM_PHONGVAN_DANHMUC_TIEUCHIDANHGIA}${ACTION.DETAIL}`,
+                      )
+                    ) {
+                      history.push(`${pathname}/${record.id}/chi-tiet`);
+                    }
                   },
                 })}
               />

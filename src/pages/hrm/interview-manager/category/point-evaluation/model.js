@@ -1,23 +1,20 @@
 import * as services from './services';
 
 export default {
-  namespace: 'hrmInterviewManagerCategoryInterview',
+  namespace: 'hrmInterviewManagerCategoryPointEvaluation',
   state: {
-    data: [ ],
-    paginationReducer: {
-      total: 0,
-    },
+    details: {},
+    skill: [],
     error: {
       isError: false,
       data: {},
     },
   },
   reducers: {
-    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      paginationReducer: payload.pagination,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -30,15 +27,14 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        const response = yield saga.call(services.getData, payload);
+        callback(response.parsePayload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -46,14 +42,13 @@ export default {
         });
       }
     },
-    *REMOVE({ payload, callback }, saga) {
+    *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
+        yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
       }
     },
   },
-  subscriptions: {},
 };

@@ -14,7 +14,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -42,20 +42,23 @@ export default {
         });
       }
     },
-    *ADD({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
+      }
+    },
+    *GET_DATA_EVALUATION_CRITERIA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDataEvaluationCriteria, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

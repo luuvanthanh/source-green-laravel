@@ -1,9 +1,11 @@
 import { memo, useEffect, useRef } from 'react';
 import { Checkbox } from 'antd';
 import Table from '@/components/CommonComponent/Table';
+import PropTypes from 'prop-types';
+
 import stylesModule from '../styles.module.scss';
 
-const Index = memo(() => {
+const Index = memo(({ setDataEvaluation, dataEvaluation, type }) => {
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -11,18 +13,34 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  const onChangCheckBox = (record, e) => {
+    setDataEvaluation(
+      dataEvaluation?.map((i) => ({
+        ...i,
+        checkbox: record?.id === i?.id ? e.target.checked : i?.checkbox,
+      })),
+    );
+  };
+
   const header = () => {
     const columns = [
-      {
-        title: 'Khoảng điểm từ',
-        key: 'a',
-        className: 'min-width-150',
-        render: () =>
-          <Checkbox />,
-      },
+      ...(type !== 'detail'
+        ? [
+            {
+              key: 'check',
+              className: 'min-width-150',
+              render: (record) => (
+                <Checkbox
+                  defaultChecked={record?.checkBox}
+                  onChange={(e) => onChangCheckBox(record, e)}
+                />
+              ),
+            },
+          ]
+        : []),
       {
         title: 'Tiêu chí',
-        key: 'a',
+        key: 'name',
         className: 'min-width-400',
         render: (record) => record?.name,
       },
@@ -34,7 +52,7 @@ const Index = memo(() => {
     <div className={stylesModule['wrapper-table']}>
       <Table
         columns={header()}
-        dataSource={[{ name: 'Trình độ chuyên môn' }]}
+        dataSource={dataEvaluation}
         pagination={false}
         className="table-edit"
         isEmpty
@@ -49,5 +67,17 @@ const Index = memo(() => {
     </div>
   );
 });
+
+Index.propTypes = {
+  dataEvaluation: PropTypes.arrayOf(PropTypes.any),
+  setDataEvaluation: PropTypes.PropTypes.any,
+  type: PropTypes.PropTypes.any,
+};
+
+Index.defaultProps = {
+  dataEvaluation: [],
+  setDataEvaluation: () => {},
+  type: '',
+};
 
 export default Index;

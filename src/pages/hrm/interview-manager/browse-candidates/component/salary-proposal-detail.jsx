@@ -1,11 +1,11 @@
 import { memo, useEffect, useRef } from 'react';
 import Heading from '@/components/CommonComponent/Heading';
 import Pane from '@/components/CommonComponent/Pane';
-
+import PropTypes from 'prop-types';
 import FormDetail from '@/components/CommonComponent/FormDetail';
 import { variables } from '@/utils';
 
-const Index = memo(() => {
+const Index = memo(({ details }) => {
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -20,22 +20,34 @@ const Index = memo(() => {
       </Heading>
       <Pane className="row border-bottom">
         <Pane className="col-lg-3">
-          <FormDetail name="20.000.000 đ" label="Mức lương đề xuất" type={variables.TYPE.TEXT} />
+          <FormDetail
+            name={details?.suggestedSalary}
+            label="Mức lương đề xuất"
+            type={variables.TYPE.TEXT}
+          />
         </Pane>
         <Pane className="col-lg-3">
-          <FormDetail name="Không duyệt lương" label="CEO xử lý" type={variables.TYPE.TEXT} />
+          <FormDetail label="CEO xử lý" type={variables.TYPE.TEXT} />
         </Pane>
         <Pane className="col-lg-6">
-          <FormDetail name="Lương đề xuất cao hơn mặt bằng chung. Xem xét lại" label="Nội dung" type={variables.TYPE.TEXT} />
+          <FormDetail label="Nội dung" type={variables.TYPE.TEXT} />
         </Pane>
       </Pane>
       <Pane className="row pt20">
         <Pane className="col-lg-3">
-          <FormDetail name="18.000.000 đ" label="Mức lương đề xuất lần 2" type={variables.TYPE.TEXT} />
+          <FormDetail label="Mức lương đề xuất lần 2" type={variables.TYPE.TEXT} />
         </Pane>
       </Pane>
     </Pane>
   );
 });
+
+Index.propTypes = {
+  details: PropTypes.PropTypes.any,
+};
+
+Index.defaultProps = {
+  details: {},
+};
 
 export default Index;
