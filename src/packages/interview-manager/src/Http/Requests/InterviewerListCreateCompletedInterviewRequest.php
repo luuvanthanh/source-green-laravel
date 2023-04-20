@@ -28,7 +28,7 @@ class InterviewerListCreateCompletedInterviewRequest extends FormRequest
         return [
             'interviewListId' => 'required|exists:InterviewLists,Id',
             'employeeId' => [
-                'required','exists:Employees,Id',
+                'required','exists:InterviewListEmployees,EmployeeId',
                 function($atribute, $value, $fail){
                     $interviewDetail = InterviewDetail::where('InterviewListId', $this->id)->where('EmployeeId', $value)->first();
 
