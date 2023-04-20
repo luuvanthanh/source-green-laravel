@@ -14,12 +14,13 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
 import CustomListUpload from '@/components/CommonComponent/CustomListUpload';
+import TableEdit from './table-edit';
 
 const Index = memo(() => {
   const [
     menuData,
     loading,
-    { error, foodCommonsGroups },
+    { error, foodCommonsGroups, foodCommonsMaterials },
     { user },
   ] = useSelector(
     ({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate, user }) => [
@@ -37,6 +38,7 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const [pathImage, setPathImage] = useState([]);
   const [units, setUnits] = useState([]);
+  const [data, setData] = useState([]);
   const [collapsedUnit, setCollapsedUnit] = useState(false);
   const [nameUnit, setNameUnit] = useState(null);
 
@@ -48,6 +50,17 @@ const Index = memo(() => {
         ...params,
         measureUnit: units.find((item) => item.id === values.measureUnitId)?.name,
         pathImage: JSON.stringify(pathImage),
+        itemDetailMasterRequest: {
+          itemDetailMasters: data?.map((i) => ({
+            itemDetailRequest: {
+              itemName: i?.itemName,
+              itemMaterialId: i?.itemMaterialId,
+              measureUnitId: i?.measureUnitId,
+              quantity: i?.quantity,
+              itemDetailType: i?.itemDetailType,
+            },
+          })),
+        },
       },
       callback: (response, error) => {
         if (response) {
@@ -78,6 +91,7 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
+            setData(response?.itemDetails?.map((i) => ({ ...i, checkInput: true })));
             formRef.current.setFieldsValue({
               ...response,
               measureUnit: response?.measureUnit?.name,
@@ -103,6 +117,10 @@ const Index = memo(() => {
     });
     dispatch({
       type: 'foodCommonsCreate/GET_FOOD_COMMONS_GROUPS',
+      payload: {},
+    });
+    dispatch({
+      type: 'foodCommonsCreate/GET_FOOD_COMMONS_MATERIALS',
       payload: {},
     });
     // dispatch({
@@ -195,17 +213,17 @@ const Index = memo(() => {
       <Breadcrumbs className="pb30 pt0" last="Tạo món ăn" menu={menuData} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Pane className="row justify-content-center">
-          <Pane className="col-lg-8">
+          <Pane className="col-lg-12">
             <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
-              <Pane className="p20 pt20 card">
-                <Loading
-                  loading={
-                    loading['foodCommonsCreate/GET_MEASURE_UNITS'] ||
-                    loading['foodCommonsCreate/GET_DATA']
-                  }
-                  isError={error.isError}
-                  params={{ error, goBack: '/bep/thuc-don/mon-an' }}
-                >
+              <Loading
+                loading={
+                  loading['foodCommonsCreate/GET_MEASURE_UNITS'] ||
+                  loading['foodCommonsCreate/GET_DATA']
+                }
+                isError={error.isError}
+                params={{ error, goBack: '/bep/thuc-don/mon-an' }}
+              >
+                <Pane className="p20 pt20 card">
                   <Heading type="form-title" className="mb20">
                     Thông tin chung
                   </Heading>
@@ -297,34 +315,40 @@ const Index = memo(() => {
                   {!isEmpty(pathImage) && (
                     <CustomListUpload data={pathImage} remove={(item) => onRemoFile(item)} />
                   )}
-                </Loading>
-              </Pane>
-
-              <Pane className="py20 d-flex justify-content-between align-items-center">
-                {user?.roleCode === 'sale' ||
-                user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
-                  ''
-                ) : (
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={
-                      loading['foodCommonsCreate/ADD'] ||
-                      loading['foodCommonsCreate/UPDATE'] ||
-                      loading['foodCommonsCreate/GET_DATA']
-                    }
-                    permission={
-                      params?.id
-                        ? `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`
-                        : `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.CREATE}`
-                    }
-                  >
-                    Lưu
-                  </Button>
-                )}
-              </Pane>
+                </Pane>
+                <Pane className="p20 pt20 card">
+                  <TableEdit
+                    setData={setData}
+                    data={data}
+                    foodCommonsMaterials={foodCommonsMaterials}
+                  />
+                </Pane>
+                <Pane className="py20 d-flex justify-content-between align-items-center">
+                  {user?.roleCode === 'sale' ||
+                  user?.roleCode === variables?.LIST_ROLE_CODE?.TEACHER ? (
+                    ''
+                  ) : (
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={
+                        loading['foodCommonsCreate/ADD'] ||
+                        loading['foodCommonsCreate/UPDATE'] ||
+                        loading['foodCommonsCreate/GET_DATA']
+                      }
+                      permission={
+                        params?.id
+                          ? `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.EDIT}`
+                          : `${FLATFORM.WEB}${permissions.BEP_DANHMUCMONAN}${ACTION.CREATE}`
+                      }
+                    >
+                      Lưu
+                    </Button>
+                  )}
+                </Pane>
+              </Loading>
             </Form>
           </Pane>
         </Pane>

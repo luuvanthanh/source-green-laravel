@@ -4,6 +4,7 @@ export default {
   namespace: 'foodCommonsCreate',
   state: {
     details: {},
+    foodCommonsMaterials: [],
     error: {
       isError: false,
       data: {},
@@ -24,6 +25,10 @@ export default {
     SET_FOOD_COMMONS_GROUPS: (state, { payload }) => ({
       ...state,
       foodCommonsGroups: payload,
+    }),
+    SET_FOOD_COMMONS_MATERIALS: (state, { payload }) => ({
+      ...state,
+      foodCommonsMaterials: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -100,6 +105,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_FOOD_COMMONS_MATERIALS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getFoodCommonsMaterials, payload);
+        yield saga.put({
+          type: 'SET_FOOD_COMMONS_MATERIALS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

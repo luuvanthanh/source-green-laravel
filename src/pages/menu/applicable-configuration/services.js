@@ -1,18 +1,21 @@
 import request from '@/utils/request';
 
 export function add(data = {}) {
-  return request('/food-commons/config-food', {
+  return request('/settings/set-multiple', {
     method: 'PUT',
-    data :{
+    data :[
       ...data
-    },
+    ],
     parse: true,
   });
 }
 
 export function details() {
-  return request(`/food-commons/groups-for-food`, {
+  return request(`/settings/get-multiple`, {
     method: 'GET',
+    params: {
+      keys: ['config_food_in_kitchen','material_group'], 
+    },
   });
 }
 

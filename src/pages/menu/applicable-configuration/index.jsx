@@ -22,7 +22,7 @@ const Index = memo(() => {
     menuApplicableConfiguration,
     loading,
     user,
-    menuApplicableConfiguration.dataFoodGroup,
+    menuApplicableConfiguration.dataMaterials,
     menu,
   ]);
   const dispatch = useDispatch();
@@ -37,20 +37,22 @@ const Index = memo(() => {
         if (response) {
           setDetail(response);
           form.setFieldsValue({
-            value: response?.id,
+            config_food_in_kitchen: response?.find((i) => i?.key === 'config_food_in_kitchen')
+              ?.value,
+            material_group: response?.find((i) => i?.key === 'material_group')?.value,
           });
         }
       },
     });
   };
 
-  const onFinish = (value) => {
-    setDetail({});
+  const onFinish = (values) => {
     dispatch({
       type: 'menuApplicableConfiguration/ADD',
-      payload: {
-        value: value?.value,
-      },
+      payload: [
+        { key: 'config_food_in_kitchen', value: values?.config_food_in_kitchen },
+        { key: 'material_group', value: values?.material_group },
+      ],
       callback: (response, error) => {
         if (response) {
           setCheckEdit(false);
@@ -86,25 +88,55 @@ const Index = memo(() => {
         <Helmet title="Cấu hình áp dụng" />
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
-            <Heading type="form-title" className="pb20">
-              Cấu hình áp dụng
-            </Heading>
-            <Loading loading={effects['menuApplicableConfiguration/GET_DETAILS']}>
+            <Loading
+              loading={
+                effects['menuApplicableConfiguration/GET_DETAILS'] ||
+                effects['menuApplicableConfiguration/GET_FOOD_GROUP']
+              }
+            >
               <div className="card p20">
+                <Heading type="form-title" className="pb20">
+                  Cấu hình áp dụng
+                </Heading>
                 <Pane className="row">
                   <Pane className="col-lg-12">
                     {checkEdit ? (
                       <FormItem
                         label="Nhóm hàng áp dụng"
-                        name="value"
+                        name="config_food_in_kitchen"
                         data={dataFoodGroup}
                         type={variables.TYPE.SELECT}
                       />
                     ) : (
                       <FormDetail
-                        name={detail?.name}
+                        name={detail?.find((i) => i?.key === 'config_food_in_kitchen')?.value}
+                        data={dataFoodGroup}
                         label="Nhóm hàng áp dụng"
-                        type={variables.TYPE.TEXT}
+                        type={variables.TYPE.SELECT}
+                      />
+                    )}
+                  </Pane>
+                </Pane>
+              </div>
+              <div className="card p20">
+                <Heading type="form-title" className="pb20">
+                  Nguyên vật liệu áp dụng
+                </Heading>
+                <Pane className="row">
+                  <Pane className="col-lg-12">
+                    {checkEdit ? (
+                      <FormItem
+                        label="Nhóm hàng áp dụng"
+                        name="material_group"
+                        data={dataFoodGroup}
+                        type={variables.TYPE.SELECT}
+                      />
+                    ) : (
+                      <FormDetail
+                        name={detail?.find((i) => i?.key === 'material_group')?.value}
+                        label="Nhóm hàng áp dụng"
+                        data={dataFoodGroup}
+                        type={variables.TYPE.SELECT}
                       />
                     )}
                   </Pane>

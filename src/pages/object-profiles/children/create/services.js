@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { omit, pickBy } from 'lodash';
+import { omit, pickBy ,head} from 'lodash';
 import { Helper, variables } from '@/utils';
 
 const removeParams = (params) =>
@@ -82,7 +82,7 @@ export function getHistory(params = {}) {
 }
 
 export function addMaterials(data = {}) {
-  return request(`/student-materials`, {
+  return request(`/student-materials/set-multiple-by-studentId/${head(data)?.studentId}`, {
     method: 'POST',
     data,
   });

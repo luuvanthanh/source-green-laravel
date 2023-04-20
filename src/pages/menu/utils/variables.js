@@ -134,6 +134,16 @@ export const variables = {
     { id: 'Friday', name: 'Thứ 6' },
   ],
   WEEKLY: 'WEEKLY',
+  DATA_NORM_TYPE: [
+    {
+      id: 'Main',
+      name: 'Định mức chính',
+    },
+    {
+      id: 'Employee',
+      name: 'Định mức nhân viên',
+    },
+  ],
 };
 
 export default variables;
