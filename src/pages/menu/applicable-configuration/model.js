@@ -5,6 +5,7 @@ export default {
   state: {
     details: {},
     dataFoodGroup: [],
+    dataMaterials: [],
     error: {
       isError: false,
       data: {},

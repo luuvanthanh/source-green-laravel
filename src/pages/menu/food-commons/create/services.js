@@ -19,7 +19,7 @@ export function getFoodCommonsGroups(params = {}) {
 }
 
 export function get(params = {}) {
-  return request(`/food-commons/${params.id}`, {
+  return request(`/food-commons/${params.id}/with-detail`, {
     method: 'GET',
   });
 }
@@ -49,5 +49,11 @@ export function remove(id) {
   return request(`/food-commons/${id}`, {
     method: 'DELETE',
     parse: true,
+  });
+}
+
+export function getFoodCommonsMaterials() {
+  return request(`/food-commons/material-item-with-item-group-id-and-type`, {
+    method: 'GET',
   });
 }
