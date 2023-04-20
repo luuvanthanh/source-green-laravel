@@ -2,6 +2,7 @@
 
 namespace GGPHP\InterviewManager\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\InterviewManager\Models\EvaluationCriteria;
@@ -33,13 +34,14 @@ class InterviewListTransformer extends BaseTransformer
     {
         $data = $this->getAvgEvaluation($model);
         $messages = '';
-        if (empty($model->PointEvaluationId)) {
+        if (empty($model->pointEvaluationId)) {
             $messages = 'Điểm đánh giá của nhân sự không nằm trong điểm đánh giá của cấu hình vui lòng thêm vào cấu hình điểm đánh giá.';
         }
         return [
             'Status' => array_search($model->Status, InterviewList::STATUS),
             'evaluationCriteria' => $data,
-            'messagePonitEvalute' => $messages
+            'messagePonitEvalute' => $messages,
+            'Date' => Carbon::parse($model->Date)->format('d-m-Y')
         ];
     }
 

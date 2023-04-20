@@ -6,7 +6,7 @@ use App\Models\User;
 use GGPHP\Category\Models\Division;
 use GGPHP\Core\Models\UuidModel;
 
-class InterviewList extends UuidModel
+class DoInterview extends UuidModel
 {
     CONST CODE = 'PV';
     // chưa phỏng vấn
@@ -29,7 +29,7 @@ class InterviewList extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'InterviewLists';
+    protected $table = 'DoInterviews';
 
     /**
      * The attributes that are mass assignable.
@@ -49,13 +49,14 @@ class InterviewList extends UuidModel
         'Address',
         'Status',
         'MediumScore',
-        'PointEvaluationId',
-        'SuggestedSalary'
+        'PointEvaluation',
+        'InterviewListId',
+        'EmployeeId'
     ];
 
-    public function interviewListEmployee()
+    public function evaluation()
     {
-        return $this->belongsToMany(User::class, 'InterviewListEmployees', 'InterviewListId', 'EmployeeId');
+        return $this->belongsToMany(EvaluationCriteria::class, 'DoInterviewEvaluations', 'DoInterviewId', 'EvaluationCriteriaId');
     }
 
     public function division()
@@ -66,15 +67,5 @@ class InterviewList extends UuidModel
     public function interviewConfiguration()
     {
         return $this->belongsTo(InterviewConfiguration::class, 'InterviewConfigurationId');
-    }
-
-    public function pointEvaluation()
-    {
-        return $this->belongsTo(PointEvaluation::class, 'PointEvaluationId');
-    }
-
-    public function interviewDetail()
-    {
-        return $this->hasMany(InterviewDetail::class, 'InterviewListId');
     }
 }

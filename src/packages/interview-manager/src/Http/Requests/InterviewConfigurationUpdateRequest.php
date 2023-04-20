@@ -30,13 +30,13 @@ class InterviewConfigurationUpdateRequest extends FormRequest
             'id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $interviewConfigura = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId' , $this->interview_configuration)->first();
-                    $interviewList = InterviewList::where('InterviewConfigurationId' , $this->interview_configuration)->first();
+                    // $interviewConfigura = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId' , $this->interview_configuration)->first();
+                    // $interviewList = InterviewList::where('InterviewConfigurationId' , $this->interview_configuration)->first();
 
-                    if (!is_null($interviewConfigura) || !is_null($interviewList)) {
+                    // if (!is_null($interviewConfigura) || !is_null($interviewList)) {
 
-                        return $fail('Dữ liệu đã được sử dụng');
-                    }
+                    //     return $fail('Dữ liệu đã được sử dụng');
+                    // }
                 },
             ],
             'divisionId' => 'nullable|exists:Divisions,Id',
