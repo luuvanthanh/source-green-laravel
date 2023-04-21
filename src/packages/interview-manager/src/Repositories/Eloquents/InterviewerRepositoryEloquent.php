@@ -64,6 +64,8 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
                 $query->orWhereLike('Code', $attributes['key']);
             })->orWhereHas('division', function ($query) use ($attributes) {
                 $query->whereLike('Name', $attributes['key']);
+            })->orWhereHas('interviewerEmployee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['key']);
             });
         }
 

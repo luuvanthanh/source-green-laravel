@@ -7,15 +7,15 @@ use Exception;
 use GGPHP\Clover\Models\EmployeeAccount;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\InterviewManager\Models\DoInterview;
-use GGPHP\InterviewManager\Models\DoInterviewEvaluation;
-use GGPHP\InterviewManager\Models\InterviewConfigurationEvaluationCriteria;
 use GGPHP\InterviewManager\Models\InterviewDetail;
 use GGPHP\InterviewManager\Models\Interviewer;
-use GGPHP\InterviewManager\Models\InterviewerListEmployee;
 use GGPHP\InterviewManager\Models\InterviewList;
 use GGPHP\InterviewManager\Models\PointEvaluation;
+use GGPHP\InterviewManager\Presenters\DoInterviewPresenter;
 use GGPHP\InterviewManager\Presenters\InterviewListPresenter;
+use GGPHP\InterviewManager\Repositories\Contracts\DoInterviewRepository;
 use GGPHP\InterviewManager\Repositories\Contracts\InterviewListRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Throwable;
@@ -25,7 +25,7 @@ use Throwable;
  *
  * @package GGPHP\InterviewManager\Repositories\Eloquents;
  */
-class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements InterviewListRepository
+class DoInterviewRepositoryEloquent extends CoreRepositoryEloquent implements DoInterviewRepository
 {
     /**
      * @var array
@@ -39,7 +39,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
      */
     public function model()
     {
-        return InterviewList::class;
+        return DoInterview::class;
     }
 
     /**
@@ -49,7 +49,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
      */
     public function presenter()
     {
-        return InterviewListPresenter::class;
+        return DoInterviewPresenter::class;
     }
 
     /**
@@ -84,6 +84,12 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             });
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->Where('EmployeeId', $attributes['employeeId']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $results = $this->paginate($attributes['limit']);
         } else {
@@ -91,70 +97,6 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
         }
 
         return $results;
-    }
-
-    public function create(array $attributes)
-    {
-        DB::beginTransaction();
-        try {
-            $attributes = $this->creating($attributes);
-
-            $result = InterviewList::create($attributes);
-            if (!is_null($result) && !empty($attributes['employeeId'])) {
-                $result->interviewListEmployee()->attach($attributes['employeeId']);
-            }
-            $employeeId = InterviewerListEmployee::where('InterviewListId', $result->Id)->get()->toArray();
-            
-            foreach ($employeeId as $key => $value) {
-                $attributes['employeeId'] = $value['EmployeeId'];
-                $attributes['interviewListId'] = $result->Id;
-                $doInterview = DoInterview::create($attributes);
-            }
-            
-
-            $evaluationConfig = InterviewConfigurationEvaluationCriteria::where('InterviewConfigurationId', $doInterview->InterviewConfigurationId)->get();
-            if (!empty($evaluationConfig)) {
-                foreach ($evaluationConfig as $key => $value) {
-                    $data[] = $value->EvaluationCriteriaId;
-                }
-                $doInterview->evaluation()->attach($data);
-                
-            }
-
-            DB::commit();
-        } catch (Throwable $th) {
-            DB::rollBack();
-            throw new Exception($th->getMessage(), $th->getCode());
-        }
-
-        $this->sentNotification($result);
-
-        return parent::parserResult($result);
-    }
-
-    public function creating($attributes)
-    {
-        $code = InterviewList::latest()->first();
-
-        if (is_null($code)) {
-            $code = InterviewList::CODE . '001';
-        } else {
-            $stt = substr($code->Code, 2);
-            $stt += 1;
-
-            if (strlen($stt) == 1) {
-                $code = InterviewList::CODE . '00' . $stt;
-            } elseif (strlen($stt) == 2) {
-                $code = InterviewList::CODE . '0' . $stt;
-            } else {
-                $code = InterviewList::CODE . $stt;
-            }
-        }
-        $attributes['code'] = $code;
-        $attributes['date'] = Carbon::parse($attributes['date'])->format('Y-m-d');
-        $attributes['status'] = InterviewList::STATUS['NOT_INTERVIEWED_YET'];
-
-        return $attributes;
     }
 
     public function update(array $attributes, $id)
@@ -248,7 +190,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
                     }
                 }
             }
-            $doInterview = DoInterview::where('InterviewListId', $id)->first();
+            $doInterview = DoInterview::where('InterviewListId', $id)->where('EmployeeId', $attributes['employeeId'])->first();
             $doInterview->update([
                 'Status' => $poinEvaluation,
                 'MediumScore' => $avg
@@ -304,7 +246,7 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             }
         }
 
-        return parent::parserResult($interviewList);
+        return parent::parserResult($doInterview);
     }
     // duyệt lương bới ceo
     public function salaryApproval(array $attributes, $id)

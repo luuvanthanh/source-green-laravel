@@ -124,4 +124,12 @@ class InterviewListController extends Controller
 
         return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
     }
+
+    // get configuaion and employee by division.
+    public function getConfiguationEmployee($id)
+    {
+        $sendSuggestions = $this->interviewListRepository->getConfiguationEmployee($id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
 }

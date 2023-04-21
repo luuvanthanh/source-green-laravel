@@ -28,11 +28,11 @@ class InterviewerDeleteRequest extends FormRequest
             'id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $interviewerEmployee = InterviewerEmployee::where('InterviewerId', $value)->first();
-                    if (!is_null($interviewerEmployee)) {
+                    // $interviewerEmployee = InterviewerEmployee::where('InterviewerId', $value)->first();
+                    // if (!is_null($interviewerEmployee)) {
 
-                        return $fail('Dữ liệu đã được sử dụng');
-                    }
+                    //     return $fail('Dữ liệu đã được sử dụng');
+                    // }
                 }
             ]
         ];

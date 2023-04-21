@@ -37,11 +37,11 @@ class PointEvaluationCreateRequest extends FormRequest
                             return $fail('Khoảng điểm từ của phần tử sau phải lớn hơn khoảng điểm đến của phần tử trước.');
                         }
 
-                        $interViewDetail = InterviewDetail::distinct('PointEvaluationId')->get()->pluck('PointEvaluationId')->toArray();
-                        $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->first();
-                        if (!is_null($pointValue)) {
-                            return $fail('Dữ liệu đã được sử dụng');
-                        }
+                        // $interViewDetail = InterviewDetail::distinct('PointEvaluationId')->get()->pluck('PointEvaluationId')->toArray();
+                        // $pointValue = PointEvaluation::whereIn('Id', $interViewDetail)->first();
+                        // if (!is_null($pointValue)) {
+                        //     return $fail('Dữ liệu đã được sử dụng');
+                        // }
                     }
                 },
             ],

@@ -38,9 +38,14 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('sendSuggestions/{id}', 'InterviewListController@sendSuggestions');
             // gửi đê xuất không duyệt lương
             \Route::put('sendSuggestion-do-not-approve/{id}', 'InterviewListController@sendSuggestionDoNotApprove');
-            \Route::put('complete-interview/{id}', 'InterviewListController@completeInterview');
+            \Route::put('complete-interview/{id}', 'DoInterviewController@completeInterview');
             // duyệt lương bởi CEO
             \Route::put('salary-approval/{id}', 'InterviewListController@salaryApproval');
+            
+            // get cấu hình và người phụ trách dựa vào bộ phận.
+            \Route::get('get-configuation-employee/{id}', 'InterviewListController@getConfiguationEmployee');
+            // get làm phỏng vấn
+            \Route::resource('do-interviews', 'DoInterviewController');
         });
     }
 }
