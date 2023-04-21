@@ -7,6 +7,8 @@ use GGPHP\InterviewManager\Models\Refund;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Fee\Transformers\SchoolYearTransformer;
 use GGPHP\InterviewManager\Models\Interviewer;
+use GGPHP\Users\Models\User;
+use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use GGPHP\Users\Transformers\UserTransformer;
 
 /**
@@ -21,7 +23,7 @@ class InterviewerTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['division', 'interviewerEmployee'];
+    protected $availableIncludes = ['division', 'interviewerEmployee', 'configuation'];
 
     /**
      * Transform the custom field entity.
@@ -30,7 +32,29 @@ class InterviewerTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $usersuse =  $model->interviewerEmployee->toArray();
+        $users= User::get()->toArray();
+        $data = [];
+        foreach ($users as $key => $value) {
+            $newData = array_combine(
+                array_map(function($key) { return lcfirst($key); }, array_keys($value)),
+                array_values($value)
+            );
+            $data[] = $newData;
+        }
+        foreach ($usersuse as $key => $value) {
+            foreach ($data as $key => $itemUser) {
+                if ($value['Id'] == $itemUser['id']) {
+                    $data[$key]['status'] = 'true';
+                }else {
+                    $data[$key]['status'] = 'false';
+                }
+            }
+        }
+        
+        return [
+            'employee' => $data
+        ];
     }
 
     public function includeDivision(Interviewer $interviewer)
@@ -45,5 +69,10 @@ class InterviewerTransformer extends BaseTransformer
     public function includeInterviewerEmployee(Interviewer $interviewer)
     {
         return $this->collection($interviewer->interviewerEmployee, new InterviewerEmployeeTransformer, 'InterviewerEmployee');
+    }
+
+    public function includeConfiguation(Interviewer $interviewer)
+    {
+        return $this->collection($interviewer->configuation, new InterviewConfigurationTransformer, 'InterviewConfiguration');
     }
 }

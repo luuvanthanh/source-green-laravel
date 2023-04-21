@@ -91,4 +91,12 @@ class InterviewerController extends Controller
 
         return $this->success([], '', ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
+
+    // get configuaion and employee by division.
+    public function getConfiguationEmployee($id)
+    {
+        $sendSuggestions = $this->interviewerRepository->getConfiguationEmployee($id);
+
+        return $this->success($sendSuggestions, trans('lang::messages.common.modifySuccess'), ['isShowData' => false]);
+    }
 }

@@ -8,6 +8,7 @@ use GGPHP\InterviewManager\Models\EvaluationCriteria;
 use GGPHP\InterviewManager\Models\Interviewer;
 use GGPHP\InterviewManager\Presenters\InterviewerPresenter;
 use GGPHP\InterviewManager\Repositories\Contracts\InterviewerRepository;
+use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Support\Facades\DB;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Throwable;
@@ -150,5 +151,13 @@ class InterviewerRepositoryEloquent extends CoreRepositoryEloquent implements In
         $interviewer->interviewerEmployee()->detach();
         
         $interviewer->delete();
+    }
+
+    public function getConfiguationEmployee($id)
+    {
+        $interview = Interviewer::where('DivisionId', $id)->first();
+        $result = parent::find($interview->Id);
+
+        return $result;
     }
 }

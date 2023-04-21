@@ -355,11 +355,4 @@ class InterviewListRepositoryEloquent extends CoreRepositoryEloquent implements 
             dispatch(new \GGPHP\Core\Jobs\SendNotiWithoutCode($dataNotifiCation));
         }
     }
-
-    public function getConfiguationEmployee($id)
-    {
-        $interview = Interviewer::where('DivisionId', $id)->with('configuation', 'interviewerEmployee')->get()->toArray();
-        
-        return ['data' => $interview];
-    }
 }

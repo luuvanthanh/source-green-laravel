@@ -43,7 +43,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('salary-approval/{id}', 'InterviewListController@salaryApproval');
             
             // get cấu hình và người phụ trách dựa vào bộ phận.
-            \Route::get('get-configuation-employee/{id}', 'InterviewListController@getConfiguationEmployee');
+            \Route::get('get-configuation-employee/{id}', 'InterviewerController@getConfiguationEmployee');
             // get làm phỏng vấn
             \Route::resource('do-interviews', 'DoInterviewController');
         });
