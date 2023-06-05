@@ -76,6 +76,7 @@ class ExcelExporterServices
      */
     public function export($type, $params, $callbacks = [], $events = [])
     {
+        dd( $this->resultFolder);
         $templateFile = $this->configs[$type]['template'];
         $resultFile = $this->configs[$type]['result'] ?? $templateFile;
 
