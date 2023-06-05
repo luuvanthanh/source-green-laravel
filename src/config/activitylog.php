@@ -3,7 +3,7 @@
 return [
 
     /*
-     * If set to false, no activities will be saved to the database.
+     * If set to false, no activities will be saved to the databases.
      */
     'enabled' => env('ACTIVITY_LOGGER_ENABLED', true),
 
